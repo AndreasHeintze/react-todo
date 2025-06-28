@@ -1,20 +1,23 @@
-import {useRef, useEffect} from "react"
+import {useContext, useRef, useState, useEffect} from "react"
+import {TodoContext} from "./contexts/TodoContext"
 import CheckBox from "./CheckBox"
 import Spinner from './Spinner'
 import {formatTime} from './helpers'
 
-export default function Todo({
-  todo,
-  currentTime,
-  onTodoSave,
-  onTodoEdit,
-  onTodoDelete,
-  onTodoToggleTimer,
-  onTodoCompleted
-}) {
+export default function Todo({todo}) {
   const descrRef = useRef(null)
+  const {
+    handleTodoEdit,
+    handleTodoSave,
+    handleTodoCompleted,
+    handleTodoDelete,
+    handleTodoToggleTimer,
+    handleTodoDoubleClick,
+    handleTodoContentEditable,
+  } = useContext(TodoContext)
   
   useEffect(() => {
+    // Focus description and select all text
     if (descrRef.current && todo.editMode) {
       descrRef.current.focus()
       // Select text
@@ -26,41 +29,54 @@ export default function Todo({
     }
   }, [todo])
 
-  // Calculate total time
-  let totalTime = todo.timeSpent
-  if (todo.isTimerRunning && todo.startTime) {
-    totalTime = totalTime + (currentTime - todo.startTime)
-  }
+  const [localTime, setLocalTime] = useState(Date.now())
+  const lastUpdateTime = useRef(localTime)
+  const animationFrameId = useRef()
 
-  function handleTodoDoubleClick() {
-    if (!todo.editMode) {
-      onTodoEdit(todo)
+  // Update localTime every second
+  useEffect(() => {
+    if (!todo.isTimerRunning) {
+      // Stop animation when timer stops
+      if (animationFrameId.current) {
+        cancelAnimationFrame(animationFrameId.current)
+        animationFrameId.current = null
+      }
+      return
     }
-  }
 
-  function handleTodoInput(ev) {
-    const enterPressed = ev.target.innerText.indexOf('\n') !== -1
-    if (enterPressed) {
-      const singleLine = ev.target.innerText.replace(/\n/g, '')
-      ev.target.innerText = singleLine
-      ev.target.blur()
+    // Start animation loop for this specific Todo
+    const animate = () => {
+      const now = Date.now()
+      if (now - lastUpdateTime.current >= 1000) {
+        setLocalTime(now)
+        lastUpdateTime.current = now
+      }
+      animationFrameId.current = requestAnimationFrame(animate)
     }
-  }
+    animationFrameId.current = requestAnimationFrame(animate)
+    return () => {
+      if (animationFrameId.current) {
+        cancelAnimationFrame(animationFrameId.current)
+      }
+    }
+  }, [todo.isTimerRunning])
   
-  function handleTodoBlur(ev) {
-    onTodoSave(todo, ev.target.innerText.trim())
-  }
+  // Use localTime for calculations
+  const totalTime = todo.timeSpent + 
+    (todo.isTimerRunning && todo.startTime ? localTime - todo.startTime : 0)
 
   return (
     <div className="flex items-center">
       
-      <CheckBox todo={todo} onTodoCompleted={onTodoCompleted} />
+      {/** Todo completed checkbox */}
+      <CheckBox todo={todo} onTodoCompleted={() => handleTodoCompleted(todo, localTime)} />
       
+      {/** Todo description text */}
       <div className="px-2 py-1 w-full mr-2 h-8 rounded"
         ref={descrRef}
-        onInput={handleTodoInput}
-        onBlur={handleTodoBlur}
-        onDoubleClick={handleTodoDoubleClick}
+        onInput={handleTodoContentEditable}
+        onBlur={(ev) => handleTodoSave(todo, ev.target.innerText.trim())}
+        onDoubleClick={() => handleTodoDoubleClick(todo)}
         suppressContentEditableWarning={true}
         contentEditable={todo.editMode ? 'plaintext-only' : 'false'}
         style={{
@@ -73,27 +89,30 @@ export default function Todo({
         title={todo.editMode ? '' : 'Du kan dubbelklicka för att editera.'}
       >{todo.descr}</div>
       
+      {/** Total time spent */}
       <div className="flex justify-end font-mono text-sm mr-2 w-24">{formatTime(totalTime)}</div>
 
+      {/** Edit button */}
       <button 
         className={`px-3 py-1 mr-2 font-medium rounded border h-8 flex items-center transition-all duration-200 ${
           todo.completed 
             ? 'bg-gray-200 text-gray-400 border-gray-300 cursor-not-allowed'
             : 'bg-blue-50 hover:bg-blue-100 text-blue-600 border-blue-200 cursor-pointer hover:border-blue-300'
         }`}
-        onClick={() => onTodoEdit(todo)}
+        onClick={() => handleTodoEdit(todo)}
         disabled={todo.completed}
       >
         Edit
       </button>
 
+      {/** Timer button */}
       <button 
         className={`relative px-3 py-1 mr-2 font-medium rounded border w-48 h-8 flex justify-center items-center whitespace-nowrap transition-all duration-200 ${
           todo.completed 
             ? 'bg-gray-200 text-gray-400 border-gray-300 cursor-not-allowed'
             : 'bg-amber-50 hover:bg-amber-100 text-amber-600 border-amber-200 cursor-pointer hover:border-amber-300'
         }`}
-        onClick={() => onTodoToggleTimer(todo)}
+        onClick={() => handleTodoToggleTimer(todo, localTime)}
         disabled={todo.completed}
         title={todo.isTimerRunning ? 'Click to stop timer' : ''}
       >
@@ -102,7 +121,8 @@ export default function Todo({
         {todo.isTimerRunning ? 'Stop timer' : 'Start timer'}
       </button>
 
-      <button className="px-3 py-1 bg-red-50 hover:bg-red-100 text-red-600 font-medium rounded border border-red-200 cursor-pointer hover:border-red-300 transition-all duration-200 h-8 flex items-center" onClick={() => onTodoDelete(todo)}>Delete</button>
+      {/** Delete button */}
+      <button className="px-3 py-1 bg-red-50 hover:bg-red-100 text-red-600 font-medium rounded border border-red-200 cursor-pointer hover:border-red-300 transition-all duration-200 h-8 flex items-center" onClick={() => handleTodoDelete(todo)}>Delete</button>
     </div>
   )
 }

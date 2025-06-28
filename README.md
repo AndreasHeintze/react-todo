@@ -1,5 +1,7 @@
 # React + Vite
 
+[You can try this React-Todo app on Vercel](https://react-todo-gilt-kappa.vercel.app/)
+
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
 Currently, two official plugins are available:
