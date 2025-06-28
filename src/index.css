@@ -1,0 +1,51 @@
+@import "tailwindcss";
+
+/* 1. Huvudcontainern med alla inställningar */
+.spinner-stop-container {
+  position: relative;
+  
+  /* --- KONTROLLPANEL --- */
+  --spinner-size: 20px;
+  --spinner-color: #e17100;
+  --spinner-thickness: 2px; /* <-- NY VARIABEL FÖR TJOCKLEK */
+
+  /* Använd variablerna */
+  width: var(--spinner-size);
+  height: var(--spinner-size);
+  color: var(--spinner-color); 
+}
+
+/* 2. Spinnern använder nu variabeln för tjocklek */
+.modern-spinner {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  border-radius: 50%;
+  
+  /* Använder variabeln från containern */
+  border: var(--spinner-thickness) solid currentColor; 
+  
+  border-top-color: transparent;
+  animation: spin 1s linear infinite;
+}
+
+/* 3. Kvadraten (oförändrad) */
+.stop-square {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 8px; 
+  height: 8px;
+  background-color: currentColor; 
+}
+
+/* Keyframes (oförändrad) */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
