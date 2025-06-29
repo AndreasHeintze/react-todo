@@ -1,7 +1,7 @@
 export default function CheckBox({todo, onTodoCompleted}) {
   return (
     <div 
-      onClick={() => onTodoCompleted(todo)}
+      onClick={onTodoCompleted}
       className={`w-5 h-5 mr-3 rounded border-2 cursor-pointer transition-all duration-200 flex items-center justify-center flex-shrink-0 ${
         todo.completed 
           ? 'bg-green-600 border-green-600 text-white' 

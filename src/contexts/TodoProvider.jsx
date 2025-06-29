@@ -18,11 +18,13 @@ export function TodoProvider({children}) {
     setTodos([...todos, {
       id: generateId(),
       descr,
+      editMode: false,
+      completed: false,
       timeSpent: 0,
       startTime: null,
       isTimerRunning: false,
-      editMode: false,
-      completed: false,
+      createdAt: Date.now(),
+      completedAt: null,
     }])
 
     setNewTodo('')
@@ -56,12 +58,12 @@ export function TodoProvider({children}) {
     }))
   }, [todos, setTodos])
 
-  const handleTodoCompleted = useCallback((todo, localTime) => {
+  const handleTodoCompleted = useCallback((todo) => {
     setTodos(todos.map((currTodo) => {
       if (currTodo.id === todo.id) {
         // Toggle the clicked todo's completed
         const completed = !currTodo.completed
-        const addTime = currTodo.startTime ? localTime - currTodo.startTime : 0
+        const addTime = currTodo.startTime ? Date.now() - currTodo.startTime : 0
 
         return {
           ...currTodo,
@@ -75,8 +77,10 @@ export function TodoProvider({children}) {
     }))
   }, [todos, setTodos])
 
-  const handleTodoToggleTimer = useCallback((todo, localTime) => {
+  const handleTodoToggleTimer = useCallback((todo) => {
     setTodos(todos.map((currTodo) => {
+
+      const localTime = Date.now()
 
       if (currTodo.id === todo.id) {
         // Toggle the clicked todo's isTimerRunning

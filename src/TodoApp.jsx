@@ -9,10 +9,10 @@ export default function TodoApp() {
     handleTodoAdd,
   } = useContext(TodoContext)
 
-  return (
+   return (
     <div className="border p-8 rounded-lg mx-auto">
       
-      <h2 className="mx-4 mt-2 mb-8 text-2xl font-bold">TodoApp</h2>
+      <h2 className="mx-4 mt-2 mb-8 text-2xl font-bold">Todo-Planner</h2>
       
       <form onSubmit={handleTodoAdd}>
         <div className="flex p-2 mb-6">
