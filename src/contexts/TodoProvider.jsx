@@ -2,6 +2,14 @@ import {useRef, useCallback} from "react"
 import {useUniqueId, usePersistedState} from "../helpers"
 import {TodoContext} from "./TodoContext"
 
+function findTopSortPosition(todos) {
+  const uncompletedTodos = todos.filter(todo => !todo.completed)
+  const minSortOrder = uncompletedTodos.length > 0 
+    ? Math.min(...uncompletedTodos.map(t => t.sortOrder)) 
+    : 1
+  return minSortOrder
+}
+
 export function TodoProvider({children}) {
   const generateId = useUniqueId()
   const [newTodo, setNewTodo] = usePersistedState('todo', '')
@@ -16,13 +24,7 @@ export function TodoProvider({children}) {
     }
 
     // Find the minimum sortOrder among uncompleted todos and subtract 1
-      const uncompletedTodos = todos.filter(todo => !todo.completed)
-      const minSortOrder = uncompletedTodos.length > 0 
-        ? Math.min(...uncompletedTodos.map(t => t.sortOrder)) 
-        : 1
-      
-      const nextSortOrder = minSortOrder - 1
-
+    
     setTodos([...todos, {
       id: generateId(),
       descr,
@@ -31,7 +33,7 @@ export function TodoProvider({children}) {
       timeSpent: 0,
       startTime: null,
       isTimerRunning: false,
-      sortOrder: nextSortOrder,
+      sortOrder: findTopSortPosition(todos) - 1,
       createdAt: Date.now(),
       completedAt: null,
     }])
@@ -77,7 +79,8 @@ export function TodoProvider({children}) {
         return {
           ...currTodo,
           completed: completed,
-          completedAt: Date.now(),
+          completedAt: completed ? Date.now() : null,
+          sortOrder: completed ? currTodo.sortOrder : findTopSortPosition(todos) - 1,
           isTimerRunning: false,
           startTime: null,
           timeSpent: currTodo.timeSpent + addTime
