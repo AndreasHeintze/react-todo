@@ -27,7 +27,7 @@ export default function Todo({todo}) {
       selection.removeAllRanges()
       selection.addRange(range)
     }
-  }, [todo])
+  }, [todo.editMode])
 
   const [localTime, setLocalTime] = useState(Date.now())
   const lastUpdateTime = useRef(localTime)
@@ -54,6 +54,7 @@ export default function Todo({todo}) {
       animationFrameId.current = requestAnimationFrame(animate)
     }
     animationFrameId.current = requestAnimationFrame(animate)
+    
     return () => {
       if (animationFrameId.current) {
         cancelAnimationFrame(animationFrameId.current)

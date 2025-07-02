@@ -1,4 +1,4 @@
-import {useRef, useCallback} from "react"
+import {useCallback} from "react"
 import {useUniqueId, usePersistedState} from "../helpers"
 import {TodoContext} from "./TodoContext"
 
