@@ -17,7 +17,7 @@ export default function TodoList() {
       {
         getSortedTodos().map((todo) => {
           return (
-            <li className={`p-2 ${todo.isTimerRunning ? 'bg-stone-100' : ''}`} key={todo.id}>
+            <li key={todo.id}>
               <Todo todo={todo} />
             </li>
           )

@@ -66,7 +66,7 @@ export default function Todo({todo}) {
     (todo.isTimerRunning && todo.startTime ? localTime - todo.startTime : 0)
 
   return (
-    <div className="flex items-center">
+    <div className={`flex items-center p-2 rounded bg-white m-2 border-l-4 ${todo.isTimerRunning ? 'border-l-red-500 shadow' : 'border-l-transparent'}`}>
       
       {/** Todo completed checkbox */}
       <CheckBox todo={todo} onTodoCompleted={() => handleTodoCompleted(todo)} />
