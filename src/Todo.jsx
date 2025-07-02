@@ -70,7 +70,7 @@ export default function Todo({todo}) {
     <div className={`flex items-center p-2 rounded bg-white m-2 border-l-4 ${todo.isTimerRunning ? 'border-l-red-500 shadow' : 'border-l-transparent'}`}>
       
       {/** Todo completed checkbox */}
-      <CheckBox todo={todo} onTodoCompleted={() => handleTodoCompleted(todo)} />
+      <CheckBox todo={todo} onTodoCompleted={() => handleTodoCompleted(todo, todo.isTimerRunning ? localTime : undefined)} />
       
       {/** Todo description text */}
       <div className="px-2 py-1 w-full mr-2 h-8 rounded"
@@ -113,7 +113,7 @@ export default function Todo({todo}) {
             ? 'bg-gray-200 text-gray-400 border-gray-300 cursor-not-allowed'
             : 'bg-amber-50 hover:bg-amber-100 text-amber-600 border-amber-200 cursor-pointer hover:border-amber-300'
         }`}
-        onClick={() => handleTodoToggleTimer(todo)}
+        onClick={() => handleTodoToggleTimer(todo, todo.isTimerRunning ? localTime : undefined)}
         disabled={todo.completed}
         title={todo.isTimerRunning ? 'Click to stop timer' : ''}
       >

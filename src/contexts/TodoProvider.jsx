@@ -69,17 +69,17 @@ export function TodoProvider({children}) {
     }))
   }, [todos, setTodos])
 
-  const handleTodoCompleted = useCallback((todo) => {
+  const handleTodoCompleted = useCallback((todo, localTime) => {
     setTodos(todos.map((currTodo) => {
       if (currTodo.id === todo.id) {
         // Toggle the clicked todo's completed
         const completed = !currTodo.completed
-        const addTime = currTodo.startTime ? Date.now() - currTodo.startTime : 0
+        const addTime = currTodo.startTime ? (localTime || Date.now()) - currTodo.startTime : 0
 
         return {
           ...currTodo,
           completed: completed,
-          completedAt: completed ? Date.now() : null,
+          completedAt: completed ? (localTime || Date.now()) : null,
           sortOrder: completed ? currTodo.sortOrder : findTopSortPosition(todos) - 1,
           isTimerRunning: false,
           startTime: null,
@@ -90,20 +90,20 @@ export function TodoProvider({children}) {
     }))
   }, [todos, setTodos])
 
-  const handleTodoToggleTimer = useCallback((todo) => {
+  const handleTodoToggleTimer = useCallback((todo, localTime) => {
     setTodos(todos.map((currTodo) => {
 
-      const localTime = Date.now()
+      const time = localTime || Date.now()
 
       if (currTodo.id === todo.id) {
         // Toggle the clicked todo's isTimerRunning
         const isTimerRunning = !currTodo.isTimerRunning
-        const addTime = currTodo.startTime ? localTime - currTodo.startTime : 0
+        const addTime = currTodo.startTime ? time - currTodo.startTime : 0
         
         return {
           ...currTodo, 
           isTimerRunning,
-          startTime: isTimerRunning ? localTime : null,
+          startTime: isTimerRunning ? time : null,
           timeSpent: isTimerRunning 
             ? currTodo.timeSpent
             : currTodo.timeSpent + addTime
@@ -111,7 +111,7 @@ export function TodoProvider({children}) {
       }
       
       if (currTodo.isTimerRunning) {
-        const addTime = currTodo.startTime ? localTime - currTodo.startTime : 0
+        const addTime = currTodo.startTime ? time - currTodo.startTime : 0
         // Stop any other running timer
         return {
           ...currTodo,
