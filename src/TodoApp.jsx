@@ -22,7 +22,7 @@ export default function TodoApp() {
              onChange={(ev) => setNewTodo(ev.target.value)}
              placeholder="Enter your todo description here"
            />
-           <button className="flex w-20 cursor-pointer items-center justify-center rounded bg-green-600 px-4 py-2 font-medium text-white shadow-sm transition-all duration-200 hover:bg-green-700 hover:shadow-md">
+           <button className="bg-green-haze-500 hover:bg-green-haze-600 flex w-20 cursor-pointer items-center justify-center rounded px-4 py-2 font-medium text-white shadow-sm transition-all duration-200 hover:shadow-md">
              Add
            </button>
          </div>
