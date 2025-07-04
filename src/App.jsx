@@ -4,11 +4,13 @@ import './App.css'
 
 function App() {
   return (
-    <main className="container my-10 mx-auto">
-      <TodoProvider>
-        <TodoApp />
-      </TodoProvider>
-    </main>
+    <div className="bg-havelock-blue-700 min-h-dvh p-0 font-sans sm:px-4 sm:py-10">
+      <main className="container mx-auto">
+        <TodoProvider>
+          <TodoApp />
+        </TodoProvider>
+      </main>
+    </div>
   )
 }
 

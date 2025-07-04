@@ -1,51 +1,17 @@
 @import "tailwindcss";
 
-/* 1. Huvudcontainern med alla inställningar */
-.spinner-stop-container {
-  position: relative;
-  
-  /* --- KONTROLLPANEL --- */
-  --spinner-size: 20px;
-  --spinner-color: #e17100;
-  --spinner-thickness: 2px; /* <-- NY VARIABEL FÖR TJOCKLEK */
+@theme {
+  --color-havelock-blue-50: oklch(97.454% 0.00803 254.094);
+  --color-havelock-blue-100: oklch(94.842% 0.01388 248.155);
+  --color-havelock-blue-200: oklch(88.382% 0.03273 249.715);
+  --color-havelock-blue-300: oklch(78.634% 0.06297 246.467);
+  --color-havelock-blue-400: oklch(63.109% 0.10975 246.713);
+  --color-havelock-blue-500: oklch(58.046% 0.11339 248.08);
+  --color-havelock-blue-600: oklch(49.626% 0.10621 250.495);
+  --color-havelock-blue-700: oklch(42.72% 0.09097 251.669);
+  --color-havelock-blue-800: oklch(38.558% 0.0745 250.355);
+  --color-havelock-blue-900: oklch(34.661% 0.06194 253.094);
+  --color-havelock-blue-950: oklch(26.561% 0.04516 255.669);
 
-  /* Använd variablerna */
-  width: var(--spinner-size);
-  height: var(--spinner-size);
-  color: var(--spinner-color); 
-}
-
-/* 2. Spinnern använder nu variabeln för tjocklek */
-.modern-spinner {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  box-sizing: border-box;
-  border-radius: 50%;
-  
-  /* Använder variabeln från containern */
-  border: var(--spinner-thickness) solid currentColor; 
-  
-  border-top-color: transparent;
-  animation: spin 1s linear infinite;
-}
-
-/* 3. Kvadraten (oförändrad) */
-.stop-square {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 8px; 
-  height: 8px;
-  background-color: currentColor; 
-}
-
-/* Keyframes (oförändrad) */
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
+  --shadow-tiny: 0 0 0 calc(1px / var(--scale-x, 1)) rgba(63, 63, 68, 0.05), 0 1px calc(3px / var(--scale-x, 1)) 0 rgba(34, 33, 81, 0.15);
 }

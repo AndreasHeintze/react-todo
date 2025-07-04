@@ -12,16 +12,14 @@ export default function TodoList() {
   }, [todos])
 
   return (
-    <ul>
-      {
-        sortedTodos.map((todo) => {
-          return (
-            <li key={todo.id}>
-              <Todo todo={todo} />
-            </li>
-          )
-        })
-      }
+    <ul className="@container">
+      {sortedTodos.map((todo) => {
+        return (
+          <li key={todo.id}>
+            <Todo todo={todo} />
+          </li>
+        )
+      })}
     </ul>
   )
 }

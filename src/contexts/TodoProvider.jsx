@@ -56,87 +56,102 @@ export function TodoProvider({children}) {
     setTodos(todos.filter((currTodo) => currTodo.id !== todo.id))
   }, [todos, setTodos])
 
-  const handleTodoSave = useCallback((todo, newText) => {
-    setTodos(todos.map((currTodo) => {
-      if (currTodo.id === todo.id) {
-        return {
-          ...currTodo, 
-          descr: newText.trim(), 
-          editMode: false
-        }
+  const handleTodoSave = useCallback(
+    (ev, todo) => {
+      ev.target.scrollTop = 0
+      setTodos(
+        todos.map((currTodo) => {
+          if (currTodo.id === todo.id) {
+            return {
+              ...currTodo,
+              descr: ev.target.innerText.trim(),
+              editMode: false,
+            }
+          }
+          return currTodo
+        })
+      )
+    },
+    [todos, setTodos]
+  )
+
+  const handleTodoCompleted = useCallback(
+    (todo) => {
+      setTodos(
+        todos.map((currTodo) => {
+          if (currTodo.id === todo.id) {
+            // Toggle the clicked todo's completed
+            const completed = !currTodo.completed
+            const time = Date.now()
+            const addTime = currTodo.startTime ? time - currTodo.startTime : 0
+
+            return {
+              ...currTodo,
+              completed: completed,
+              completedAt: completed ? time : null,
+              sortOrder: completed ? currTodo.sortOrder : findTopSortPosition(todos) - 1,
+              isTimerRunning: false,
+              startTime: null,
+              timeSpent: currTodo.timeSpent + addTime,
+            }
+          }
+          return currTodo
+        })
+      )
+    },
+    [todos, setTodos]
+  )
+
+  const handleTodoToggleTimer = useCallback(
+    (todo) => {
+      setTodos(
+        todos.map((currTodo) => {
+          const time = Date.now()
+
+          if (currTodo.id === todo.id) {
+            // Toggle the clicked todo's isTimerRunning
+            const isTimerRunning = !currTodo.isTimerRunning
+            const addTime = currTodo.startTime ? time - currTodo.startTime : 0
+
+            return {
+              ...currTodo,
+              isTimerRunning,
+              startTime: isTimerRunning ? time : null,
+              timeSpent: isTimerRunning ? currTodo.timeSpent : currTodo.timeSpent + addTime,
+            }
+          }
+
+          if (currTodo.isTimerRunning) {
+            const addTime = currTodo.startTime ? time - currTodo.startTime : 0
+            // Stop any other running timer
+            return {
+              ...currTodo,
+              isTimerRunning: false,
+              startTime: null,
+              timeSpent: currTodo.timeSpent + addTime,
+            }
+          }
+
+          return currTodo
+        })
+      )
+    },
+    [todos, setTodos]
+  )
+
+  const handleTodoDoubleClick = useCallback(
+    (todo) => {
+      if (!todo.editMode) {
+        handleTodoEdit(todo)
       }
-      return currTodo
-    }))
-  }, [todos, setTodos])
-
-  const handleTodoCompleted = useCallback((todo, localTime) => {
-    setTodos(todos.map((currTodo) => {
-      if (currTodo.id === todo.id) {
-        // Toggle the clicked todo's completed
-        const completed = !currTodo.completed
-        const addTime = currTodo.startTime ? (localTime || Date.now()) - currTodo.startTime : 0
-
-        return {
-          ...currTodo,
-          completed: completed,
-          completedAt: completed ? (localTime || Date.now()) : null,
-          sortOrder: completed ? currTodo.sortOrder : findTopSortPosition(todos) - 1,
-          isTimerRunning: false,
-          startTime: null,
-          timeSpent: currTodo.timeSpent + addTime
-        }
-      }
-      return currTodo
-    }))
-  }, [todos, setTodos])
-
-  const handleTodoToggleTimer = useCallback((todo, localTime) => {
-    setTodos(todos.map((currTodo) => {
-
-      const time = localTime || Date.now()
-
-      if (currTodo.id === todo.id) {
-        // Toggle the clicked todo's isTimerRunning
-        const isTimerRunning = !currTodo.isTimerRunning
-        const addTime = currTodo.startTime ? time - currTodo.startTime : 0
-        
-        return {
-          ...currTodo, 
-          isTimerRunning,
-          startTime: isTimerRunning ? time : null,
-          timeSpent: isTimerRunning 
-            ? currTodo.timeSpent
-            : currTodo.timeSpent + addTime
-        }
-      }
-      
-      if (currTodo.isTimerRunning) {
-        const addTime = currTodo.startTime ? time - currTodo.startTime : 0
-        // Stop any other running timer
-        return {
-          ...currTodo,
-          isTimerRunning: false,
-          startTime: null,
-          timeSpent: currTodo.timeSpent + addTime
-        }
-      }
-
-      return currTodo
-    }))
-  }, [todos, setTodos])
-
-
-  const handleTodoDoubleClick = useCallback((todo) => {
-    if (!todo.editMode) {
-      handleTodoEdit(todo)
-    }
-  }, [handleTodoEdit])
+    },
+    [handleTodoEdit]
+  )
 
   const handleTodoContentEditable = useCallback((ev) => {
     const enterPressed = ev.target.innerText.indexOf('\n') !== -1
     if (enterPressed) {
-      const singleLine = ev.target.innerText.replace(/\n/g, '')
-      ev.target.innerText = singleLine
+      ev.target.innerText = ev.target.innerText.replace(/\n/g, '')
       ev.target.blur()
     }
   }, [])

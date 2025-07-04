@@ -10,18 +10,25 @@ export default function TodoApp() {
   } = useContext(TodoContext)
 
    return (
-    <div className="border p-8 rounded-lg mx-auto bg-stone-50">
-      
-      <h2 className="mx-4 mt-2 mb-8 text-2xl font-bold">Todo-Planner</h2>
-      
-      <form onSubmit={handleTodoAdd}>
-        <div className="flex p-2 mb-6">
-          <input className="px-2 py-2 mr-2 rounded bg-white border-gray-400 border w-full" name="todoInput" value={newTodo} onChange={(ev) => setNewTodo(ev.target.value)} placeholder="Enter your todo description here" />
-          <button className="flex justify-center items-center w-20 px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-medium rounded shadow-sm cursor-pointer hover:shadow-md transition-all duration-200">Add</button>
-        </div>
-      </form>
+     <div className="mx-auto bg-white p-2 shadow-lg sm:rounded-lg sm:p-4 md:p-8">
+       <h2 className="mt-2 mb-8 text-3xl font-semibold">Todo Tracker</h2>
 
-      <TodoList />
-    </div>
-  )
+       <form onSubmit={handleTodoAdd}>
+         <div className="mb-8 flex">
+           <input
+             className="mr-2 w-full rounded border border-gray-400 bg-white px-2 py-2"
+             name="todoInput"
+             value={newTodo}
+             onChange={(ev) => setNewTodo(ev.target.value)}
+             placeholder="Enter your todo description here"
+           />
+           <button className="flex w-20 cursor-pointer items-center justify-center rounded bg-green-600 px-4 py-2 font-medium text-white shadow-sm transition-all duration-200 hover:bg-green-700 hover:shadow-md">
+             Add
+           </button>
+         </div>
+       </form>
+
+       <TodoList />
+     </div>
+   )
 }
