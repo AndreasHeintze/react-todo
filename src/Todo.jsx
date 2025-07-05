@@ -62,7 +62,7 @@ export default function Todo({ todo }) {
 
   return (
     <div
-      className={`flex flex-wrap justify-between gap-4 rounded border-l-4 bg-white p-3 @min-2xl:flex-nowrap ${todo.isTimerRunning || !todo.isTimerRunning ? 'shadow-tiny border-l-red-500' : 'border-l-transparent'}`}
+      className={`flex flex-wrap justify-between gap-4 rounded border-l-4 bg-white p-3 @min-2xl:flex-nowrap ${todo.isTimerRunning ? 'shadow-tiny border-l-red-500' : 'border-l-transparent'}`}
     >
       <div className="flex items-center gap-3">
         {/** Todo completed checkbox */}
