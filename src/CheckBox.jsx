@@ -1,12 +1,24 @@
 export default function CheckBox({todo, onTodoCompleted}) {
+  const handleKeyUp = (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault()
+      onTodoCompleted()
+    }
+  }
+
   return (
-    <div
+    <button
+      type="button"
+      role="checkbox"
       onClick={onTodoCompleted}
-      className={`flex size-5 flex-shrink-0 cursor-pointer items-center justify-center rounded border-2 transition-all duration-200 ${
+      onKeyUp={handleKeyUp}
+      className={`focus:ring-green-haze-500 flex size-5 flex-shrink-0 cursor-pointer items-center justify-center rounded border-2 transition-all duration-200 focus:ring-2 focus:ring-offset-2 focus:outline-none ${
         todo.completed
           ? 'border-green-haze-600 bg-green-haze-600 text-white'
           : 'hover:border-green-haze-500 border-gray-300 bg-white'
       }`}
+      aria-checked={todo.completed}
+      aria-label={`Mark task "${todo.text}" as ${todo.completed ? 'incomplete' : 'complete'}`}
     >
       {todo.completed && (
         <svg className="h-4 w-4 stroke-current stroke-2" fill="currentColor" viewBox="0 0 20 20">
@@ -17,6 +29,6 @@ export default function CheckBox({todo, onTodoCompleted}) {
           />
         </svg>
       )}
-    </div>
+    </button>
   )
 }

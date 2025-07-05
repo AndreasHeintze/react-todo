@@ -7,21 +7,34 @@ export default function TodoApp() {
 
   return (
     <div className="mx-auto bg-white p-2 shadow-lg sm:rounded-lg sm:p-4 md:p-8">
-      <h2 className="mt-2 mb-8 text-3xl font-semibold">Todo Tracker</h2>
+      <h1 className="mt-2 mb-8 text-3xl font-semibold">Todo Tracker</h1>
 
       <form onSubmit={handleTodoAdd}>
         <div className="mb-8 flex">
+          <label htmlFor="todoInput" className="sr-only">
+            Enter your todo description
+          </label>
           <input
-            className="mr-2 w-full rounded border border-gray-400 bg-white px-2 py-2"
+            id="todoInput"
+            className="focus:ring-green-haze-500 focus:border-green-haze-500 mr-2 w-full rounded border border-gray-400 bg-white px-2 py-2 focus:ring-2 focus:outline-none"
             name="todoInput"
             value={newTodo}
             onChange={(ev) => setNewTodo(ev.target.value)}
             placeholder="Enter your todo description here"
+            aria-describedby="todo-help"
+            required
           />
-          <button className="bg-green-haze-500 hover:bg-green-haze-600 flex w-20 cursor-pointer items-center justify-center rounded px-4 py-2 font-medium text-white shadow-sm transition-all duration-200 hover:shadow-md">
+          <button
+            type="submit"
+            className="bg-green-haze-500 hover:bg-green-haze-600 focus:ring-green-haze-500 flex w-20 cursor-pointer items-center justify-center rounded px-4 py-2 font-medium text-white shadow-sm transition-all duration-200 hover:shadow-md focus:ring-2 focus:ring-offset-2 focus:outline-none"
+            aria-label="Add new todo"
+          >
             Add
           </button>
         </div>
+        <p id="todo-help" className="sr-only">
+          Enter a description for your todo item and press Add or Enter to create it
+        </p>
       </form>
 
       <TodoList />

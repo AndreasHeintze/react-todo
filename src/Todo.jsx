@@ -15,6 +15,7 @@ export default function Todo({ todo }) {
     handleTodoToggleTimer,
     handleTodoDoubleClick,
     handleTodoContentEditable,
+    handleTodoContentEditableKeyDown,
   } = useContext(TodoContext)
 
   useEffect(() => {
@@ -61,7 +62,7 @@ export default function Todo({ todo }) {
 
   return (
     <div
-      className={`flex justify-between gap-4 rounded border-l-4 bg-white p-3 @max-2xl:flex-wrap ${todo.isTimerRunning ? 'shadow-tiny border-l-red-500' : 'border-l-transparent'}`}
+      className={`flex flex-wrap justify-between gap-4 rounded border-l-4 bg-white p-3 @min-2xl:flex-nowrap ${todo.isTimerRunning || !todo.isTimerRunning ? 'shadow-tiny border-l-red-500' : 'border-l-transparent'}`}
     >
       <div className="flex items-center gap-3">
         {/** Todo completed checkbox */}
@@ -69,8 +70,9 @@ export default function Todo({ todo }) {
 
         {/** Todo description text */}
         <div
-          className="line-clamp-1 min-w-60 overflow-hidden rounded"
+          className="line-clamp-3 min-w-60 overflow-hidden rounded px-2 py-1 focus:ring-2 focus:ring-blue-500 focus:outline-none @min-xl:line-clamp-2 @min-3xl:line-clamp-1"
           ref={descrRef}
+          onKeyDown={(ev) => handleTodoContentEditableKeyDown(ev, todo)}
           onInput={handleTodoContentEditable}
           onBlur={(ev) => handleTodoSave(ev, todo)}
           onDoubleClick={() => handleTodoDoubleClick(todo)}
@@ -81,56 +83,79 @@ export default function Todo({ todo }) {
             opacity: todo.completed ? 0.5 : 1,
             cursor: todo.editMode || todo.completed ? 'text' : 'pointer',
           }}
-          title={todo.editMode ? '' : 'Du kan dubbelklicka för att editera.'}
+          title={todo.editMode ? '' : 'Double-click to edit'}
+          aria-label={todo.editMode ? 'Edit todo description' : `Todo: ${todo.descr}`}
+          role={todo.editMode ? 'textbox' : 'button'}
+          tabIndex={todo.editMode ? 0 : -1}
+          aria-multiline="false"
+          aria-describedby={todo.editMode ? `todo-${todo.id}-hint` : undefined}
         >
           {todo.descr}
         </div>
+
+        {/* Screen reader hint for edit mode */}
+        {todo.editMode && (
+          <div id={`todo-${todo.id}-hint`} className="sr-only">
+            Press Enter to save
+          </div>
+        )}
       </div>
 
       <div className="flex grow items-center justify-end gap-3">
         {/** Total time spent */}
-        <div className="flex w-24 justify-end text-right font-mono text-sm">{formatTime(totalTime)}</div>
+        <div
+          className="flex w-24 justify-end text-right font-mono text-sm"
+          aria-label={`Time spent: ${formatTime(totalTime)}`}
+          role="timer"
+        >
+          {formatTime(totalTime)}
+        </div>
 
         {/** Edit button */}
         <button
-          className={`flex h-8 items-center rounded border p-1 font-medium transition-colors duration-200 ${
+          type="button"
+          className={`flex h-8 items-center rounded border p-1 font-medium transition-colors duration-200 focus:ring-2 focus:ring-blue-500 focus:outline-none ${
             todo.completed
               ? 'cursor-not-allowed border-gray-300 bg-gray-200 text-gray-400'
               : 'cursor-pointer border-blue-200 bg-blue-50 text-blue-600 hover:border-blue-300 hover:bg-blue-100'
           }`}
           onClick={() => handleTodoEdit(todo)}
           disabled={todo.completed}
+          aria-label={`Edit todo: ${todo.descr}`}
         >
-          <Edit size={20} />
+          <Edit size={20} aria-hidden="true" />
         </button>
 
         {/** Timer button */}
         <button
-          className={`flex h-8 items-center rounded border p-1 font-medium whitespace-nowrap transition-colors duration-200 ${
+          type="button"
+          className={`flex h-8 items-center rounded border p-1 font-medium whitespace-nowrap transition-colors duration-200 focus:ring-2 focus:ring-amber-500 focus:outline-none ${
             todo.completed
               ? 'cursor-not-allowed border-gray-300 bg-gray-200 text-gray-400'
               : 'cursor-pointer border-amber-200 bg-amber-50 text-amber-600 hover:border-amber-300 hover:bg-amber-100'
           }`}
           onClick={() => handleTodoToggleTimer(todo)}
           disabled={todo.completed}
-          title={todo.isTimerRunning ? 'Click to stop timer' : ''}
+          aria-label={todo.isTimerRunning ? `Stop timer for todo: ${todo.descr}` : `Start timer for todo: ${todo.descr}`}
         >
-          {!todo.isTimerRunning && <Timer size={20} />}
+          {!todo.isTimerRunning && <Timer size={20} aria-hidden="true" />}
 
           {todo.isTimerRunning && (
-            <div className="relative">
-              <LoaderCircle size={20} className="animate-spin" />
-              <div className="absolute top-[7px] left-[7px] size-1.5 bg-current"></div>
+            <div className="relative" aria-label="Timer is running">
+              <LoaderCircle size={20} className="animate-spin" aria-hidden="true" />
+              <div className="absolute top-[7px] left-[7px] size-1.5 bg-current" aria-hidden="true"></div>
             </div>
           )}
         </button>
 
         {/** Delete button */}
         <button
-          className="flex h-8 cursor-pointer items-center rounded border border-red-200 bg-red-50 p-1 font-medium text-red-600 transition-colors duration-200 hover:border-red-300 hover:bg-red-100"
+          type="button"
+          className="flex h-8 cursor-pointer items-center rounded border border-red-200 bg-red-50 p-1 font-medium text-red-600 transition-colors duration-200 hover:border-red-300 hover:bg-red-100 focus:ring-2 focus:ring-red-500 focus:outline-none"
           onClick={() => handleTodoDelete(todo)}
+          aria-label={`Delete todo: ${todo.descr}`}
         >
-          <Trash2 size={20} />
+          <Trash2 size={20} aria-hidden="true" />
         </button>
       </div>
     </div>
