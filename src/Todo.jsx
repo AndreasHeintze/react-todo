@@ -1,11 +1,11 @@
-import { useContext, useRef, useState, useEffect } from 'react'
-import { Edit, Timer, Trash2 } from 'lucide-react'
+import { forwardRef, useContext, useRef, useState, useEffect } from 'react'
+import { Edit, Timer, Trash2, GripVertical } from 'lucide-react'
 import { TodoContext } from './contexts/TodoContext'
 import CheckBox from './CheckBox'
 import { formatTime } from './helpers'
 import { LoaderCircle } from 'lucide-react'
 
-export default function Todo({ todo }) {
+const Todo = forwardRef(({ todo, style, attributes, listeners }, ref) => {
   const todoTitleRef = useRef(null)
   const {
     handleTodoEdit,
@@ -61,15 +61,26 @@ export default function Todo({ todo }) {
 
   return (
     <div
+      ref={ref}
+      style={style}
       className={`flex flex-wrap justify-between gap-4 rounded border-l-4 bg-white p-3 @min-2xl:flex-nowrap ${todo.isTimerRunning ? 'shadow-tiny border-l-red-500' : 'border-l-transparent'}`}
     >
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2">
+        {/** Drag handle */}
+        {!todo.completed && (
+          <div {...attributes} {...listeners} className="cursor-grab" aria-label="Drag to reorder">
+            <GripVertical size={20} className="text-gray-400" />
+          </div>
+        )}
+        {/** Some space */}
+        {todo.completed && <div className="size-[20px]"></div>}
+
         {/** Todo completed checkbox */}
         <CheckBox todo={todo} onTodoCompleted={() => handleTodoCompleted(todo)} />
 
         {/** Todo title text */}
         <div
-          className={`${todo.editMode ? '' : 'line-clamp-3 @min-xl:line-clamp-2 @min-3xl:line-clamp-1'} min-w-60 overflow-hidden rounded px-2 py-1 focus:ring-2 focus:ring-blue-500 focus:outline-none`}
+          className={`${todo.editMode ? '' : 'line-clamp-3 @min-xl:line-clamp-2 @min-3xl:line-clamp-1'} min-w-60 overflow-hidden rounded p-1 focus:ring-2 focus:ring-blue-500 focus:outline-none`}
           ref={todoTitleRef}
           onKeyDown={(ev) => handleTodoContentEditable(ev, todo)}
           onBlur={(ev) => handleTodoSave(ev, todo)}
@@ -158,4 +169,8 @@ export default function Todo({ todo }) {
       </div>
     </div>
   )
-}
+})
+
+Todo.displayName = 'Todo'
+
+export default Todo

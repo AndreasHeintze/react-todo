@@ -188,6 +188,34 @@ export function TodoProvider({ children }) {
     }
   }, [])
 
+  const handleTodoSort = useCallback(
+    (draggedTodo, droppedOnTodo) => {
+      if (draggedTodo.id === droppedOnTodo.id) {
+        return
+      }
+
+      setTodos((prevTodos) => {
+        const activeTodos = prevTodos.filter((todo) => !todo.completed).sort((a, b) => a.sortOrder - b.sortOrder)
+        const completedTodos = prevTodos.filter((todo) => todo.completed)
+
+        const draggedIndex = activeTodos.findIndex((todo) => todo.id === draggedTodo.id)
+        const droppedIndex = activeTodos.findIndex((todo) => todo.id === droppedOnTodo.id)
+
+        const newActiveTodos = [...activeTodos]
+        const [removed] = newActiveTodos.splice(draggedIndex, 1)
+        newActiveTodos.splice(droppedIndex, 0, removed)
+
+        const updatedTodos = newActiveTodos.map((todo, index) => ({
+          ...todo,
+          sortOrder: index,
+        }))
+
+        return [...updatedTodos, ...completedTodos]
+      })
+    },
+    [setTodos]
+  )
+
   // Memoize the context value to prevent unnecessary re-renders
   const contextValue = useMemo(
     () => ({
@@ -204,6 +232,7 @@ export function TodoProvider({ children }) {
       handleTodoToggleTimer,
       handleTodoDoubleClick,
       handleTodoContentEditable,
+      handleTodoSort,
     }),
     [
       generateId,
@@ -219,6 +248,7 @@ export function TodoProvider({ children }) {
       handleTodoToggleTimer,
       handleTodoDoubleClick,
       handleTodoContentEditable,
+      handleTodoSort,
     ]
   )
 
