@@ -31,14 +31,14 @@ export function TodoProvider({ children }) {
     (ev) => {
       ev.preventDefault()
 
-      const descr = newTodo.trim()
-      if (!descr) {
+      const title = newTodo.trim()
+      if (!title) {
         return
       }
 
       const newTodoItem = {
         id: generateId(),
-        descr,
+        title,
         editMode: false,
         completed: false,
         timeSpent: 0,
@@ -80,13 +80,13 @@ export function TodoProvider({ children }) {
     (ev, todo) => {
       ev.target.scrollTop = 0
 
-      let newDescription = ev.target.innerText.trim()
+      let newTitle = ev.target.innerText.trim()
 
-      // Don't save if description is empty - restore original and exit edit mode
-      if (!newDescription) {
-        // Reset the DOM element to original description
-        ev.target.innerText = todo.descr
-        newDescription = todo.descr
+      // Don't save if title is empty - restore original and exit edit mode
+      if (!newTitle) {
+        // Reset the DOM element to original title
+        ev.target.innerText = todo.title
+        newTitle = todo.title
       }
 
       setTodos((prevTodos) =>
@@ -94,7 +94,7 @@ export function TodoProvider({ children }) {
           if (currTodo.id === todo.id) {
             return {
               ...currTodo,
-              descr: newDescription,
+              title: newTitle,
               editMode: false,
             }
           }
@@ -174,24 +174,17 @@ export function TodoProvider({ children }) {
     [handleTodoEdit]
   )
 
-  // Restore old description text if escape is pressed
-  const handleTodoContentEditableKeyDown = useCallback((ev, todo) => {
+  const handleTodoContentEditable = useCallback((ev, todo) => {
+    // Restore old title text if escape is pressed
     if (ev.key === 'Escape') {
-      ev.target.innerText = todo.descr
+      ev.target.innerText = todo.title
       ev.target.blur()
+      return
     }
-  }, [])
-
-  const handleTodoContentEditable = useCallback((ev) => {
-    // Prevent line breaks in single-line todo descriptions
-    const enterPressed = ev.target.innerText.indexOf('\n') !== -1 && ev.target.textContent !== ''
-    if (enterPressed) {
-      ev.target.innerText = ev.target.innerText.replace(/\n/g, '')
+    // Save new title text if enter is pressed.
+    if (ev.key === 'Enter') {
       ev.target.blur()
-    }
-    // Prevent blur event when deleting all text
-    if (!ev.target.textContent) {
-      ev.preventDefault()
+      return
     }
   }, [])
 
@@ -211,7 +204,6 @@ export function TodoProvider({ children }) {
       handleTodoToggleTimer,
       handleTodoDoubleClick,
       handleTodoContentEditable,
-      handleTodoContentEditableKeyDown,
     }),
     [
       generateId,
@@ -227,7 +219,6 @@ export function TodoProvider({ children }) {
       handleTodoToggleTimer,
       handleTodoDoubleClick,
       handleTodoContentEditable,
-      handleTodoContentEditableKeyDown,
     ]
   )
 

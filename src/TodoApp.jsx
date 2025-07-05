@@ -12,7 +12,7 @@ export default function TodoApp() {
       <form onSubmit={handleTodoAdd}>
         <div className="mb-8 flex">
           <label htmlFor="todoInput" className="sr-only">
-            Enter your todo description
+            Enter your todo title
           </label>
           <input
             id="todoInput"
@@ -20,7 +20,7 @@ export default function TodoApp() {
             name="todoInput"
             value={newTodo}
             onChange={(ev) => setNewTodo(ev.target.value)}
-            placeholder="Enter your todo description here"
+            placeholder="Enter your todo title here"
             aria-describedby="todo-help"
             required
           />
@@ -33,7 +33,7 @@ export default function TodoApp() {
           </button>
         </div>
         <p id="todo-help" className="sr-only">
-          Enter a description for your todo item and press Add or Enter to create it
+          Enter a title for your todo item and press Add or Enter to create it
         </p>
       </form>
 

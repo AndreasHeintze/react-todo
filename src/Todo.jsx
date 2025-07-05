@@ -6,7 +6,7 @@ import { formatTime } from './helpers'
 import { LoaderCircle } from 'lucide-react'
 
 export default function Todo({ todo }) {
-  const descrRef = useRef(null)
+  const todoTitleRef = useRef(null)
   const {
     handleTodoEdit,
     handleTodoSave,
@@ -15,17 +15,16 @@ export default function Todo({ todo }) {
     handleTodoToggleTimer,
     handleTodoDoubleClick,
     handleTodoContentEditable,
-    handleTodoContentEditableKeyDown,
   } = useContext(TodoContext)
 
   useEffect(() => {
-    // Focus description and select all text
-    if (descrRef.current && todo.editMode) {
-      descrRef.current.focus()
+    // Focus the todo title and select all text
+    if (todoTitleRef.current && todo.editMode) {
+      todoTitleRef.current.focus()
       // Select text
       const range = document.createRange()
       const selection = window.getSelection()
-      range.selectNodeContents(descrRef.current)
+      range.selectNodeContents(todoTitleRef.current)
       selection.removeAllRanges()
       selection.addRange(range)
     }
@@ -68,12 +67,11 @@ export default function Todo({ todo }) {
         {/** Todo completed checkbox */}
         <CheckBox todo={todo} onTodoCompleted={() => handleTodoCompleted(todo)} />
 
-        {/** Todo description text */}
+        {/** Todo title text */}
         <div
-          className="line-clamp-3 min-w-60 overflow-hidden rounded px-2 py-1 focus:ring-2 focus:ring-blue-500 focus:outline-none @min-xl:line-clamp-2 @min-3xl:line-clamp-1"
-          ref={descrRef}
-          onKeyDown={(ev) => handleTodoContentEditableKeyDown(ev, todo)}
-          onInput={handleTodoContentEditable}
+          className={`${todo.editMode ? '' : 'line-clamp-3 @min-xl:line-clamp-2 @min-3xl:line-clamp-1'} min-w-60 overflow-hidden rounded px-2 py-1 focus:ring-2 focus:ring-blue-500 focus:outline-none`}
+          ref={todoTitleRef}
+          onKeyDown={(ev) => handleTodoContentEditable(ev, todo)}
           onBlur={(ev) => handleTodoSave(ev, todo)}
           onDoubleClick={() => handleTodoDoubleClick(todo)}
           suppressContentEditableWarning={true}
@@ -84,13 +82,13 @@ export default function Todo({ todo }) {
             cursor: todo.editMode || todo.completed ? 'text' : 'pointer',
           }}
           title={todo.editMode ? '' : 'Double-click to edit'}
-          aria-label={todo.editMode ? 'Edit todo description' : `Todo: ${todo.descr}`}
+          aria-label={todo.editMode ? 'Edit todo title' : `Todo: ${todo.title}`}
           role={todo.editMode ? 'textbox' : 'button'}
           tabIndex={todo.editMode ? 0 : -1}
           aria-multiline="false"
           aria-describedby={todo.editMode ? `todo-${todo.id}-hint` : undefined}
         >
-          {todo.descr}
+          {todo.title}
         </div>
 
         {/* Screen reader hint for edit mode */}
@@ -121,7 +119,7 @@ export default function Todo({ todo }) {
           }`}
           onClick={() => handleTodoEdit(todo)}
           disabled={todo.completed}
-          aria-label={`Edit todo: ${todo.descr}`}
+          aria-label={`Edit todo: ${todo.title}`}
         >
           <Edit size={20} aria-hidden="true" />
         </button>
@@ -136,7 +134,7 @@ export default function Todo({ todo }) {
           }`}
           onClick={() => handleTodoToggleTimer(todo)}
           disabled={todo.completed}
-          aria-label={todo.isTimerRunning ? `Stop timer for todo: ${todo.descr}` : `Start timer for todo: ${todo.descr}`}
+          aria-label={todo.isTimerRunning ? `Stop timer for todo: ${todo.title}` : `Start timer for todo: ${todo.title}`}
         >
           {!todo.isTimerRunning && <Timer size={20} aria-hidden="true" />}
 
@@ -153,7 +151,7 @@ export default function Todo({ todo }) {
           type="button"
           className="flex h-8 cursor-pointer items-center rounded border border-red-200 bg-red-50 p-1 font-medium text-red-600 transition-colors duration-200 hover:border-red-300 hover:bg-red-100 focus:ring-2 focus:ring-red-500 focus:outline-none"
           onClick={() => handleTodoDelete(todo)}
-          aria-label={`Delete todo: ${todo.descr}`}
+          aria-label={`Delete todo: ${todo.title}`}
         >
           <Trash2 size={20} aria-hidden="true" />
         </button>
