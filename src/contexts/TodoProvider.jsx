@@ -1,60 +1,72 @@
-import {useCallback} from "react"
-import {useUniqueId, usePersistedState} from "../helpers"
-import {TodoContext} from "./TodoContext"
+import { useCallback } from 'react'
+import { useUniqueId, usePersistedState } from '../helpers'
+import { TodoContext } from './TodoContext'
 
 function findTopSortPosition(todos) {
-  const uncompletedTodos = todos.filter(todo => !todo.completed)
-  const minSortOrder = uncompletedTodos.length > 0 
-    ? Math.min(...uncompletedTodos.map(t => t.sortOrder)) 
-    : 1
+  const uncompletedTodos = todos.filter((todo) => !todo.completed)
+  const minSortOrder = uncompletedTodos.length > 0 ? Math.min(...uncompletedTodos.map((t) => t.sortOrder)) : 1
   return minSortOrder
 }
 
-export function TodoProvider({children}) {
+export function TodoProvider({ children }) {
   const generateId = useUniqueId()
   const [newTodo, setNewTodo] = usePersistedState('todo', '')
   const [todos, setTodos] = usePersistedState('todos', [])
 
-  const handleTodoAdd = useCallback((ev) => {
-    ev.preventDefault()
-    
-    const descr = newTodo.trim()
-    if (!descr) {
-      return
-    }
+  const handleTodoAdd = useCallback(
+    (ev) => {
+      ev.preventDefault()
 
-    // Find the minimum sortOrder among uncompleted todos and subtract 1
-    
-    setTodos([...todos, {
-      id: generateId(),
-      descr,
-      editMode: false,
-      completed: false,
-      timeSpent: 0,
-      startTime: null,
-      isTimerRunning: false,
-      sortOrder: findTopSortPosition(todos) - 1,
-      createdAt: Date.now(),
-      completedAt: null,
-    }])
-
-    setNewTodo('')
-  }, [generateId, newTodo, setNewTodo, todos, setTodos])
-
-  const handleTodoEdit = useCallback((todo) => {
-    if (todo.completed) return
-
-    setTodos(todos.map((currTodo) => {
-      if (currTodo.id === todo.id) {
-        return {...currTodo, editMode: true}
+      const descr = newTodo.trim()
+      if (!descr) {
+        return
       }
-      return {...currTodo, editMode: false}
-    }))
-  }, [todos, setTodos])
 
-  const handleTodoDelete = useCallback((todo) => {
-    setTodos(todos.filter((currTodo) => currTodo.id !== todo.id))
-  }, [todos, setTodos])
+      // Find the minimum sortOrder among uncompleted todos and subtract 1
+
+      setTodos([
+        ...todos,
+        {
+          id: generateId(),
+          descr,
+          editMode: false,
+          completed: false,
+          timeSpent: 0,
+          startTime: null,
+          isTimerRunning: false,
+          sortOrder: findTopSortPosition(todos) - 1,
+          createdAt: Date.now(),
+          completedAt: null,
+        },
+      ])
+
+      setNewTodo('')
+    },
+    [generateId, newTodo, setNewTodo, todos, setTodos]
+  )
+
+  const handleTodoEdit = useCallback(
+    (todo) => {
+      if (todo.completed) return
+
+      setTodos(
+        todos.map((currTodo) => {
+          if (currTodo.id === todo.id) {
+            return { ...currTodo, editMode: true }
+          }
+          return { ...currTodo, editMode: false }
+        })
+      )
+    },
+    [todos, setTodos]
+  )
+
+  const handleTodoDelete = useCallback(
+    (todo) => {
+      setTodos(todos.filter((currTodo) => currTodo.id !== todo.id))
+    },
+    [todos, setTodos]
+  )
 
   const handleTodoSave = useCallback(
     (ev, todo) => {
@@ -155,11 +167,13 @@ export function TodoProvider({children}) {
       ev.target.blur()
     }
   }, [])
-  
+
   const value = {
     generateId,
-    newTodo, setNewTodo,
-    todos, setTodos,
+    newTodo,
+    setNewTodo,
+    todos,
+    setTodos,
     handleTodoAdd,
     handleTodoEdit,
     handleTodoDelete,
@@ -169,10 +183,6 @@ export function TodoProvider({children}) {
     handleTodoDoubleClick,
     handleTodoContentEditable,
   }
-	
-	return (
-    <TodoContext value={value}>
-		  {children}
-	  </TodoContext>
-  )
+
+  return <TodoContext value={value}>{children}</TodoContext>
 }
