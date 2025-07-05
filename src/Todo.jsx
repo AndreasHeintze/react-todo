@@ -1,8 +1,7 @@
-import {useContext, useRef, useState, useEffect} from "react"
+import { useContext, useRef, useState, useEffect } from 'react'
 import { Edit, Timer, Trash2 } from 'lucide-react'
 import { TodoContext } from './contexts/TodoContext'
 import CheckBox from './CheckBox'
-import Spinner from './Spinner'
 import { formatTime } from './helpers'
 import { LoaderCircle } from 'lucide-react'
 
@@ -62,7 +61,7 @@ export default function Todo({ todo }) {
 
   return (
     <div
-      className={`my-2 flex justify-between gap-4 rounded border-l-4 bg-white p-3 @max-2xl:flex-wrap ${todo.isTimerRunning ? 'shadow-tiny border-l-red-500' : 'border-l-transparent'}`}
+      className={`flex justify-between gap-4 rounded border-l-4 bg-white p-3 @max-2xl:flex-wrap ${todo.isTimerRunning ? 'shadow-tiny border-l-red-500' : 'border-l-transparent'}`}
     >
       <div className="flex items-center gap-3">
         {/** Todo completed checkbox */}
@@ -94,7 +93,7 @@ export default function Todo({ todo }) {
 
         {/** Edit button */}
         <button
-          className={`flex h-8 items-center rounded border p-1 font-medium transition-all duration-200 ${
+          className={`flex h-8 items-center rounded border p-1 font-medium transition-colors duration-200 ${
             todo.completed
               ? 'cursor-not-allowed border-gray-300 bg-gray-200 text-gray-400'
               : 'cursor-pointer border-blue-200 bg-blue-50 text-blue-600 hover:border-blue-300 hover:bg-blue-100'
@@ -107,7 +106,7 @@ export default function Todo({ todo }) {
 
         {/** Timer button */}
         <button
-          className={`flex h-8 items-center rounded border p-1 font-medium whitespace-nowrap transition-all duration-200 ${
+          className={`flex h-8 items-center rounded border p-1 font-medium whitespace-nowrap transition-colors duration-200 ${
             todo.completed
               ? 'cursor-not-allowed border-gray-300 bg-gray-200 text-gray-400'
               : 'cursor-pointer border-amber-200 bg-amber-50 text-amber-600 hover:border-amber-300 hover:bg-amber-100'
@@ -128,7 +127,7 @@ export default function Todo({ todo }) {
 
         {/** Delete button */}
         <button
-          className="flex h-8 cursor-pointer items-center rounded border border-red-200 bg-red-50 p-1 font-medium text-red-600 transition-all duration-200 hover:border-red-300 hover:bg-red-100"
+          className="flex h-8 cursor-pointer items-center rounded border border-red-200 bg-red-50 p-1 font-medium text-red-600 transition-colors duration-200 hover:border-red-300 hover:bg-red-100"
           onClick={() => handleTodoDelete(todo)}
         >
           <Trash2 size={20} />
