@@ -74,11 +74,11 @@ const Todo = forwardRef(({ todo, style, attributes, listeners }, ref) => {
     if (todo.editMode && todoTitleRef.current) {
       todoTitleRef.current.focus()
       // Select text
-      const range = document.createRange()
-      const selection = window.getSelection()
-      range.selectNodeContents(todoTitleRef.current)
-      selection.removeAllRanges()
-      selection.addRange(range)
+      // const range = document.createRange()
+      // const selection = window.getSelection()
+      // range.selectNodeContents(todoTitleRef.current)
+      // selection.removeAllRanges()
+      // selection.addRange(range)
     }
   }, [todo.editMode])
 
