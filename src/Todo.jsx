@@ -73,6 +73,8 @@ const Todo = forwardRef(({ todo, style, attributes, listeners }, ref) => {
   useEffect(() => {
     if (todo.editMode && todoTitleRef.current) {
       todoTitleRef.current.focus()
+      // Set cursor at the start
+      todoTitleRef.current.setSelectionRange(0, 0)
       // Select text
       // const range = document.createRange()
       // const selection = window.getSelection()
