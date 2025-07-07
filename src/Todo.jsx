@@ -129,7 +129,7 @@ const Todo = forwardRef(({ todo, style, attributes, listeners }, ref) => {
 
         {/** Todo title text */}
         <div
-          className={`line-clamp-1 max-w-[144px] touch-manipulation rounded p-1 focus:ring-2 focus:ring-blue-500 focus:outline-none`}
+          className={`line-clamp-1 max-w-[144px] rounded p-1 focus:ring-2 focus:ring-blue-500 focus:outline-none`}
           ref={todoTitleRef}
           onKeyDown={(ev) => handleTodoContentEditable(ev, todo)}
           onBlur={(ev) => handleTodoSave(ev, todo)}
