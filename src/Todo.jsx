@@ -73,13 +73,6 @@ const Todo = forwardRef(({ todo, style, attributes, listeners }, ref) => {
   useEffect(() => {
     if (todo.editMode && todoTitleRef.current) {
       todoTitleRef.current.focus()
-      // Set cursor at the start
-      const range = document.createRange()
-      range.selectNodeContents(todoTitleRef.current)
-      range.collapse(true) // Collapse to start
-      const selection = window.getSelection()
-      selection.removeAllRanges()
-      selection.addRange(range)
     }
   }, [todo.editMode])
 
