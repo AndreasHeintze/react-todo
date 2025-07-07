@@ -7,6 +7,8 @@ import { LoaderCircle } from 'lucide-react'
 
 const Todo = forwardRef(({ todo, style, attributes, listeners }, ref) => {
   const {
+    swipedTodoId,
+    setSwipedTodoId,
     handleTodoEdit,
     handleTodoSave,
     handleTodoCompleted,
@@ -80,14 +82,37 @@ const Todo = forwardRef(({ todo, style, attributes, listeners }, ref) => {
     }
   }, [todo.editMode])
 
+  // Reset this todo if another todo is swiped
+  useEffect(() => {
+    if (swipedTodoId && swipedTodoId !== todo.id && todoRef.current) {
+      todoRef.current.scrollTo({
+        left: 0,
+        behavior: 'smooth',
+      })
+    }
+  }, [swipedTodoId, todo.id])
+
+  let scrollTimeout
+  const handleTouchEnd = (ev) => {
+    const scrollTodo = ev.currentTarget
+    clearTimeout(scrollTimeout)
+    scrollTimeout = setTimeout(() => {
+      const scrollPos = scrollTodo.scrollLeft
+      if (scrollPos !== 0) {
+        setSwipedTodoId(todo.id)
+      }
+    }, 200)
+  }
+
   // Use a re-render to calculate time
   const totalTime = todo.timeSpent + (todo.isTimerRunning && todo.startTime ? Date.now() - todo.startTime : 0)
 
   return (
     <div
+      onTouchEnd={handleTouchEnd}
       ref={todoRef}
       style={style}
-      className={`${todo.color} scrollbar-hide shadow-tiny flex snap-x snap-mandatory items-center justify-between gap-4 overflow-x-auto rounded border-l-5 bg-white p-3 pl-2`}
+      className={`${todo.color} scrollbar-hide shadow-tiny flex touch-manipulation snap-x snap-mandatory items-center justify-between gap-4 overflow-x-auto rounded border-l-5 bg-white p-3 pl-2 select-none`}
     >
       <div className="flex min-w-[200px] flex-shrink-0 snap-end items-center justify-start gap-2">
         {/** Drag handle */}
@@ -104,7 +129,7 @@ const Todo = forwardRef(({ todo, style, attributes, listeners }, ref) => {
 
         {/** Todo title text */}
         <div
-          className={`line-clamp-1 max-w-[144px] rounded p-1 focus:ring-2 focus:ring-blue-500 focus:outline-none`}
+          className={`line-clamp-1 max-w-[144px] touch-manipulation rounded p-1 focus:ring-2 focus:ring-blue-500 focus:outline-none`}
           ref={todoTitleRef}
           onKeyDown={(ev) => handleTodoContentEditable(ev, todo)}
           onBlur={(ev) => handleTodoSave(ev, todo)}

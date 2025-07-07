@@ -70,6 +70,7 @@ export function TodoProvider({ children }) {
   const generateId = useUniqueId()
   const [newTodo, setNewTodo] = usePersistedState('todo', '')
   const [todos, setTodos] = usePersistedState('todos', [])
+  const [swipedTodoId, setSwipedTodoId] = usePersistedState(null)
 
   const handleTodoAdd = useCallback(
     (ev) => {
@@ -268,6 +269,8 @@ export function TodoProvider({ children }) {
       setNewTodo,
       todos,
       setTodos,
+      swipedTodoId,
+      setSwipedTodoId,
       handleTodoAdd,
       handleTodoEdit,
       handleTodoDelete,
@@ -283,6 +286,8 @@ export function TodoProvider({ children }) {
       setNewTodo,
       todos,
       setTodos,
+      swipedTodoId,
+      setSwipedTodoId,
       handleTodoAdd,
       handleTodoEdit,
       handleTodoDelete,
