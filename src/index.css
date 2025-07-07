@@ -1,5 +1,16 @@
 @import "tailwindcss";
 
+/* Add to your global CSS */
+@layer utilities {
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}
+
 @theme {
   --color-havelock-blue-50: oklch(97.454% 0.00803 254.094);
   --color-havelock-blue-100: oklch(94.842% 0.01388 248.155);

@@ -22,6 +22,50 @@ function stopTimer(todo, currentTime) {
   }
 }
 
+function getRandomTailwindColor() {
+  const predefinedColors = [
+    'border-l-red-400',
+    'border-l-orange-400',
+    'border-l-amber-400',
+    'border-l-yellow-400',
+    'border-l-lime-400',
+    'border-l-green-400',
+    'border-l-emerald-400',
+    'border-l-teal-400',
+    'border-l-cyan-400',
+    'border-l-sky-400',
+    'border-l-blue-400',
+    'border-l-indigo-400',
+    'border-l-violet-400',
+    'border-l-purple-400',
+    'border-l-fuchsia-400',
+    'border-l-pink-400',
+    'border-l-rose-400',
+  ]
+
+  const dummyColors = [
+    'to-red-400',
+    'to-orange-400',
+    'to-amber-400',
+    'to-yellow-400',
+    'to-lime-400',
+    'to-green-400',
+    'to-emerald-400',
+    'to-teal-400',
+    'to-cyan-400',
+    'to-sky-400',
+    'to-blue-400',
+    'to-indigo-400',
+    'to-violet-400',
+    'to-purple-400',
+    'to-fuchsia-400',
+    'to-pink-400',
+    'to-rose-400',
+  ]
+
+  return predefinedColors[Math.floor(Math.random() * predefinedColors.length)]
+}
+
 export function TodoProvider({ children }) {
   const generateId = useUniqueId()
   const [newTodo, setNewTodo] = usePersistedState('todo', '')
@@ -39,6 +83,7 @@ export function TodoProvider({ children }) {
       const newTodoItem = {
         id: generateId(),
         title,
+        color: getRandomTailwindColor(),
         editMode: false,
         completed: false,
         timeSpent: 0,
@@ -219,7 +264,6 @@ export function TodoProvider({ children }) {
   // Memoize the context value to prevent unnecessary re-renders
   const contextValue = useMemo(
     () => ({
-      generateId,
       newTodo,
       setNewTodo,
       todos,
@@ -235,7 +279,6 @@ export function TodoProvider({ children }) {
       handleTodoSort,
     }),
     [
-      generateId,
       newTodo,
       setNewTodo,
       todos,
@@ -252,5 +295,5 @@ export function TodoProvider({ children }) {
     ]
   )
 
-  return <TodoContext.Provider value={contextValue}>{children}</TodoContext.Provider>
+  return <TodoContext value={contextValue}>{children}</TodoContext>
 }

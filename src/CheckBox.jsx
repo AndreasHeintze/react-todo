@@ -1,10 +1,15 @@
-export default function CheckBox({todo, onTodoCompleted}) {
-  const handleKeyUp = (e) => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault()
-      onTodoCompleted()
-    }
-  }
+import { useCallback } from 'react'
+
+export default function CheckBox({ todo, onTodoCompleted }) {
+  const handleKeyUp = useCallback(
+    (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault()
+        onTodoCompleted()
+      }
+    },
+    [onTodoCompleted]
+  )
 
   return (
     <button

@@ -1,4 +1,4 @@
-import { forwardRef, useContext, useRef, useState, useEffect } from 'react'
+import { forwardRef, useContext, useRef, useImperativeHandle, useState, useEffect } from 'react'
 import { Edit, Timer, Trash2, GripVertical } from 'lucide-react'
 import { TodoContext } from './contexts/TodoContext'
 import CheckBox from './CheckBox'
@@ -6,7 +6,6 @@ import { formatTime } from './helpers'
 import { LoaderCircle } from 'lucide-react'
 
 const Todo = forwardRef(({ todo, style, attributes, listeners }, ref) => {
-  const todoTitleRef = useRef(null)
   const {
     handleTodoEdit,
     handleTodoSave,
@@ -17,23 +16,16 @@ const Todo = forwardRef(({ todo, style, attributes, listeners }, ref) => {
     handleTodoContentEditable,
   } = useContext(TodoContext)
 
-  useEffect(() => {
-    // Focus the todo title and select all text
-    if (todoTitleRef.current && todo.editMode) {
-      todoTitleRef.current.focus()
-      // Select text
-      const range = document.createRange()
-      const selection = window.getSelection()
-      range.selectNodeContents(todoTitleRef.current)
-      selection.removeAllRanges()
-      selection.addRange(range)
-    }
-  }, [todo.editMode])
+  const todoRef = useRef(null)
+  const todoTitleRef = useRef(null)
+  const totalTimeRef = useRef(null)
+  const [titleWidth, setTitleWidth] = useState(0)
 
-  const [, setTick] = useState(0)
-  const intervalId = useRef()
+  useImperativeHandle(ref, () => todoRef.current)
 
   // Update tick every second
+  const [, setTick] = useState(0)
+  const intervalId = useRef()
   useEffect(() => {
     if (!todo.isTimerRunning) {
       // Stop interval when timer stops
@@ -56,16 +48,48 @@ const Todo = forwardRef(({ todo, style, attributes, listeners }, ref) => {
     }
   }, [todo.isTimerRunning])
 
+  // Calc <title-width> = <todo-width> - <timer-width> - 92
+  useEffect(() => {
+    // Calculate on todo change
+    calculateWidth()
+
+    // Also calculate on window resize
+    window.addEventListener('resize', calculateWidth)
+
+    function calculateWidth() {
+      if (todoRef.current && totalTimeRef.current) {
+        const spacer = todoRef.current.offsetWidth > 671 ? 220 : 92
+        const newTitleWidth = todoRef.current.offsetWidth - totalTimeRef.current.offsetWidth - spacer
+        setTitleWidth(newTitleWidth)
+      }
+    }
+
+    return () => window.removeEventListener('resize', calculateWidth)
+  }, [todo])
+
+  // If editMode, focus the todo title and select all text
+  useEffect(() => {
+    if (todo.editMode && todoTitleRef.current) {
+      todoTitleRef.current.focus()
+      // Select text
+      const range = document.createRange()
+      const selection = window.getSelection()
+      range.selectNodeContents(todoTitleRef.current)
+      selection.removeAllRanges()
+      selection.addRange(range)
+    }
+  }, [todo.editMode])
+
   // Use a re-render to calculate time
   const totalTime = todo.timeSpent + (todo.isTimerRunning && todo.startTime ? Date.now() - todo.startTime : 0)
 
   return (
     <div
-      ref={ref}
+      ref={todoRef}
       style={style}
-      className={`flex flex-wrap justify-between gap-4 rounded border-l-4 bg-white p-3 @min-2xl:flex-nowrap ${todo.isTimerRunning ? 'shadow-tiny border-l-red-500' : 'border-l-transparent'}`}
+      className={`${todo.color} scrollbar-hide shadow-tiny flex snap-x snap-mandatory items-center justify-between gap-4 overflow-x-auto rounded border-l-5 bg-white p-3 pl-2`}
     >
-      <div className="flex items-center gap-2">
+      <div className="flex min-w-[200px] flex-shrink-0 snap-end items-center justify-start gap-2">
         {/** Drag handle */}
         {!todo.completed && (
           <div {...attributes} {...listeners} className="cursor-grab" aria-label="Drag to reorder">
@@ -73,14 +97,14 @@ const Todo = forwardRef(({ todo, style, attributes, listeners }, ref) => {
           </div>
         )}
         {/** Some space */}
-        {todo.completed && <div className="size-[20px]"></div>}
+        {todo.completed && <div className="size-[20px] min-w-[20px]"></div>}
 
         {/** Todo completed checkbox */}
         <CheckBox todo={todo} onTodoCompleted={() => handleTodoCompleted(todo)} />
 
         {/** Todo title text */}
         <div
-          className={`${todo.editMode ? '' : 'line-clamp-3 @min-xl:line-clamp-2 @min-3xl:line-clamp-1'} min-w-60 overflow-hidden rounded p-1 focus:ring-2 focus:ring-blue-500 focus:outline-none`}
+          className={`line-clamp-1 max-w-[144px] rounded p-1 focus:ring-2 focus:ring-blue-500 focus:outline-none`}
           ref={todoTitleRef}
           onKeyDown={(ev) => handleTodoContentEditable(ev, todo)}
           onBlur={(ev) => handleTodoSave(ev, todo)}
@@ -88,6 +112,7 @@ const Todo = forwardRef(({ todo, style, attributes, listeners }, ref) => {
           suppressContentEditableWarning={true}
           contentEditable={todo.editMode ? 'plaintext-only' : 'false'}
           style={{
+            minWidth: titleWidth,
             textDecoration: todo.completed ? 'line-through' : '',
             opacity: todo.completed ? 0.5 : 1,
             cursor: todo.editMode || todo.completed ? 'text' : 'pointer',
@@ -97,25 +122,26 @@ const Todo = forwardRef(({ todo, style, attributes, listeners }, ref) => {
           role={todo.editMode ? 'textbox' : 'button'}
           tabIndex={todo.editMode ? 0 : -1}
           aria-multiline="false"
-          aria-describedby={todo.editMode ? `todo-${todo.id}-hint` : undefined}
+          aria-describedby={todo.editMode ? 'todo-hint' : undefined}
         >
           {todo.title}
         </div>
 
         {/* Screen reader hint for edit mode */}
         {todo.editMode && (
-          <div id={`todo-${todo.id}-hint`} className="sr-only">
+          <div id="todo-hint" className="sr-only">
             Press Enter to save
           </div>
         )}
       </div>
 
-      <div className="flex grow items-center justify-end gap-3">
+      <div className="flex flex-shrink-0 snap-start items-center justify-end gap-3">
         {/** Total time spent */}
         <div
-          className="flex w-24 justify-end text-right font-mono text-sm"
-          aria-label={`Time spent: ${formatTime(totalTime)}`}
+          ref={totalTimeRef}
           role="timer"
+          className="flex items-center justify-end text-right font-mono text-sm"
+          aria-label={`Time spent: ${formatTime(totalTime)}`}
         >
           {formatTime(totalTime)}
         </div>

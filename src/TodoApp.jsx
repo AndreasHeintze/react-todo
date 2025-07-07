@@ -6,17 +6,17 @@ export default function TodoApp() {
   const { newTodo, setNewTodo, handleTodoAdd } = useContext(TodoContext)
 
   return (
-    <div className="mx-auto bg-white p-2 shadow-lg sm:rounded-lg sm:p-4 md:p-8">
-      <h1 className="mt-2 mb-8 text-3xl font-semibold">Todo Tracker</h1>
+    <div className="mx-auto bg-transparent px-2 py-8 text-sm shadow-lg sm:rounded-lg sm:p-4 md:bg-white md:p-8 md:text-base">
+      <h1 className="mt-2 mb-8 text-3xl font-semibold text-white md:text-black">Todo Tracker</h1>
 
       <form onSubmit={handleTodoAdd}>
-        <div className="mb-8 flex">
+        <div className="mb-8 flex text-base">
           <label htmlFor="todoInput" className="sr-only">
             Enter your todo title
           </label>
           <input
             id="todoInput"
-            className="focus:ring-green-haze-500 focus:border-green-haze-500 mr-2 w-full rounded border border-gray-400 bg-white px-2 py-2 focus:ring-2 focus:outline-none"
+            className="focus:ring-green-haze-500 focus:border-green-haze-500 mr-2 w-full rounded border border-gray-400 bg-white p-4 focus:ring-2 focus:outline-none"
             name="todoInput"
             value={newTodo}
             onChange={(ev) => setNewTodo(ev.target.value)}
