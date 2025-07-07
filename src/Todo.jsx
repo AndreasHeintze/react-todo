@@ -74,13 +74,12 @@ const Todo = forwardRef(({ todo, style, attributes, listeners }, ref) => {
     if (todo.editMode && todoTitleRef.current) {
       todoTitleRef.current.focus()
       // Set cursor at the start
-      todoTitleRef.current.setSelectionRange(0, 0)
-      // Select text
-      // const range = document.createRange()
-      // const selection = window.getSelection()
-      // range.selectNodeContents(todoTitleRef.current)
-      // selection.removeAllRanges()
-      // selection.addRange(range)
+      const range = document.createRange()
+      range.selectNodeContents(todoTitleRef.current)
+      range.collapse(true) // Collapse to start
+      const selection = window.getSelection()
+      selection.removeAllRanges()
+      selection.addRange(range)
     }
   }, [todo.editMode])
 
