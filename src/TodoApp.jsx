@@ -6,7 +6,7 @@ export default function TodoApp() {
   const { newTodo, setNewTodo, handleTodoAdd } = useContext(TodoContext)
 
   return (
-    <div className="mx-auto bg-transparent px-2 py-8 text-sm shadow-lg sm:rounded-lg sm:p-4 md:bg-white md:p-8 md:text-base">
+    <div className="mx-auto bg-transparent px-2 py-8 text-sm sm:rounded-lg sm:p-4 md:bg-white md:p-8 md:text-base md:shadow-lg">
       <h1 className="mt-2 mb-8 text-3xl font-semibold text-white md:text-black">Todo Tracker</h1>
 
       <form onSubmit={handleTodoAdd}>

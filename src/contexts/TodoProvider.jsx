@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { useUniqueId, usePersistedState } from '../helpers'
 import { TodoContext } from './TodoContext'
 
@@ -6,20 +6,6 @@ function findTopSortPosition(todos) {
   const uncompletedTodos = todos.filter((todo) => !todo.completed)
   const minSortOrder = uncompletedTodos.length > 0 ? Math.min(...uncompletedTodos.map((t) => t.sortOrder)) : 1
   return minSortOrder
-}
-
-function stopTimer(todo, currentTime) {
-  if (!todo.isTimerRunning || !todo.startTime) {
-    return { ...todo, isTimerRunning: false, startTime: null }
-  }
-
-  const addTime = currentTime - todo.startTime
-  return {
-    ...todo,
-    isTimerRunning: false,
-    startTime: null,
-    timeSpent: todo.timeSpent + addTime,
-  }
 }
 
 function getRandomTailwindColor() {
@@ -43,7 +29,7 @@ function getRandomTailwindColor() {
     'border-l-rose-400',
   ]
 
-  const dummyColors = [
+  const DUMMYCOLORS = [
     'to-red-400',
     'to-orange-400',
     'to-amber-400',
@@ -70,7 +56,60 @@ export function TodoProvider({ children }) {
   const generateId = useUniqueId()
   const [newTodo, setNewTodo] = usePersistedState('todo', '')
   const [todos, setTodos] = usePersistedState('todos', [])
-  const [swipedTodoId, setSwipedTodoId] = usePersistedState(null)
+  const [timeLog, setTimeLog] = usePersistedState('timelog', [])
+  const [currTimeItem, setCurrTimeItem] = usePersistedState('timeitem', { id: null })
+  const [swipedTodo, setSwipedTodo] = useState(null) // No need to persist this, since it won't be swiped after a page reload.
+
+  console.log('todos', todos)
+  console.log('timeLog', timeLog)
+
+  const startTimer = useCallback(
+    (todo, currentTime) => {
+      const newTimeItem = {
+        id: generateId(),
+        todoId: todo.id,
+        start: currentTime,
+        stop: null,
+      }
+
+      setTimeLog((prevTimeLog) => [...prevTimeLog, newTimeItem])
+      setCurrTimeItem(newTimeItem)
+
+      return {
+        ...todo,
+        isTimerRunning: true,
+        startTime: currentTime,
+      }
+    },
+    [generateId, setCurrTimeItem, setTimeLog]
+  )
+
+  const stopTimer = useCallback(
+    (todo, currentTime) => {
+      if (!todo.isTimerRunning) return todo
+
+      setTimeLog((prevTimeLog) =>
+        prevTimeLog.map((currTimeLogItem) => {
+          if (currTimeLogItem.id === currTimeItem?.id) {
+            return {
+              ...currTimeLogItem,
+              stop: currentTime,
+            }
+          }
+          return currTimeLogItem
+        })
+      )
+      setCurrTimeItem(null)
+
+      return {
+        ...todo,
+        isTimerRunning: false,
+        startTime: null,
+        timeSpent: todo.timeSpent + (currentTime - todo.startTime),
+      }
+    },
+    [setTimeLog, setCurrTimeItem, currTimeItem?.id]
+  )
 
   const handleTodoAdd = useCallback(
     (ev) => {
@@ -84,8 +123,9 @@ export function TodoProvider({ children }) {
       const newTodoItem = {
         id: generateId(),
         title,
+        descr: '',
         color: getRandomTailwindColor(),
-        editMode: false,
+        mode: 'list',
         completed: false,
         timeSpent: 0,
         startTime: null,
@@ -101,20 +141,6 @@ export function TodoProvider({ children }) {
     [generateId, newTodo, setNewTodo, todos, setTodos]
   )
 
-  const handleTodoEdit = useCallback(
-    (todo) => {
-      if (todo.completed) return
-
-      setTodos((prevTodos) =>
-        prevTodos.map((currTodo) => ({
-          ...currTodo,
-          editMode: currTodo.id === todo.id,
-        }))
-      )
-    },
-    [setTodos]
-  )
-
   const handleTodoDelete = useCallback(
     (todo) => {
       setTodos((prevTodos) => prevTodos.filter((currTodo) => currTodo.id !== todo.id))
@@ -123,27 +149,30 @@ export function TodoProvider({ children }) {
   )
 
   const handleTodoSave = useCallback(
-    (ev, todo) => {
-      ev.target.scrollTop = 0
-
-      let newTitle = ev.target.innerText.trim()
-
-      // Don't save if title is empty - restore original and exit edit mode
-      if (!newTitle) {
-        // Reset the DOM element to original title
-        ev.target.innerText = todo.title
-        newTitle = todo.title
-      }
-
+    (ev, todo, data) => {
       setTodos((prevTodos) =>
         prevTodos.map((currTodo) => {
           if (currTodo.id === todo.id) {
-            return {
-              ...currTodo,
-              title: newTitle,
-              editMode: false,
+            const newTodo = { ...currTodo, ...data }
+            newTodo.title = newTodo.title.trim()
+
+            // Restore old title if it's empty
+            if (!newTodo.title) {
+              newTodo.title = todo.title
+              // Reset the DOM element to original title
+              if (ev.target.tagName === 'DIV') {
+                ev.target.innerText = todo.title
+              }
             }
+
+            return newTodo
           }
+
+          // Make sure other todos are in list mode
+          if (currTodo.mode !== 'list') {
+            return { ...currTodo, mode: 'list' }
+          }
+
           return currTodo
         })
       )
@@ -160,24 +189,25 @@ export function TodoProvider({ children }) {
           if (currTodo.id === todo.id) {
             const completed = !currTodo.completed
             const stoppedTodo = stopTimer(currTodo, currentTime)
-
             return {
               ...stoppedTodo,
               completed,
               completedAt: completed ? currentTime : null,
               sortOrder: completed ? currTodo.sortOrder : findTopSortPosition(prevTodos) - 1,
-              editMode: false,
+              mode: 'list',
             }
           }
           return currTodo
         })
       )
     },
-    [setTodos]
+    [setTodos, stopTimer]
   )
 
   const handleTodoToggleTimer = useCallback(
-    (todo) => {
+    (todo, stop = false) => {
+      if (stop && !todo.isTimerRunning) return
+
       const currentTime = Date.now()
 
       setTodos((prevTodos) =>
@@ -187,12 +217,8 @@ export function TodoProvider({ children }) {
             const isTimerRunning = !currTodo.isTimerRunning
 
             if (isTimerRunning) {
-              // Starting timer
-              return {
-                ...currTodo,
-                isTimerRunning: true,
-                startTime: currentTime,
-              }
+              console.trace('Calling startTimer()')
+              return startTimer(currTodo, currentTime)
             }
 
             // Stopping timer
@@ -208,16 +234,7 @@ export function TodoProvider({ children }) {
         })
       )
     },
-    [setTodos]
-  )
-
-  const handleTodoDoubleClick = useCallback(
-    (todo) => {
-      if (!todo.editMode && !todo.completed) {
-        handleTodoEdit(todo)
-      }
-    },
-    [handleTodoEdit]
+    [setTodos, startTimer, stopTimer]
   )
 
   const handleTodoContentEditable = useCallback((ev, todo) => {
@@ -269,15 +286,13 @@ export function TodoProvider({ children }) {
       setNewTodo,
       todos,
       setTodos,
-      swipedTodoId,
-      setSwipedTodoId,
+      swipedTodo,
+      setSwipedTodo,
       handleTodoAdd,
-      handleTodoEdit,
       handleTodoDelete,
       handleTodoSave,
       handleTodoCompleted,
       handleTodoToggleTimer,
-      handleTodoDoubleClick,
       handleTodoContentEditable,
       handleTodoSort,
     }),
@@ -286,15 +301,13 @@ export function TodoProvider({ children }) {
       setNewTodo,
       todos,
       setTodos,
-      swipedTodoId,
-      setSwipedTodoId,
+      swipedTodo,
+      setSwipedTodo,
       handleTodoAdd,
-      handleTodoEdit,
       handleTodoDelete,
       handleTodoSave,
       handleTodoCompleted,
       handleTodoToggleTimer,
-      handleTodoDoubleClick,
       handleTodoContentEditable,
       handleTodoSort,
     ]

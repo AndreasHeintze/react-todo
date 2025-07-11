@@ -34,11 +34,11 @@ export function usePersistedState(key, defaultValue) {
     } catch {
       return defaultValue
     }
-  });
+  })
 
   useEffect(() => {
     try {
-      localStorage.setItem(key, JSON.stringify(state));
+      localStorage.setItem(key, JSON.stringify(state))
     } catch (error) {
       console.error('Failed to save to localStorage:', error)
     }
