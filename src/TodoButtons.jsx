@@ -5,10 +5,11 @@ import { Edit, Timer, Trash2, LoaderCircle } from 'lucide-react'
 
 const TodoButtons = forwardRef(({ todo }, ref) => {
   const { handleTodoSave, handleTodoToggleTimer, handleTodoDelete } = useContext(TodoContext)
+  const buttonsRef = useRef(null)
 
   // Update tick every second
   const [, setTick] = useState(0)
-  const intervalId = useRef()
+  const intervalId = useRef(null)
   useEffect(() => {
     if (!todo.isTimerRunning) {
       // Stop interval when timer stops
@@ -31,11 +32,20 @@ const TodoButtons = forwardRef(({ todo }, ref) => {
     }
   }, [todo.isTimerRunning, todo.startTime])
 
+  /**
+   * This is a workaround for iPhone (IOS) to prevent todos
+   * ending up swiped to the right when completing/un-completing
+   * Which happens if I place the class directly on the element.
+   */
+  useEffect(() => {
+    buttonsRef.current.classList.add('snap-end')
+  }, [])
+
   // Use a re-render to calculate time
   const totalTime = todo.timeSpent + (todo.isTimerRunning && todo.startTime ? Date.now() - todo.startTime : 0)
 
   return (
-    <div className="buttons ml-2 flex items-center justify-end gap-6 @2xl:gap-3">
+    <div ref={buttonsRef} className="ml-2 flex items-center justify-end gap-6 @2xl:gap-3">
       {/** Total time spent */}
       <button
         type="button"

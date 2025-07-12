@@ -2,6 +2,27 @@ import { useCallback, useMemo, useState } from 'react'
 import { useUniqueId, usePersistedState } from '../helpers'
 import { TodoContext } from './TodoContext'
 
+const DUMMYTWCLASSES = [
+  'to-red-400',
+  'to-orange-400',
+  'to-amber-400',
+  'to-yellow-400',
+  'to-lime-400',
+  'to-green-400',
+  'to-emerald-400',
+  'to-teal-400',
+  'to-cyan-400',
+  'to-sky-400',
+  'to-blue-400',
+  'to-indigo-400',
+  'to-violet-400',
+  'to-purple-400',
+  'to-fuchsia-400',
+  'to-pink-400',
+  'to-rose-400',
+  'snap-end',
+]
+
 function findTopSortPosition(todos) {
   const activeTodos = todos.filter((todo) => !todo.completed)
   const minSortOrder = activeTodos.length > 0 ? Math.min(...activeTodos.map((t) => t.sortOrder)) : 1
@@ -27,26 +48,6 @@ function getRandomTailwindColor() {
     'border-l-fuchsia-400',
     'border-l-pink-400',
     'border-l-rose-400',
-  ]
-
-  const DUMMYCOLORS = [
-    'to-red-400',
-    'to-orange-400',
-    'to-amber-400',
-    'to-yellow-400',
-    'to-lime-400',
-    'to-green-400',
-    'to-emerald-400',
-    'to-teal-400',
-    'to-cyan-400',
-    'to-sky-400',
-    'to-blue-400',
-    'to-indigo-400',
-    'to-violet-400',
-    'to-purple-400',
-    'to-fuchsia-400',
-    'to-pink-400',
-    'to-rose-400',
   ]
 
   return predefinedColors[Math.floor(Math.random() * predefinedColors.length)]
@@ -181,14 +182,8 @@ export function TodoProvider({ children }) {
           return timeItem
         })
       )
-
-      // Third reset swipedTodo?
-      if (todo.id === swipedTodo?.id) {
-        swipedTodo.ref.scrollLeft = 0
-        setSwipedTodo(null)
-      }
     },
-    [setTodos, setTimeLog, swipedTodo]
+    [setTodos, setTimeLog]
   )
 
   const handleTodoToggleTimer = useCallback(
