@@ -246,7 +246,6 @@ export function TodoProvider({ children }) {
   )
 
   const handleTodoContentEditable = useCallback((ev, todo) => {
-    ev.preventDefault()
     ev.stopPropagation()
 
     // Restore old title text if escape is pressed
