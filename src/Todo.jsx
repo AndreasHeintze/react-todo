@@ -39,21 +39,31 @@ const Todo = forwardRef(({ todo, style, attributes, listeners }, ref) => {
     let scrollTimeout
     return (ev) => {
       ev.stopPropagation()
+      if (todo.completed) {
+        setSwipedTodo(null)
+        return false
+      }
       const scrolledTodo = ev.currentTarget
       clearTimeout(scrollTimeout)
       scrollTimeout = setTimeout(() => {
         if (scrolledTodo.scrollLeft !== 0) {
-          if (swipedTodo && swipedTodo !== scrolledTodo) {
-            swipedTodo.scrollTo({
+          if (swipedTodo && swipedTodo.ref !== scrolledTodo) {
+            swipedTodo.ref.scrollTo({
               left: 0,
               behavior: 'smooth',
             })
           }
-          setSwipedTodo(scrolledTodo)
+          console.log('todo.completed', todo.completed)
+          console.trace('setSwipedTodo')
+          setSwipedTodo({ id: todo.id, ref: scrolledTodo })
+        } else {
+          setSwipedTodo(null)
         }
       }, 200)
     }
   })()
+
+  console.log(swipedTodo)
 
   return (
     <div
@@ -62,9 +72,9 @@ const Todo = forwardRef(({ todo, style, attributes, listeners }, ref) => {
       style={style}
     >
       {todo.isTimerRunning && (
-        <span class="absolute top-1 right-1 z-0 flex size-2">
-          <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-400 opacity-75"></span>
-          <span class="relative inline-flex size-2 rounded-full bg-red-500"></span>
+        <span className="absolute top-1 right-1 z-0 flex size-2">
+          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-400 opacity-75"></span>
+          <span className="relative inline-flex size-2 rounded-full bg-red-500"></span>
         </span>
       )}
 
@@ -84,7 +94,7 @@ const Todo = forwardRef(({ todo, style, attributes, listeners }, ref) => {
             </div>
           )}
           {/** Some space */}
-          {todo.completed && <div className="size-[20px] min-w-[20px]"></div>}
+          {todo.completed && <div className="size-[20px] min-w-[20px] snap-start"></div>}
 
           {/** Todo completed checkbox */}
           <CheckBox todo={todo} onTodoCompleted={(ev) => handleTodoCompleted(ev, todo)} />
