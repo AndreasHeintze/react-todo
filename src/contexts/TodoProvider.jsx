@@ -183,10 +183,7 @@ export function TodoProvider({ children }) {
       )
 
       // Third reset swipedTodo?
-      if (todo.isTimerRunning && todo.id === swipedTodo?.id) {
-        console.log('todo.isTimerRunning', todo.isTimerRunning)
-        console.log('todo.id', todo.id)
-        console.log('swipedTodo', swipedTodo)
+      if (todo.id === swipedTodo?.id) {
         swipedTodo.ref.scrollLeft = 0
         setSwipedTodo(null)
       }
