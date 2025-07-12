@@ -1,6 +1,16 @@
 import {useState, useEffect} from "react"
 
-export function formatTime(ms) {
+export function formatDate(timestamp) {
+  const date = new Date(timestamp)
+  return date.toLocaleDateString()
+}
+
+export function formatTime(timestamp) {
+  const date = new Date(timestamp)
+  return date.toLocaleTimeString()
+}
+
+export function formatTimeSpent(ms) {
   if (ms < 0) ms = 0
 
   const totalSeconds = Math.floor(ms / 1000)

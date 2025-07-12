@@ -1,6 +1,6 @@
 import { useRef, useState, useEffect, useContext, forwardRef } from 'react'
 import { TodoContext } from './contexts/TodoContext'
-import { formatTime } from './helpers'
+import { formatTimeSpent } from './helpers'
 import { Edit, Timer, Trash2, LoaderCircle } from 'lucide-react'
 
 const TodoButtons = forwardRef(({ todo }, ref) => {
@@ -43,9 +43,9 @@ const TodoButtons = forwardRef(({ todo }, ref) => {
         role="timer"
         className="flex h-8 cursor-pointer items-center justify-end rounded border border-transparent p-1 text-right font-mono text-sm text-stone-600 transition-colors duration-200 hover:border-stone-300 hover:bg-stone-100 focus:ring-2 focus:ring-stone-500 focus:outline-none"
         onClick={(ev) => handleTodoSave(ev, todo, { mode: todo.mode === 'timelog' ? 'list' : 'timelog' })}
-        aria-label={`Time spent: ${formatTime(totalTime)}`}
+        aria-label={`Time spent: ${formatTimeSpent(totalTime)}`}
       >
-        {formatTime(totalTime)}
+        {formatTimeSpent(totalTime)}
       </button>
 
       {/** Edit button */}

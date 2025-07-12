@@ -3,8 +3,8 @@ import { useUniqueId, usePersistedState } from '../helpers'
 import { TodoContext } from './TodoContext'
 
 function findTopSortPosition(todos) {
-  const uncompletedTodos = todos.filter((todo) => !todo.completed)
-  const minSortOrder = uncompletedTodos.length > 0 ? Math.min(...uncompletedTodos.map((t) => t.sortOrder)) : 1
+  const activeTodos = todos.filter((todo) => !todo.completed)
+  const minSortOrder = activeTodos.length > 0 ? Math.min(...activeTodos.map((t) => t.sortOrder)) : 1
   return minSortOrder
 }
 
@@ -52,64 +52,21 @@ function getRandomTailwindColor() {
   return predefinedColors[Math.floor(Math.random() * predefinedColors.length)]
 }
 
+function stopTimer(currTodo, currentTime) {
+  return {
+    ...currTodo,
+    isTimerRunning: false,
+    startTime: null,
+    timeSpent: currTodo.timeSpent + (currentTime - currTodo.startTime),
+  }
+}
+
 export function TodoProvider({ children }) {
   const generateId = useUniqueId()
   const [newTodo, setNewTodo] = usePersistedState('todo', '')
   const [todos, setTodos] = usePersistedState('todos', [])
   const [timeLog, setTimeLog] = usePersistedState('timelog', [])
-  const [currTimeItem, setCurrTimeItem] = usePersistedState('timeitem', { id: null })
   const [swipedTodo, setSwipedTodo] = useState(null) // No need to persist this, since it won't be swiped after a page reload.
-
-  console.log('todos', todos)
-  console.log('timeLog', timeLog)
-
-  const startTimer = useCallback(
-    (todo, currentTime) => {
-      const newTimeItem = {
-        id: generateId(),
-        todoId: todo.id,
-        start: currentTime,
-        stop: null,
-      }
-
-      setTimeLog((prevTimeLog) => [...prevTimeLog, newTimeItem])
-      setCurrTimeItem(newTimeItem)
-
-      return {
-        ...todo,
-        isTimerRunning: true,
-        startTime: currentTime,
-      }
-    },
-    [generateId, setCurrTimeItem, setTimeLog]
-  )
-
-  const stopTimer = useCallback(
-    (todo, currentTime) => {
-      if (!todo.isTimerRunning) return todo
-
-      setTimeLog((prevTimeLog) =>
-        prevTimeLog.map((currTimeLogItem) => {
-          if (currTimeLogItem.id === currTimeItem?.id) {
-            return {
-              ...currTimeLogItem,
-              stop: currentTime,
-            }
-          }
-          return currTimeLogItem
-        })
-      )
-      setCurrTimeItem(null)
-
-      return {
-        ...todo,
-        isTimerRunning: false,
-        startTime: null,
-        timeSpent: todo.timeSpent + (currentTime - todo.startTime),
-      }
-    },
-    [setTimeLog, setCurrTimeItem, currTimeItem?.id]
-  )
 
   const handleTodoAdd = useCallback(
     (ev) => {
@@ -183,11 +140,12 @@ export function TodoProvider({ children }) {
   const handleTodoCompleted = useCallback(
     (todo) => {
       const currentTime = Date.now()
+      const completed = !todo.completed
 
+      // First, update the todos state
       setTodos((prevTodos) =>
         prevTodos.map((currTodo) => {
           if (currTodo.id === todo.id) {
-            const completed = !currTodo.completed
             const stoppedTodo = stopTimer(currTodo, currentTime)
             return {
               ...stoppedTodo,
@@ -200,27 +158,40 @@ export function TodoProvider({ children }) {
           return currTodo
         })
       )
+
+      if (!completed) return
+
+      // Second, update the timelog state
+      // If the completed todo has a running timer, stop it.
+      setTimeLog((prevTimeLog) =>
+        prevTimeLog.map((timeItem) => {
+          if (timeItem.todoId == todo.id && !timeItem.stop) {
+            return { ...timeItem, stop: currentTime }
+          }
+          return timeItem
+        })
+      )
     },
-    [setTodos, stopTimer]
+    [setTodos, setTimeLog]
   )
 
   const handleTodoToggleTimer = useCallback(
-    (todo, stop = false) => {
-      if (stop && !todo.isTimerRunning) return
-
+    (todo) => {
       const currentTime = Date.now()
+      const isStarting = !todo.isTimerRunning
 
-      setTodos((prevTodos) =>
-        prevTodos.map((currTodo) => {
+      // First, update the todos state
+      setTodos((prevTodos) => {
+        return prevTodos.map((currTodo) => {
           if (currTodo.id === todo.id) {
-            // Toggle the clicked todo's timer
-            const isTimerRunning = !currTodo.isTimerRunning
-
-            if (isTimerRunning) {
-              console.trace('Calling startTimer()')
-              return startTimer(currTodo, currentTime)
+            if (isStarting) {
+              // Starting timer
+              return {
+                ...currTodo,
+                isTimerRunning: true,
+                startTime: currentTime,
+              }
             }
-
             // Stopping timer
             return stopTimer(currTodo, currentTime)
           }
@@ -232,9 +203,33 @@ export function TodoProvider({ children }) {
 
           return currTodo
         })
-      )
+      })
+
+      // Second, update the timelog state
+      setTimeLog((prevTimeLog) => {
+        // Stop all current running timers in the timelog
+        const updatedLog = prevTimeLog.map((timeItem) => {
+          if (!timeItem.stop) {
+            return { ...timeItem, stop: currentTime }
+          }
+          return timeItem
+        })
+
+        // If starting a new timer, add a new time item to the timelog
+        if (isStarting) {
+          const newTimeItem = {
+            id: generateId(),
+            todoId: todo.id,
+            start: currentTime,
+            stop: null,
+          }
+          return [...updatedLog, newTimeItem]
+        }
+
+        return updatedLog
+      })
     },
-    [setTodos, startTimer, stopTimer]
+    [setTodos, setTimeLog, generateId]
   )
 
   const handleTodoContentEditable = useCallback((ev, todo) => {
@@ -286,6 +281,7 @@ export function TodoProvider({ children }) {
       setNewTodo,
       todos,
       setTodos,
+      timeLog,
       swipedTodo,
       setSwipedTodo,
       handleTodoAdd,
@@ -301,6 +297,7 @@ export function TodoProvider({ children }) {
       setNewTodo,
       todos,
       setTodos,
+      timeLog,
       swipedTodo,
       setSwipedTodo,
       handleTodoAdd,
