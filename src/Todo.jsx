@@ -64,7 +64,8 @@ const Todo = forwardRef(({ todo, style, attributes, listeners }, ref) => {
       <div
         ref={swipeTodoRef}
         onScrollEnd={handleScrollEnd}
-        className={`scrollbar-hide flex snap-x snap-mandatory items-center justify-between overflow-x-auto overscroll-x-contain scroll-auto rounded p-3 pl-2`}
+        data-swipeable="true"
+        className={`scrollbar-hide flex snap-x snap-mandatory items-center justify-between overflow-x-auto rounded p-3 pl-2`}
       >
         {/** Drag, checkbox and title section */}
         <div className="flex snap-end items-center justify-start gap-2">
