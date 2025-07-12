@@ -35,7 +35,7 @@ const TodoButtons = forwardRef(({ todo }, ref) => {
   const totalTime = todo.timeSpent + (todo.isTimerRunning && todo.startTime ? Date.now() - todo.startTime : 0)
 
   return (
-    <div className="buttons ml-2 flex snap-start items-center justify-end gap-4">
+    <div className="buttons ml-2 flex snap-start items-center justify-end gap-5">
       {/** Total time spent */}
       <button
         type="button"
