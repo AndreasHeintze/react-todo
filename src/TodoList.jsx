@@ -1,4 +1,4 @@
-import { useContext, useEffect, useMemo, useState } from 'react'
+import { useContext, useMemo, useState } from 'react'
 import { DndContext, DragOverlay, closestCenter } from '@dnd-kit/core'
 import { SortableContext, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
@@ -29,14 +29,6 @@ export default function TodoList() {
   }, [todos])
 
   const activeTodoIds = useMemo(() => activeTodos.map((todo) => todo.id), [activeTodos])
-
-  useEffect(() => {
-    // Reset all horizontal scroll positions
-    const scrollableElements = document.querySelectorAll('[data-swipeable]')
-    scrollableElements.forEach((el) => {
-      el.scrollLeft = 0
-    })
-  }, [])
 
   function handleDragStart(event) {
     const { active } = event
