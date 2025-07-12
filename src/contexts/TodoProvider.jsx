@@ -71,6 +71,7 @@ export function TodoProvider({ children }) {
   const handleTodoAdd = useCallback(
     (ev) => {
       ev.preventDefault()
+      ev.stopPropagation()
 
       const title = newTodo.trim()
       if (!title) {
@@ -99,7 +100,10 @@ export function TodoProvider({ children }) {
   )
 
   const handleTodoDelete = useCallback(
-    (todo) => {
+    (ev, todo) => {
+      ev.preventDefault()
+      ev.stopPropagation()
+
       setTodos((prevTodos) => prevTodos.filter((currTodo) => currTodo.id !== todo.id))
     },
     [setTodos]
@@ -107,6 +111,9 @@ export function TodoProvider({ children }) {
 
   const handleTodoSave = useCallback(
     (ev, todo, data) => {
+      ev.preventDefault()
+      ev.stopPropagation()
+
       setTodos((prevTodos) =>
         prevTodos.map((currTodo) => {
           if (currTodo.id === todo.id) {
@@ -138,7 +145,10 @@ export function TodoProvider({ children }) {
   )
 
   const handleTodoCompleted = useCallback(
-    (todo) => {
+    (ev, todo) => {
+      ev.preventDefault()
+      ev.stopPropagation()
+
       const currentTime = Date.now()
       const completed = !todo.completed
 
@@ -176,7 +186,10 @@ export function TodoProvider({ children }) {
   )
 
   const handleTodoToggleTimer = useCallback(
-    (todo) => {
+    (ev, todo) => {
+      ev.preventDefault()
+      ev.stopPropagation()
+
       const currentTime = Date.now()
       const isStarting = !todo.isTimerRunning
 
@@ -233,6 +246,9 @@ export function TodoProvider({ children }) {
   )
 
   const handleTodoContentEditable = useCallback((ev, todo) => {
+    ev.preventDefault()
+    ev.stopPropagation()
+
     // Restore old title text if escape is pressed
     if (ev.key === 'Escape') {
       ev.target.innerText = todo.title

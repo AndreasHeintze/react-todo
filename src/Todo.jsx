@@ -77,7 +77,7 @@ const Todo = forwardRef(({ todo, style, attributes, listeners }, ref) => {
           {todo.completed && <div className="size-[20px] min-w-[20px]"></div>}
 
           {/** Todo completed checkbox */}
-          <CheckBox todo={todo} onTodoCompleted={() => handleTodoCompleted(todo)} />
+          <CheckBox todo={todo} onTodoCompleted={(ev) => handleTodoCompleted(ev, todo)} />
 
           {/** Todo title text */}
           {todo.mode !== 'edit' && (

@@ -71,7 +71,7 @@ const TodoButtons = forwardRef(({ todo }, ref) => {
             ? 'cursor-not-allowed border-gray-300 bg-gray-200 text-gray-400'
             : 'cursor-pointer border-amber-200 bg-amber-50 text-amber-600 hover:border-amber-300 hover:bg-amber-100'
         }`}
-        onClick={() => handleTodoToggleTimer(todo)}
+        onClick={(ev) => handleTodoToggleTimer(ev, todo)}
         disabled={todo.completed}
         aria-label={todo.isTimerRunning ? `Stop timer for todo: ${todo.title}` : `Start timer for todo: ${todo.title}`}
       >
@@ -89,7 +89,7 @@ const TodoButtons = forwardRef(({ todo }, ref) => {
       <button
         type="button"
         className="flex h-8 cursor-pointer items-center rounded border border-red-200 bg-red-50 p-1 font-medium text-red-600 transition-colors duration-200 hover:border-red-300 hover:bg-red-100 focus:ring-2 focus:ring-red-500 focus:outline-none"
-        onClick={() => handleTodoDelete(todo)}
+        onClick={(ev) => handleTodoDelete(ev, todo)}
         aria-label={`Delete todo: ${todo.title}`}
       >
         <Trash2 size={20} aria-hidden="true" />
