@@ -1,9 +1,21 @@
-import { useContext } from 'react'
+import { useContext, useEffect } from 'react'
 import TodoList from './TodoList'
 import { TodoContext } from './contexts/TodoContext'
 
 export default function TodoApp() {
   const { newTodo, setNewTodo, handleTodoAdd } = useContext(TodoContext)
+
+  useEffect(() => {
+    // Force reset all scroll positions on load
+    const resetScrollPositions = () => {
+      document.querySelectorAll('[data-swipeable]').forEach((el) => {
+        el.scrollLeft = 0
+      })
+    }
+    resetScrollPositions()
+    // Also reset after a small delay for iOS
+    setTimeout(resetScrollPositions, 100)
+  }, [])
 
   return (
     <div className="mx-auto bg-transparent px-2 py-8 text-sm sm:rounded-lg sm:p-4 md:bg-white md:p-8 md:text-base md:shadow-lg">

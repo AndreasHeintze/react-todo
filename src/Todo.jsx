@@ -15,11 +15,6 @@ const Todo = forwardRef(({ todo, style, attributes, listeners }, ref) => {
   const totalTimeRef = useRef(null)
   const [titleWidth, setTitleWidth] = useState(0)
 
-  useEffect(() => {
-    // Reset all horizontal scroll positions
-    swipeTodoRef.current.scrollLeft = 0
-  }, [])
-
   // Calc <title-width> = <todo-width> - <timer-width> - 76
   useEffect(() => {
     // Calculate on todo change
