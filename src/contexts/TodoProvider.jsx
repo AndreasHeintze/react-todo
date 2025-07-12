@@ -181,8 +181,17 @@ export function TodoProvider({ children }) {
           return timeItem
         })
       )
+
+      // Third reset swipedTodo?
+      if (todo.isTimerRunning && todo.id === swipedTodo?.id) {
+        console.log('todo.isTimerRunning', todo.isTimerRunning)
+        console.log('todo.id', todo.id)
+        console.log('swipedTodo', swipedTodo)
+        swipedTodo.ref.scrollLeft = 0
+        setSwipedTodo(null)
+      }
     },
-    [setTodos, setTimeLog]
+    [setTodos, setTimeLog, swipedTodo]
   )
 
   const handleTodoToggleTimer = useCallback(
