@@ -20,7 +20,7 @@ const Todo = forwardRef(({ todo, style, attributes, listeners }, ref) => {
     // Calculate on todo change
     calculateWidth()
 
-    // Also calculate on window resize
+    // Also re-calculate on window resize
     window.addEventListener('resize', calculateWidth)
 
     function calculateWidth() {
@@ -66,10 +66,10 @@ const Todo = forwardRef(({ todo, style, attributes, listeners }, ref) => {
         onScrollEnd={handleScrollEnd}
         onTouchEnd={handleScrollEnd}
         data-swipeable="true"
-        className={`scrollbar-hide flex snap-x snap-mandatory items-center justify-between overflow-x-auto rounded p-3 pl-2`}
+        className={`scrollbar-hide flex snap-x snap-mandatory scroll-px-3 items-center justify-between overflow-x-auto rounded p-3 pl-2`}
       >
         {/** Drag, checkbox and title section */}
-        <div className="flex snap-end items-center justify-start gap-2">
+        <div className="flex snap-start items-center justify-start gap-2">
           {/** Drag handle */}
           {!todo.completed && (
             <div {...attributes} {...listeners} className="cursor-grab" aria-label="Drag to reorder">
@@ -85,7 +85,7 @@ const Todo = forwardRef(({ todo, style, attributes, listeners }, ref) => {
           {/** Todo title text */}
           {todo.mode !== 'edit' && (
             <div
-              className={`${todo.mode === 'list' ? 'line-clamp-1' : 'overflow-x-hidden whitespace-nowrap'} min-w-[144px] rounded p-1 font-semibold focus:outline-none`}
+              className={`${todo.mode === 'list' ? 'line-clamp-1' : 'overflow-x-hidden whitespace-nowrap'} rounded p-1 font-semibold focus:outline-none`}
               ref={todoTitleRef}
               onKeyDown={(ev) => handleTodoContentEditable(ev, todo)}
               onBlur={(ev) => handleTodoSave(ev, todo, { title: ev.target.innerText, mode: 'list' })}
