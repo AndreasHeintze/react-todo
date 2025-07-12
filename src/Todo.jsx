@@ -51,7 +51,7 @@ const Todo = forwardRef(({ todo, style, attributes, listeners }, ref) => {
           }
           setSwipedTodo(scrolledTodo)
         }
-      }, 1000)
+      }, 200)
     }
   })()
 
@@ -66,6 +66,7 @@ const Todo = forwardRef(({ todo, style, attributes, listeners }, ref) => {
       <div
         ref={swipeTodoRef}
         onScrollEnd={handleScrollEnd}
+        onTouchEnd={handleScrollEnd}
         data-swipeable="true"
         className={`scrollbar-hide flex snap-x snap-mandatory items-center justify-between overflow-x-auto rounded p-3 pl-2`}
       >
