@@ -70,12 +70,12 @@ export default function TodoList() {
         {/* Active Todos Section */}
         {activeTodos.length > 0 && (
           <section aria-labelledby="active-todos-heading">
-            <h2 id="active-todos-heading" className="mb-2 text-sm font-medium text-white md:text-black">
+            <h2 id="active-todos-heading" className="mb-2 text-sm font-medium text-white @2xl:text-black">
               Active todos ({activeTodos.length})
             </h2>
             <SortableContext items={activeTodoIds} strategy={verticalListSortingStrategy}>
               <ul
-                className="@container space-y-2"
+                className="space-y-2"
                 role="list"
                 aria-label={`${activeTodos.length} active todo${activeTodos.length !== 1 ? 's' : ''}`}
               >
@@ -92,11 +92,11 @@ export default function TodoList() {
         {/* Completed Todos Section */}
         {completedTodos.length > 0 && (
           <section aria-labelledby="completed-todos-heading" className={activeTodos.length > 0 ? 'mt-6' : ''}>
-            <h2 id="completed-todos-heading" className="mb-2 text-sm font-medium text-white md:text-black">
+            <h2 id="completed-todos-heading" className="mb-2 text-sm font-medium text-white @2xl:text-black">
               Completed ({completedTodos.length})
             </h2>
             <ul
-              className="@container space-y-2"
+              className="space-y-2"
               role="list"
               aria-label={`${completedTodos.length} completed todo${completedTodos.length !== 1 ? 's' : ''}`}
             >

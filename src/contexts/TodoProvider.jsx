@@ -156,7 +156,7 @@ export function TodoProvider({ children }) {
       setTodos((prevTodos) =>
         prevTodos.map((currTodo) => {
           if (currTodo.id === todo.id) {
-            const stoppedTodo = stopTimer(currTodo, currentTime)
+            const stoppedTodo = currTodo.isTimerRunning ? stopTimer(currTodo, currentTime) : currTodo
             return {
               ...stoppedTodo,
               completed,

@@ -27,9 +27,9 @@ export default function TodoEdit({ todo }) {
       <ul className="border border-stone-200 bg-white p-2 text-right font-mono text-sm">
         {todoTimeLog.length === 0 && <li className="text-left">No times registered yet.</li>}
         {todoTimeLog.length > 0 && (
-          <li className="@container flex justify-between gap-4 font-semibold odd:bg-stone-50">
+          <li className="flex justify-between gap-4 font-semibold odd:bg-stone-50">
             <div className="flex gap-4">
-              <div className={`hidden @md:block`}>Start date</div>
+              <div className={`hidden @2xl:block`}>Start date</div>
               <div className="min-w-[68px] text-left">Start</div>
               <div>&nbsp;</div>
               <div className="min-w-[68px] text-left">Stop</div>
@@ -39,9 +39,9 @@ export default function TodoEdit({ todo }) {
         )}
         {todoTimeLog.length > 0 &&
           todoTimeLog.map((timeItem) => (
-            <li key={timeItem.id} className="@container flex justify-between gap-4 odd:bg-stone-50">
+            <li key={timeItem.id} className="flex justify-between gap-4 odd:bg-stone-50">
               <div className="flex gap-4">
-                <div className={`hidden @md:block`} title={getStartDateTitle(timeItem)}>
+                <div className={`hidden @2xl:block`} title={getStartDateTitle(timeItem)}>
                   {formatDate(timeItem.start)}
                 </div>
                 <div className="min-w-[68px]" title={getStartTimeTitle(timeItem)}>
