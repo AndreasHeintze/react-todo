@@ -55,8 +55,6 @@ const Todo = forwardRef(({ todo, style, attributes, listeners }, ref) => {
     }
   })()
 
-  console.log('swipedTodo', swipedTodo)
-
   return (
     <div
       ref={ref}

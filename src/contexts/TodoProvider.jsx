@@ -188,7 +188,7 @@ export function TodoProvider({ children }) {
   const handleTodoToggleTimer = useCallback(
     (ev, todo) => {
       ev.preventDefault()
-      ev.stopPropagation()
+      ev.stopImmediatePropagation()
 
       const currentTime = Date.now()
       const isStarting = !todo.isTimerRunning
