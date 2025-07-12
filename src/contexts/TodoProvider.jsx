@@ -113,6 +113,7 @@ export function TodoProvider({ children }) {
     (ev, todo, data) => {
       ev.preventDefault()
       ev.stopPropagation()
+      ev.stopImmediatePropagation()
 
       setTodos((prevTodos) =>
         prevTodos.map((currTodo) => {
@@ -188,6 +189,7 @@ export function TodoProvider({ children }) {
   const handleTodoToggleTimer = useCallback(
     (ev, todo) => {
       ev.preventDefault()
+      ev.stopPropagation()
       ev.stopImmediatePropagation()
 
       const currentTime = Date.now()
