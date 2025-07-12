@@ -58,9 +58,16 @@ const Todo = forwardRef(({ todo, style, attributes, listeners }, ref) => {
   return (
     <div
       ref={ref}
-      className={`${todo.color} shadow-tiny rounded border-l-5 bg-radial from-white from-50% to-stone-50`}
+      className={`${todo.color} shadow-tiny relative rounded border-l-5 bg-radial from-white from-50% to-stone-50`}
       style={style}
     >
+      {todo.isTimerRunning && (
+        <span class="absolute top-1 right-1 z-0 flex size-2">
+          <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-400 opacity-75"></span>
+          <span class="relative inline-flex size-2 rounded-full bg-red-500"></span>
+        </span>
+      )}
+
       <div
         ref={swipeTodoRef}
         onScrollEnd={handleScrollEnd}
