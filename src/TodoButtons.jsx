@@ -51,7 +51,7 @@ const TodoButtons = forwardRef(({ todo }, ref) => {
       {/** Edit button */}
       <button
         type="button"
-        className={`flex h-8 items-center rounded border p-1 font-medium transition-colors duration-200 focus:ring-2 focus:ring-blue-500 focus:outline-none ${
+        className={`mr-48 flex h-8 items-center rounded border p-1 font-medium transition-colors duration-200 focus:ring-2 focus:ring-blue-500 focus:outline-none ${
           todo.completed
             ? 'cursor-not-allowed border-gray-300 bg-gray-200 text-gray-400'
             : 'cursor-pointer border-blue-200 bg-blue-50 text-blue-600 hover:border-blue-300 hover:bg-blue-100'
