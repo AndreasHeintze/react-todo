@@ -15,7 +15,7 @@ const Todo = forwardRef(({ todo, style, attributes, listeners }, ref) => {
   const totalTimeRef = useRef(null)
   const [titleWidth, setTitleWidth] = useState(0)
 
-  // Calc <title-width> = <todo-width> - <timer-width> - 92
+  // Calc <title-width> = <todo-width> - <timer-width> - 76
   useEffect(() => {
     // Calculate on todo change
     calculateWidth()
@@ -25,7 +25,7 @@ const Todo = forwardRef(({ todo, style, attributes, listeners }, ref) => {
 
     function calculateWidth() {
       if (swipeTodoRef.current && totalTimeRef.current) {
-        const spacer = swipeTodoRef.current.offsetWidth > 671 ? 220 : 81
+        const spacer = swipeTodoRef.current.offsetWidth > 671 ? 220 : 76
         const newTitleWidth = swipeTodoRef.current.offsetWidth - totalTimeRef.current.offsetWidth - spacer
         setTitleWidth(newTitleWidth)
       }
@@ -42,7 +42,7 @@ const Todo = forwardRef(({ todo, style, attributes, listeners }, ref) => {
       clearTimeout(scrollTimeout)
       scrollTimeout = setTimeout(() => {
         if (scrollTodo.scrollLeft !== 0) {
-          if (swipedTodo) {
+          if (swipedTodo && swipedTodo !== scrollTodo) {
             swipedTodo.scrollTo({
               left: 0,
               behavior: 'smooth',
@@ -82,7 +82,7 @@ const Todo = forwardRef(({ todo, style, attributes, listeners }, ref) => {
           {/** Todo title text */}
           {todo.mode !== 'edit' && (
             <div
-              className={`font-semibold ${todo.mode === 'list' ? 'line-clamp-1' : 'overflow-x-hidden whitespace-nowrap'} max-w-[144px] rounded p-1 focus:outline-none`}
+              className={`font-semibold ${todo.mode === 'list' ? 'line-clamp-1' : 'overflow-x-hidden whitespace-nowrap'} rounded p-1 focus:outline-none`}
               ref={todoTitleRef}
               onKeyDown={(ev) => handleTodoContentEditable(ev, todo)}
               onBlur={(ev) => handleTodoSave(ev, todo, { title: ev.target.innerText, mode: 'list' })}
