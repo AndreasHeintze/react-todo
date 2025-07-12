@@ -57,7 +57,10 @@ const TodoButtons = forwardRef(({ todo }, ref) => {
             : 'cursor-pointer border-blue-200 bg-blue-50 text-blue-600 hover:border-blue-300 hover:bg-blue-100'
         }`}
         onClick={(ev) => handleTodoSave(ev, todo, { mode: todo.mode === 'edit' ? 'list' : 'edit' })}
-        onTouchEnd={(ev) => ev.preventDefault()}
+        onTouchEnd={(ev) => {
+          ev.preventDefault()
+          ev.stopPropagation()
+        }}
         disabled={todo.completed}
         aria-label={`Edit todo: ${todo.title}`}
       >
