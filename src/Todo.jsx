@@ -82,7 +82,7 @@ const Todo = forwardRef(({ todo, style, attributes, listeners }, ref) => {
           {/** Todo title text */}
           {todo.mode !== 'edit' && (
             <div
-              className={`${todo.mode === 'list' ? 'line-clamp-1' : 'overflow-x-hidden whitespace-nowrap'} max-w-[144px] rounded p-1 focus:outline-none`}
+              className={`font-semibold ${todo.mode === 'list' ? 'line-clamp-1' : 'overflow-x-hidden whitespace-nowrap'} max-w-[144px] rounded p-1 focus:outline-none`}
               ref={todoTitleRef}
               onKeyDown={(ev) => handleTodoContentEditable(ev, todo)}
               onBlur={(ev) => handleTodoSave(ev, todo, { title: ev.target.innerText, mode: 'list' })}

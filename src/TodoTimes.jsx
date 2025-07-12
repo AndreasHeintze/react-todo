@@ -23,17 +23,34 @@ export default function TodoEdit({ todo }) {
 
   return (
     <div className="space-y-3 p-3 pt-1">
-      <h3>Time log</h3>
+      <h3 className="font-semibold">Time log</h3>
       <ul className="border border-stone-200 bg-white p-2 text-right font-mono text-sm">
         {todoTimeLog.length === 0 && <li className="text-left">No times registered yet.</li>}
+        {todoTimeLog.length > 0 && (
+          <li className="@container flex justify-between gap-4 font-semibold odd:bg-stone-50">
+            <div className="flex gap-4">
+              <div className={`hidden @md:block`}>Start date</div>
+              <div className="min-w-[68px] text-left">Start</div>
+              <div>&nbsp;</div>
+              <div className="min-w-[68px] text-left">Stop</div>
+            </div>
+            <div className="text-right">Time</div>
+          </li>
+        )}
         {todoTimeLog.length > 0 &&
           todoTimeLog.map((timeItem) => (
-            <li key={timeItem.id} className="flex justify-between gap-4 odd:bg-stone-50">
+            <li key={timeItem.id} className="@container flex justify-between gap-4 odd:bg-stone-50">
               <div className="flex gap-4">
-                <div title={getStartDateTitle(timeItem)}>{formatDate(timeItem.start)}</div>
-                <div title={getStartTimeTitle(timeItem)}>{formatTime(timeItem.start)}</div>
+                <div className={`hidden @md:block`} title={getStartDateTitle(timeItem)}>
+                  {formatDate(timeItem.start)}
+                </div>
+                <div className="min-w-[68px]" title={getStartTimeTitle(timeItem)}>
+                  {formatTime(timeItem.start)}
+                </div>
                 <div>-</div>
-                <div title={getStopTimeTitle(timeItem)}>{timeItem.stop ? formatTime(timeItem.stop) : 'Running'}</div>
+                <div className="min-w-[68px]" title={getStopTimeTitle(timeItem)}>
+                  {timeItem.stop ? formatTime(timeItem.stop) : 'Running'}
+                </div>
               </div>
               <div className="text-right" title={getLoggedTimeTitle(timeItem)}>
                 {timeItem.stop ? formatTimeSpent(timeItem.stop - timeItem.start) : ''}
