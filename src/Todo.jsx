@@ -51,9 +51,11 @@ const Todo = forwardRef(({ todo, style, attributes, listeners }, ref) => {
           }
           setSwipedTodo(scrolledTodo)
         }
-      }, 200)
+      }, 1000)
     }
   })()
+
+  console.log('swipedTodo', swipedTodo)
 
   return (
     <div
