@@ -38,11 +38,11 @@ const Todo = forwardRef(({ todo, style, attributes, listeners }, ref) => {
   const handleScrollEnd = (() => {
     let scrollTimeout
     return (ev) => {
-      const scrollTodo = ev.currentTarget
+      const scrolledTodo = ev.currentTarget
       clearTimeout(scrollTimeout)
       scrollTimeout = setTimeout(() => {
-        if (scrollTodo.scrollLeft !== 0) {
-          if (swipedTodo && swipedTodo !== scrollTodo) {
+        if (scrolledTodo.scrollLeft !== 0) {
+          if (swipedTodo && swipedTodo !== scrolledTodo) {
             swipedTodo.scrollTo({
               left: 0,
               behavior: 'smooth',
@@ -50,7 +50,7 @@ const Todo = forwardRef(({ todo, style, attributes, listeners }, ref) => {
           }
           setSwipedTodo(swipeTodoRef.current)
         }
-      }, 200)
+      }, 250)
     }
   })()
 
