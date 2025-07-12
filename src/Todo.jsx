@@ -69,10 +69,10 @@ const Todo = forwardRef(({ todo, style, attributes, listeners }, ref) => {
         className={`scrollbar-hide flex snap-x snap-proximity scroll-px-3 items-center justify-between overflow-x-auto rounded p-3 pl-2`}
       >
         {/** Drag, checkbox and title section */}
-        <div className="flex snap-start items-center justify-start gap-2">
+        <div className="flex items-center justify-start gap-2">
           {/** Drag handle */}
           {!todo.completed && (
-            <div {...attributes} {...listeners} className="cursor-grab" aria-label="Drag to reorder">
+            <div {...attributes} {...listeners} className="cursor-grab snap-start" aria-label="Drag to reorder">
               <GripVertical size={20} className="text-gray-400" />
             </div>
           )}
