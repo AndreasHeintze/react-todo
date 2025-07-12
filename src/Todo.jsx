@@ -49,9 +49,9 @@ const Todo = forwardRef(({ todo, style, attributes, listeners }, ref) => {
               behavior: 'smooth',
             })
           }
-          setSwipedTodo(swipeTodoRef.current)
+          setSwipedTodo(scrolledTodo)
         }
-      }, 500)
+      }, 200)
     }
   })()
 

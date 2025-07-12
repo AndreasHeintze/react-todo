@@ -1,9 +1,16 @@
-import { useContext } from 'react'
+import { useContext, useEffect } from 'react'
 import TodoList from './TodoList'
 import { TodoContext } from './contexts/TodoContext'
 
 export default function TodoApp() {
   const { newTodo, setNewTodo, handleTodoAdd } = useContext(TodoContext)
+
+  // Prevent browsers (Safari/Ios) trying to remember scroll positions
+  useEffect(() => {
+    if ('scrollRestoration' in history) {
+      history.scrollRestoration = 'manual'
+    }
+  }, [])
 
   return (
     <div className="mx-auto bg-transparent px-2 py-8 text-sm sm:rounded-lg sm:p-4 md:bg-white md:p-8 md:text-base md:shadow-lg">
