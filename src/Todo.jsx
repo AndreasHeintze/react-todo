@@ -9,7 +9,6 @@ import TodoButtons from './TodoButtons'
 const Todo = forwardRef(({ todo, style, attributes, listeners }, ref) => {
   const { swipedTodo, setSwipedTodo, handleTodoSave, handleTodoCompleted, handleTodoContentEditable } = useContext(TodoContext)
 
-  // const todoRef = useRef(null)
   const swipeTodoRef = useRef(null)
   const todoTitleRef = useRef(null)
   const totalTimeRef = useRef(null)
@@ -53,8 +52,6 @@ const Todo = forwardRef(({ todo, style, attributes, listeners }, ref) => {
               behavior: 'smooth',
             })
           }
-          console.log('todo.completed', todo.completed)
-          console.trace('setSwipedTodo')
           setSwipedTodo({ id: todo.id, ref: scrolledTodo })
         } else {
           setSwipedTodo(null)
@@ -62,8 +59,6 @@ const Todo = forwardRef(({ todo, style, attributes, listeners }, ref) => {
       }, 200)
     }
   })()
-
-  console.log(swipedTodo)
 
   return (
     <div
@@ -80,9 +75,9 @@ const Todo = forwardRef(({ todo, style, attributes, listeners }, ref) => {
 
       <div
         ref={swipeTodoRef}
+        data-swipeable="true"
         onScrollEnd={handleScrollEnd}
         onTouchEnd={handleScrollEnd}
-        data-swipeable="true"
         className="scrollbar-hide flex snap-x snap-proximity scroll-px-3 items-center justify-between overflow-x-auto rounded p-3 pl-2"
       >
         {/** Drag, checkbox and title section */}

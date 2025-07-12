@@ -38,7 +38,9 @@ const TodoButtons = forwardRef(({ todo }, ref) => {
    * Which happens if I place the class directly on the element.
    */
   useEffect(() => {
-    buttonsRef.current.classList.add('snap-end')
+    setTimeout(() => {
+      buttonsRef.current.classList.add('snap-end')
+    }, 10)
   }, [])
 
   // Use a re-render to calculate time

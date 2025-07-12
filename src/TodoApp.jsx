@@ -5,17 +5,17 @@ import { TodoContext } from './contexts/TodoContext'
 export default function TodoApp() {
   const { newTodo, setNewTodo, handleTodoAdd } = useContext(TodoContext)
 
-  useEffect(() => {
-    // Force reset all scroll positions on load
-    const resetScrollPositions = () => {
-      document.querySelectorAll('[data-swipeable]').forEach((el) => {
-        el.scrollLeft = 0
-      })
-    }
-    resetScrollPositions()
-    // Also reset after a small delay for iOS
-    setTimeout(resetScrollPositions, 100)
-  }, [])
+  // useEffect(() => {
+  //   // Force reset all scroll positions on load
+  //   const resetScrollPositions = () => {
+  //     document.querySelectorAll('[data-swipeable]').forEach((el) => {
+  //       el.scrollLeft = 0
+  //     })
+  //   }
+  //   resetScrollPositions()
+  //   // Also reset after a small delay for iOS
+  //   setTimeout(resetScrollPositions, 100)
+  // }, [])
 
   return (
     <div className="p-2 @xl:p-8 @2xl:p-0">
