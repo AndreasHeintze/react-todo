@@ -38,6 +38,7 @@ const Todo = forwardRef(({ todo, style, attributes, listeners }, ref) => {
   const handleScrollEnd = (() => {
     let scrollTimeout
     return (ev) => {
+      ev.stopPropagation()
       const scrolledTodo = ev.currentTarget
       clearTimeout(scrollTimeout)
       scrollTimeout = setTimeout(() => {
@@ -50,7 +51,7 @@ const Todo = forwardRef(({ todo, style, attributes, listeners }, ref) => {
           }
           setSwipedTodo(swipeTodoRef.current)
         }
-      }, 250)
+      }, 500)
     }
   })()
 
