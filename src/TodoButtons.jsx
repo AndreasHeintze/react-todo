@@ -35,7 +35,7 @@ const TodoButtons = forwardRef(({ todo }, ref) => {
   const totalTime = todo.timeSpent + (todo.isTimerRunning && todo.startTime ? Date.now() - todo.startTime : 0)
 
   return (
-    <div className="ml-2 flex snap-start items-center justify-end gap-3">
+    <div className="buttons ml-2 flex snap-start items-center justify-end gap-3">
       {/** Total time spent */}
       <button
         type="button"
@@ -57,10 +57,6 @@ const TodoButtons = forwardRef(({ todo }, ref) => {
             : 'cursor-pointer border-blue-200 bg-blue-50 text-blue-600 hover:border-blue-300 hover:bg-blue-100'
         }`}
         onClick={(ev) => handleTodoSave(ev, todo, { mode: todo.mode === 'edit' ? 'list' : 'edit' })}
-        onTouchEnd={(ev) => {
-          ev.preventDefault()
-          ev.stopPropagation()
-        }}
         disabled={todo.completed}
         aria-label={`Edit todo: ${todo.title}`}
       >
