@@ -53,11 +53,19 @@ const TodoButtons = forwardRef(({ todo }, ref) => {
         type="button"
         ref={ref}
         role="timer"
-        className="flex h-11 min-w-11 cursor-pointer items-center justify-end rounded border border-transparent p-1 text-right font-mono text-sm text-stone-600 transition-colors duration-200 hover:border-stone-300 hover:bg-stone-100 focus:ring-2 focus:ring-stone-500 focus:outline-none"
+        className="relative flex h-11 min-w-11 cursor-pointer items-center justify-end rounded border border-transparent p-1 text-right font-mono text-sm text-stone-600 transition-colors duration-200 hover:border-stone-300 hover:bg-stone-100 focus:ring-2 focus:ring-stone-500 focus:outline-none"
         onClick={(ev) => handleTodoSave(ev, todo, { mode: todo.mode === 'timelog' ? 'list' : 'timelog' })}
         aria-label={`Time spent: ${formatTimeSpent(totalTime)}`}
       >
         {formatTimeSpent(totalTime)}
+
+        {/** Todo timer running indicator */}
+        {todo.isTimerRunning && (
+          <span className="absolute -right-[10px] z-0 flex size-3">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-400 opacity-75"></span>
+            <span className="relative inline-flex size-3 rounded-full bg-red-500"></span>
+          </span>
+        )}
       </button>
 
       {/** Edit button */}

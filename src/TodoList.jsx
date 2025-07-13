@@ -73,6 +73,7 @@ export default function TodoList() {
             <h2 id="active-todos-heading" className="mb-2 text-sm font-medium text-white @2xl:text-black">
               Active todos ({activeTodos.length})
             </h2>
+
             <SortableContext items={activeTodoIds} strategy={verticalListSortingStrategy}>
               <ul
                 className="space-y-2"
@@ -95,6 +96,7 @@ export default function TodoList() {
             <h2 id="completed-todos-heading" className="mb-2 text-sm font-medium text-white @2xl:text-black">
               Completed ({completedTodos.length})
             </h2>
+
             <ul
               className="space-y-2"
               role="list"

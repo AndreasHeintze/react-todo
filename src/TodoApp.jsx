@@ -7,7 +7,7 @@ export default function TodoApp() {
 
   return (
     <div className="p-fluid-sm @2xl:!p-0">
-      <div className="mx-auto bg-transparent text-sm @2xl:m-8 @2xl:rounded-lg @2xl:bg-white @2xl:p-8 @2xl:text-base @2xl:shadow-lg">
+      <div className="mx-auto bg-transparent text-xs @md:text-sm @2xl:m-8 @2xl:rounded-lg @2xl:bg-white @2xl:p-8 @2xl:text-base @2xl:shadow-lg">
         <h1 className="mt-2 mb-8 text-3xl font-semibold text-white @2xl:text-black">Todo Tracker</h1>
 
         <form onSubmit={handleTodoAdd}>

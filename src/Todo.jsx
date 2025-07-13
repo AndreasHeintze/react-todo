@@ -14,7 +14,7 @@ const Todo = forwardRef(({ todo, style, attributes, listeners }, ref) => {
   const totalTimeRef = useRef(null)
   const [titleWidth, setTitleWidth] = useState(0)
 
-  // Calc <title-width> = <todo-width> - <timer-width> - 264 or 80
+  // Calc <title-width> = <todo-width> - <timer-width> - 272 or 88
   useEffect(() => {
     // Calculate on todo change
     calculateWidth()
@@ -24,7 +24,7 @@ const Todo = forwardRef(({ todo, style, attributes, listeners }, ref) => {
 
     function calculateWidth() {
       if (swipeTodoRef.current && totalTimeRef.current) {
-        const spacer = swipeTodoRef.current.offsetWidth > 671 ? 264 : 80
+        const spacer = swipeTodoRef.current.offsetWidth > 671 ? 272 : 88
         const newTitleWidth = swipeTodoRef.current.offsetWidth - totalTimeRef.current.offsetWidth - spacer
         setTitleWidth(newTitleWidth)
       }
@@ -66,13 +66,6 @@ const Todo = forwardRef(({ todo, style, attributes, listeners }, ref) => {
       className={`${todo.color} shadow-tiny relative rounded border-l-5 bg-radial from-white from-50% to-stone-50`}
       style={style}
     >
-      {todo.isTimerRunning && (
-        <span className="absolute top-1 right-1 z-0 flex size-2">
-          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-400 opacity-75"></span>
-          <span className="relative inline-flex size-2 rounded-full bg-red-500"></span>
-        </span>
-      )}
-
       <div
         ref={swipeTodoRef}
         data-swipeable="true"
