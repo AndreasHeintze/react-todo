@@ -1,6 +1,6 @@
 import { useContext, useMemo } from 'react'
 import { TodoContext } from './contexts/TodoContext'
-import { formatDate, formatTime, formatTimeSpent } from './helpers'
+import { formatDate, formatTime, formatTimeSpentDisplay } from './helpers'
 
 export default function TodoEdit({ todo }) {
   const { timeLog } = useContext(TodoContext)
@@ -8,7 +8,7 @@ export default function TodoEdit({ todo }) {
   const todoTimeLog = useMemo(() => timeLog.filter((timeItem) => timeItem.todoId === todo.id), [timeLog, todo.id])
 
   function getLoggedTimeTitle(timeItem) {
-    const loggedTime = timeItem.stop ? formatTimeSpent(timeItem.stop - timeItem.start) : ''
+    const loggedTime = timeItem.stop ? formatTimeSpentDisplay(timeItem.start, timeItem.stop) : ''
     return loggedTime ? `Logged time ${loggedTime}` : ''
   }
   function getStartDateTitle(timeItem) {
@@ -53,7 +53,7 @@ export default function TodoEdit({ todo }) {
                 </div>
               </div>
               <div className="text-right" title={getLoggedTimeTitle(timeItem)}>
-                {timeItem.stop ? formatTimeSpent(timeItem.stop - timeItem.start) : ''}
+                {timeItem.stop ? formatTimeSpentDisplay(timeItem.start, timeItem.stop) : ''}
               </div>
             </li>
           ))}

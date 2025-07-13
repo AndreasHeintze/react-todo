@@ -1,6 +1,6 @@
 import { useRef, useState, useEffect, useContext, forwardRef } from 'react'
 import { TodoContext } from './contexts/TodoContext'
-import { formatTimeSpent } from './helpers'
+import { formatTimeSpent, roundMs } from './helpers'
 import { Edit, Timer, Trash2, LoaderCircle } from 'lucide-react'
 
 const TodoButtons = forwardRef(({ todo }, ref) => {
@@ -44,16 +44,16 @@ const TodoButtons = forwardRef(({ todo }, ref) => {
   }, [])
 
   // Use a re-render to calculate time
-  const totalTime = todo.timeSpent + (todo.isTimerRunning && todo.startTime ? Date.now() - todo.startTime : 0)
+  const totalTime = todo.timeSpent + (todo.isTimerRunning && todo.startTime ? roundMs(Date.now()) - roundMs(todo.startTime) : 0)
 
   return (
-    <div ref={buttonsRef} className="ml-2 flex items-center justify-end gap-6 @2xl:gap-3">
+    <div ref={buttonsRef} className="ml-2 flex items-center justify-end gap-3">
       {/** Total time spent */}
       <button
         type="button"
         ref={ref}
         role="timer"
-        className="flex h-8 cursor-pointer items-center justify-end rounded border border-transparent p-1 text-right font-mono text-sm text-stone-600 transition-colors duration-200 hover:border-stone-300 hover:bg-stone-100 focus:ring-2 focus:ring-stone-500 focus:outline-none"
+        className="flex h-11 min-w-11 cursor-pointer items-center justify-end rounded border border-transparent p-1 text-right font-mono text-sm text-stone-600 transition-colors duration-200 hover:border-stone-300 hover:bg-stone-100 focus:ring-2 focus:ring-stone-500 focus:outline-none"
         onClick={(ev) => handleTodoSave(ev, todo, { mode: todo.mode === 'timelog' ? 'list' : 'timelog' })}
         aria-label={`Time spent: ${formatTimeSpent(totalTime)}`}
       >
@@ -63,7 +63,7 @@ const TodoButtons = forwardRef(({ todo }, ref) => {
       {/** Edit button */}
       <button
         type="button"
-        className={`flex h-8 items-center rounded border p-1 font-medium transition-colors duration-200 focus:ring-2 focus:ring-blue-500 focus:outline-none ${
+        className={`flex h-11 w-11 items-center justify-center rounded border p-1 font-medium transition-colors duration-200 focus:ring-2 focus:ring-blue-500 focus:outline-none ${
           todo.completed
             ? 'cursor-not-allowed border-gray-300 bg-gray-200 text-gray-400'
             : 'cursor-pointer border-blue-200 bg-blue-50 text-blue-600 hover:border-blue-300 hover:bg-blue-100'
@@ -72,13 +72,13 @@ const TodoButtons = forwardRef(({ todo }, ref) => {
         disabled={todo.completed}
         aria-label={`Edit todo: ${todo.title}`}
       >
-        <Edit size={20} aria-hidden="true" />
+        <Edit size={24} aria-hidden="true" />
       </button>
 
       {/** Timer button */}
       <button
         type="button"
-        className={`flex h-8 items-center rounded border p-1 font-medium whitespace-nowrap transition-colors duration-200 focus:ring-2 focus:ring-amber-500 focus:outline-none ${
+        className={`flex h-11 w-11 items-center justify-center rounded border p-1 font-medium whitespace-nowrap transition-colors duration-200 focus:ring-2 focus:ring-amber-500 focus:outline-none ${
           todo.completed
             ? 'cursor-not-allowed border-gray-300 bg-gray-200 text-gray-400'
             : 'cursor-pointer border-amber-200 bg-amber-50 text-amber-600 hover:border-amber-300 hover:bg-amber-100'
@@ -87,12 +87,12 @@ const TodoButtons = forwardRef(({ todo }, ref) => {
         disabled={todo.completed}
         aria-label={todo.isTimerRunning ? `Stop timer for todo: ${todo.title}` : `Start timer for todo: ${todo.title}`}
       >
-        {!todo.isTimerRunning && <Timer size={20} aria-hidden="true" />}
+        {!todo.isTimerRunning && <Timer size={26} aria-hidden="true" />}
 
         {todo.isTimerRunning && (
           <div className="relative" aria-label="Timer is running">
-            <LoaderCircle size={20} className="animate-spin" aria-hidden="true" />
-            <div className="absolute top-[7px] left-[7px] size-1.5 bg-current" aria-hidden="true"></div>
+            <LoaderCircle size={26} className="animate-spin" aria-hidden="true" />
+            <div className="absolute top-[9px] left-[9px] size-2 bg-current" aria-hidden="true"></div>
           </div>
         )}
       </button>
@@ -100,11 +100,11 @@ const TodoButtons = forwardRef(({ todo }, ref) => {
       {/** Delete button */}
       <button
         type="button"
-        className="flex h-8 cursor-pointer items-center rounded border border-red-200 bg-red-50 p-1 font-medium text-red-600 transition-colors duration-200 hover:border-red-300 hover:bg-red-100 focus:ring-2 focus:ring-red-500 focus:outline-none"
+        className="flex h-11 w-11 cursor-pointer items-center justify-center rounded border border-red-200 bg-red-50 p-1 font-medium text-red-600 transition-colors duration-200 hover:border-red-300 hover:bg-red-100 focus:ring-2 focus:ring-red-500 focus:outline-none"
         onClick={(ev) => handleTodoDelete(ev, todo)}
         aria-label={`Delete todo: ${todo.title}`}
       >
-        <Trash2 size={20} aria-hidden="true" />
+        <Trash2 size={24} aria-hidden="true" />
       </button>
     </div>
   )

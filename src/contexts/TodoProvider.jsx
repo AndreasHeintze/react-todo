@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useState } from 'react'
-import { useUniqueId, usePersistedState } from '../helpers'
+import { useUniqueId, usePersistedState, roundMs } from '../helpers'
 import { TodoContext } from './TodoContext'
 
 const DUMMYTWCLASSES = [
@@ -150,7 +150,7 @@ export function TodoProvider({ children }) {
       ev.preventDefault()
       ev.stopPropagation()
 
-      const currentTime = Date.now()
+      const currentTime = roundMs(Date.now())
       const completed = !todo.completed
 
       // First, update the todos state
@@ -191,7 +191,7 @@ export function TodoProvider({ children }) {
       ev.preventDefault()
       ev.stopPropagation()
 
-      const currentTime = Date.now()
+      const currentTime = roundMs(Date.now())
       const isStarting = !todo.isTimerRunning
 
       // First, update the todos state

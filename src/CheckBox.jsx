@@ -17,7 +17,7 @@ export default function CheckBox({ todo, onTodoCompleted }) {
       role="checkbox"
       onClick={onTodoCompleted}
       onKeyUp={handleKeyUp}
-      className={`focus:ring-green-haze-500 flex size-5 flex-shrink-0 cursor-pointer items-center justify-center rounded border-2 transition-all duration-200 focus:ring-2 focus:ring-offset-2 focus:outline-none ${
+      className={`focus:ring-green-haze-500 flex size-6 flex-shrink-0 cursor-pointer items-center justify-center rounded border-2 transition-all duration-200 focus:ring-2 focus:ring-offset-2 focus:outline-none ${
         todo.completed
           ? 'border-green-haze-600 bg-green-haze-600 text-white'
           : 'hover:border-green-haze-500 border-gray-300 bg-white'

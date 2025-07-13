@@ -14,7 +14,7 @@ const Todo = forwardRef(({ todo, style, attributes, listeners }, ref) => {
   const totalTimeRef = useRef(null)
   const [titleWidth, setTitleWidth] = useState(0)
 
-  // Calc <title-width> = <todo-width> - <timer-width> - 76
+  // Calc <title-width> = <todo-width> - <timer-width> - 260 or 76
   useEffect(() => {
     // Calculate on todo change
     calculateWidth()
@@ -24,7 +24,7 @@ const Todo = forwardRef(({ todo, style, attributes, listeners }, ref) => {
 
     function calculateWidth() {
       if (swipeTodoRef.current && totalTimeRef.current) {
-        const spacer = swipeTodoRef.current.offsetWidth > 671 ? 220 : 76
+        const spacer = swipeTodoRef.current.offsetWidth > 671 ? 260 : 76
         const newTitleWidth = swipeTodoRef.current.offsetWidth - totalTimeRef.current.offsetWidth - spacer
         setTitleWidth(newTitleWidth)
       }
@@ -78,7 +78,7 @@ const Todo = forwardRef(({ todo, style, attributes, listeners }, ref) => {
         data-swipeable="true"
         onScrollEnd={handleScrollEnd}
         onTouchEnd={handleScrollEnd}
-        className="scrollbar-hide flex snap-x snap-proximity scroll-px-3 items-center justify-between overflow-x-auto rounded p-3 pl-2"
+        className="scrollbar-hide flex snap-x snap-proximity scroll-px-3 items-center justify-between overflow-x-auto rounded px-2 py-2 pr-3"
       >
         {/** Drag, checkbox and title section */}
         <div className="flex items-center justify-start gap-2">

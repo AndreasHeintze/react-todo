@@ -1,19 +1,25 @@
 import {useState, useEffect} from "react"
 
+export function roundMs(timestamp) {
+  return Math.round(timestamp / 1000) * 1000
+}
+
 export function formatDate(timestamp) {
   const date = new Date(timestamp)
   return date.toLocaleDateString()
 }
 
 export function formatTime(timestamp) {
-  const date = new Date(timestamp)
+  // Round to nearest second
+  const roundedTimestamp = roundMs(timestamp)
+  const date = new Date(roundedTimestamp)
   return date.toLocaleTimeString()
 }
 
 export function formatTimeSpent(ms) {
   if (ms < 0) ms = 0
 
-  const totalSeconds = Math.floor(ms / 1000)
+  const totalSeconds = Math.round(ms / 1000)
   const days = Math.floor(totalSeconds / 86400)
   const hours = Math.floor((totalSeconds % 86400) / 3600)
   const minutes = Math.floor((totalSeconds % 3600) / 60)
@@ -34,6 +40,14 @@ export function formatTimeSpent(ms) {
   }
 
   return dayPart + timePart
+}
+
+export function formatTimeSpentDisplay(startTimestamp, endTimestamp) {
+  // Round both timestamps to nearest second
+  const roundedStart = roundMs(startTimestamp)
+  const roundedEnd = roundMs(endTimestamp)
+  
+  return formatTimeSpent(roundedEnd - roundedStart)
 }
 
 export function usePersistedState(key, defaultValue) {
