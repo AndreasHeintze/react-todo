@@ -11,6 +11,10 @@
   }
 }
 
+.p-fluid-sm {
+  padding: clamp(8px, 8px + (32 - 8) * (100cqw - 320px) / (671 - 320), 32px);
+}
+
 @theme {
   --color-havelock-blue-50: oklch(97.454% 0.00803 254.094);
   --color-havelock-blue-100: oklch(94.842% 0.01388 248.155);

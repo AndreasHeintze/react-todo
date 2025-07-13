@@ -24,7 +24,7 @@ const Todo = forwardRef(({ todo, style, attributes, listeners }, ref) => {
 
     function calculateWidth() {
       if (swipeTodoRef.current && totalTimeRef.current) {
-        const spacer = swipeTodoRef.current.offsetWidth > 671 ? 260 : 76
+        const spacer = swipeTodoRef.current.offsetWidth > 671 ? 264 : 80
         const newTitleWidth = swipeTodoRef.current.offsetWidth - totalTimeRef.current.offsetWidth - spacer
         setTitleWidth(newTitleWidth)
       }
