@@ -14,7 +14,7 @@ const Todo = forwardRef(({ todo, style, attributes, listeners }, ref) => {
   const totalTimeRef = useRef(null)
   const [titleWidth, setTitleWidth] = useState(0)
 
-  // Calc <title-width> = <todo-width> - <timer-width> - 260 or 76
+  // Calc <title-width> = <todo-width> - <timer-width> - 264 or 80
   useEffect(() => {
     // Calculate on todo change
     calculateWidth()
