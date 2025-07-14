@@ -88,30 +88,28 @@ const Todo = forwardRef(({ todo, style, attributes, listeners }, ref) => {
           <TodoCompletedCheckbox todo={todo} onTodoCompleted={(ev) => handleTodoCompleted(ev, todo)} />
 
           {/** Todo title */}
-          {todo.mode !== 'edit' && (
-            <div
-              className={`${todo.mode !== 'quickedit' ? 'line-clamp-1' : 'overflow-x-hidden whitespace-nowrap'} rounded p-1 pr-0 font-semibold focus:outline-none`}
-              ref={todoTitleRef}
-              onKeyDown={(ev) => handleTodoContentEditable(ev, todo)}
-              onBlur={(ev) => handleTodoSave(ev, todo, { title: ev.target.innerText, mode: 'list' })}
-              onClick={(ev) => handleTodoSave(ev, todo, { mode: 'quickedit' })}
-              suppressContentEditableWarning={true}
-              contentEditable={todo.mode === 'quickedit' ? 'plaintext-only' : 'false'}
-              style={{
-                minWidth: titleWidth,
-                textDecoration: todo.isCompleted ? 'line-through' : '',
-                opacity: todo.isCompleted ? 0.5 : 1,
-              }}
-              title={todo.mode === 'quickedit' ? '' : 'Click to edit'}
-              aria-label={todo.mode === 'quickedit' ? 'Edit todo title' : `Todo: ${todo.title}`}
-              role={todo.mode === 'quickedit' ? 'textbox' : 'button'}
-              tabIndex={todo.mode === 'quickedit' ? 0 : -1}
-              aria-multiline="false"
-              aria-describedby={todo.mode === 'quickedit' ? `todo-${todo.id}-hint` : undefined}
-            >
-              {todo.title}
-            </div>
-          )}
+          <div
+            className={`${todo.mode !== 'quickedit' ? 'line-clamp-1' : 'overflow-x-hidden whitespace-nowrap'} rounded p-1 pr-0 font-semibold focus:outline-none`}
+            ref={todoTitleRef}
+            onKeyDown={(ev) => handleTodoContentEditable(ev, todo)}
+            onBlur={(ev) => handleTodoSave(ev, todo, { title: ev.target.innerText, mode: 'list' })}
+            onClick={(ev) => handleTodoSave(ev, todo, { mode: 'quickedit' })}
+            suppressContentEditableWarning={true}
+            contentEditable={todo.mode === 'quickedit' ? 'plaintext-only' : 'false'}
+            style={{
+              minWidth: titleWidth,
+              textDecoration: todo.isCompleted ? 'line-through' : '',
+              opacity: todo.isCompleted ? 0.5 : 1,
+            }}
+            title={todo.mode === 'quickedit' ? '' : 'Click to edit'}
+            aria-label={todo.mode === 'quickedit' ? 'Edit todo title' : `Todo: ${todo.title}`}
+            role={todo.mode === 'quickedit' ? 'textbox' : 'button'}
+            tabIndex={todo.mode === 'quickedit' ? 0 : -1}
+            aria-multiline="false"
+            aria-describedby={todo.mode === 'quickedit' ? `todo-${todo.id}-hint` : undefined}
+          >
+            {todo.title}
+          </div>
 
           {/* Screen reader hint for edit mode */}
           {todo.mode === 'quickedit' && (
