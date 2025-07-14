@@ -75,6 +75,36 @@ export function TodoProvider({ children }) {
   const [openTodoId, setOpenTodoId] = usePersistedState('openTodoId', null)
   const [runningTimeItemId, setRunningTimeItemId] = usePersistedState('runningTimeItemId', null)
 
+  const updateTimeSpent = useCallback(
+    (todo) => {
+      // Find all time items connected to this todo
+      const connectedTimeItems = Array.from(timeLog.values()).filter((timeItem) => timeItem.todoId === todo.id)
+
+      // Calculate total time spent from completed time items only
+      const totalTimeSpent = connectedTimeItems
+        .filter((timeItem) => timeItem.stop) // Only count items with stop time
+        .reduce((total, timeItem) => {
+          const duration = timeItem.stop - timeItem.start
+          return total + duration
+        }, 0)
+
+      // Update the todo's timeSpent
+      setTodos((prevTodos) => {
+        const newTodos = new Map(prevTodos)
+        const oldTodo = newTodos.get(todo.id)
+
+        if (!oldTodo) return newTodos
+
+        // Update the todo with the calculated timeSpent
+        const updatedTodo = { ...oldTodo, timeSpent: totalTimeSpent }
+        newTodos.set(todo.id, updatedTodo)
+
+        return newTodos
+      })
+    },
+    [timeLog, setTodos]
+  )
+
   const handleTodoAdd = useCallback(
     (ev) => {
       ev.preventDefault()
@@ -178,7 +208,7 @@ export function TodoProvider({ children }) {
         updateTimeSpent(todo)
       }
     },
-    [setTodos, openTodoId, setOpenTodoId]
+    [setTodos, openTodoId, setOpenTodoId, updateTimeSpent]
   )
 
   const handleTodoCompleted = useCallback(
@@ -325,36 +355,6 @@ export function TodoProvider({ children }) {
       })
     },
     [setTodos]
-  )
-
-  const updateTimeSpent = useCallback(
-    (todo) => {
-      // Find all time items connected to this todo
-      const connectedTimeItems = Array.from(timeLog.values()).filter((timeItem) => timeItem.todoId === todo.id)
-
-      // Calculate total time spent from completed time items only
-      const totalTimeSpent = connectedTimeItems
-        .filter((timeItem) => timeItem.stop) // Only count items with stop time
-        .reduce((total, timeItem) => {
-          const duration = timeItem.stop - timeItem.start
-          return total + duration
-        }, 0)
-
-      // Update the todo's timeSpent
-      setTodos((prevTodos) => {
-        const newTodos = new Map(prevTodos)
-        const oldTodo = newTodos.get(todo.id)
-
-        if (!oldTodo) return newTodos
-
-        // Update the todo with the calculated timeSpent
-        const updatedTodo = { ...oldTodo, timeSpent: totalTimeSpent }
-        newTodos.set(todo.id, updatedTodo)
-
-        return newTodos
-      })
-    },
-    [timeLog, setTodos]
   )
 
   // Memoize the context value to prevent unnecessary re-renders
