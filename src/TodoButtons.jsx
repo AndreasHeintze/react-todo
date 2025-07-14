@@ -53,31 +53,31 @@ const TodoButtons = forwardRef(({ todo }, ref) => {
         type="button"
         ref={ref}
         role="timer"
-        className="relative flex h-11 min-w-11 cursor-pointer items-center justify-end rounded border border-transparent p-1 text-right font-mono text-sm text-stone-600 transition-colors duration-200 hover:border-stone-300 hover:bg-stone-100 focus:ring-2 focus:ring-stone-500 focus:outline-none"
+        className="flex h-11 min-w-11 cursor-pointer items-center justify-end rounded border border-transparent p-1 text-right font-mono text-sm transition-colors duration-200 hover:border-neutral-300 hover:bg-neutral-100 focus:ring-2 focus:ring-neutral-500 focus:outline-none"
         onClick={(ev) => handleTodoSave(ev, todo, { mode: todo.mode === 'timelog' ? 'list' : 'timelog' })}
         aria-label={`Time spent: ${formatTimeSpent(totalTime)}`}
       >
-        {formatTimeSpent(totalTime)}
-
         {/** Todo timer running indicator */}
         {todo.isTimerRunning && (
-          <span className="absolute -right-[10px] z-0 flex size-3">
+          <span className="relative -left-[2px] flex size-3">
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-400 opacity-75"></span>
             <span className="relative inline-flex size-3 rounded-full bg-red-500"></span>
           </span>
         )}
+
+        {formatTimeSpent(totalTime)}
       </button>
 
       {/** Edit button */}
       <button
         type="button"
         className={`flex h-11 w-11 items-center justify-center rounded border p-1 font-medium transition-colors duration-200 focus:ring-2 focus:ring-blue-500 focus:outline-none ${
-          todo.completed
+          todo.isCompleted
             ? 'cursor-not-allowed border-gray-300 bg-gray-200 text-gray-400'
             : 'cursor-pointer border-blue-200 bg-blue-50 text-blue-600 hover:border-blue-300 hover:bg-blue-100'
         }`}
         onClick={(ev) => handleTodoSave(ev, todo, { mode: todo.mode === 'edit' ? 'list' : 'edit' })}
-        disabled={todo.completed}
+        disabled={todo.isCompleted}
         aria-label={`Edit todo: ${todo.title}`}
       >
         <Edit size={24} aria-hidden="true" />
@@ -87,12 +87,12 @@ const TodoButtons = forwardRef(({ todo }, ref) => {
       <button
         type="button"
         className={`flex h-11 w-11 items-center justify-center rounded border p-1 font-medium whitespace-nowrap transition-colors duration-200 focus:ring-2 focus:ring-amber-500 focus:outline-none ${
-          todo.completed
+          todo.isCompleted
             ? 'cursor-not-allowed border-gray-300 bg-gray-200 text-gray-400'
             : 'cursor-pointer border-amber-200 bg-amber-50 text-amber-600 hover:border-amber-300 hover:bg-amber-100'
         }`}
         onClick={(ev) => handleTodoToggleTimer(ev, todo)}
-        disabled={todo.completed}
+        disabled={todo.isCompleted}
         aria-label={todo.isTimerRunning ? `Stop timer for todo: ${todo.title}` : `Start timer for todo: ${todo.title}`}
       >
         {!todo.isTimerRunning && <Timer size={26} aria-hidden="true" />}

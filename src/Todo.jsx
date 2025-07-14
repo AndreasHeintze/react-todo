@@ -1,7 +1,7 @@
 import { forwardRef, useContext, useRef, useState, useEffect } from 'react'
 import { GripVertical } from 'lucide-react'
 import { TodoContext } from './contexts/TodoContext'
-import CheckBox from './CheckBox'
+import TodoCompletedCheckbox from './TodoCompletedCheckbox'
 import TodoEdit from './TodoEdit'
 import TodoTimes from './TodoTimes'
 import TodoButtons from './TodoButtons'
@@ -24,7 +24,7 @@ const Todo = forwardRef(({ todo, style, attributes, listeners }, ref) => {
 
     function calculateWidth() {
       if (swipeTodoRef.current && totalTimeRef.current) {
-        const spacer = swipeTodoRef.current.offsetWidth > 671 ? 272 : 88
+        const spacer = swipeTodoRef.current.offsetWidth > 671 ? 266 : 82
         const newTitleWidth = swipeTodoRef.current.offsetWidth - totalTimeRef.current.offsetWidth - spacer
         setTitleWidth(newTitleWidth)
       }
@@ -38,7 +38,7 @@ const Todo = forwardRef(({ todo, style, attributes, listeners }, ref) => {
     let scrollTimeout
     return (ev) => {
       ev.stopPropagation()
-      if (todo.completed) {
+      if (todo.isCompleted) {
         setSwipedTodo(null)
         return false
       }
@@ -63,7 +63,7 @@ const Todo = forwardRef(({ todo, style, attributes, listeners }, ref) => {
   return (
     <div
       ref={ref}
-      className={`${todo.color} shadow-tiny relative rounded border-l-5 bg-radial from-white from-50% to-stone-50`}
+      className={`${todo.color} shadow-tiny relative rounded border-l-5 bg-radial from-white from-50% to-neutral-50`}
       style={style}
     >
       <div
@@ -76,18 +76,18 @@ const Todo = forwardRef(({ todo, style, attributes, listeners }, ref) => {
         {/** Drag, checkbox and title section */}
         <div className="flex items-center justify-start gap-2">
           {/** Drag handle */}
-          {!todo.completed && (
+          {!todo.isCompleted && (
             <div {...attributes} {...listeners} className="cursor-grab snap-start" aria-label="Drag to reorder">
               <GripVertical size={20} className="text-gray-400" />
             </div>
           )}
           {/** Some space */}
-          {todo.completed && <div className="size-[20px] min-w-[20px] snap-start"></div>}
+          {todo.isCompleted && <div className="size-[20px] min-w-[20px] snap-start"></div>}
 
           {/** Todo completed checkbox */}
-          <CheckBox todo={todo} onTodoCompleted={(ev) => handleTodoCompleted(ev, todo)} />
+          <TodoCompletedCheckbox todo={todo} onTodoCompleted={(ev) => handleTodoCompleted(ev, todo)} />
 
-          {/** Todo title text */}
+          {/** Todo title */}
           {todo.mode !== 'edit' && (
             <div
               className={`${todo.mode !== 'quickedit' ? 'line-clamp-1' : 'overflow-x-hidden whitespace-nowrap'} rounded p-1 font-semibold focus:outline-none`}
@@ -99,8 +99,8 @@ const Todo = forwardRef(({ todo, style, attributes, listeners }, ref) => {
               contentEditable={todo.mode === 'quickedit' ? 'plaintext-only' : 'false'}
               style={{
                 minWidth: titleWidth,
-                textDecoration: todo.completed ? 'line-through' : '',
-                opacity: todo.completed ? 0.5 : 1,
+                textDecoration: todo.isCompleted ? 'line-through' : '',
+                opacity: todo.isCompleted ? 0.5 : 1,
               }}
               title={todo.mode === 'quickedit' ? '' : 'Click to edit'}
               aria-label={todo.mode === 'quickedit' ? 'Edit todo title' : `Todo: ${todo.title}`}

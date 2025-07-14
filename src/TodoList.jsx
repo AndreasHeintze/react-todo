@@ -23,9 +23,10 @@ export default function TodoList() {
   const [draggedTodo, setDraggedTodo] = useState(null)
 
   const { activeTodos, completedTodos } = useMemo(() => {
-    const active = todos.filter((todo) => !todo.completed).sort((a, b) => a.sortOrder - b.sortOrder)
-    const completed = todos.filter((todo) => todo.completed).sort((a, b) => b.completedAt - a.completedAt)
-    return { activeTodos: active, completedTodos: completed }
+    const allTodos = [...todos.values()]
+    const activeTodos = allTodos.filter((todo) => todo && !todo.isCompleted).sort((a, b) => a.sortOrder - b.sortOrder)
+    const completedTodos = allTodos.filter((todo) => todo && todo.isCompleted).sort((a, b) => b.completedAt - a.completedAt)
+    return { activeTodos, completedTodos }
   }, [todos])
 
   const activeTodoIds = useMemo(() => activeTodos.map((todo) => todo.id), [activeTodos])
@@ -70,7 +71,7 @@ export default function TodoList() {
         {/* Active Todos Section */}
         {activeTodos.length > 0 && (
           <section aria-labelledby="active-todos-heading">
-            <h2 id="active-todos-heading" className="mb-2 text-sm font-medium text-white @2xl:text-black">
+            <h2 id="active-todos-heading" className="mb-2 text-sm font-medium text-white @[640px]:text-black">
               Active todos ({activeTodos.length})
             </h2>
 
@@ -93,7 +94,7 @@ export default function TodoList() {
         {/* Completed Todos Section */}
         {completedTodos.length > 0 && (
           <section aria-labelledby="completed-todos-heading" className={activeTodos.length > 0 ? 'mt-6' : ''}>
-            <h2 id="completed-todos-heading" className="mb-2 text-sm font-medium text-white @2xl:text-black">
+            <h2 id="completed-todos-heading" className="mb-2 text-sm font-medium text-white @[640px]:text-black">
               Completed ({completedTodos.length})
             </h2>
 

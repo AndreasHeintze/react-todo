@@ -5,7 +5,7 @@ import './App.css'
 function App() {
   return (
     <div className="bg-havelock-blue-700 min-h-dvh font-sans">
-      <main className="@container container mx-auto max-w-[1000px]">
+      <main className="container mx-auto">
         <TodoProvider>
           <TodoApp />
         </TodoProvider>

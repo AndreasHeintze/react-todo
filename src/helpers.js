@@ -54,7 +54,17 @@ export function usePersistedState(key, defaultValue) {
   const [state, setState] = useState(() => {
     try {
       const saved = localStorage.getItem(key)
-      return saved ? JSON.parse(saved) : defaultValue
+      if (saved) {
+        const data = JSON.parse(saved)
+        if ((key === 'todos' || key === 'timelog') && Array.isArray(data)) {
+          return new Map(data.map((item) => [item.id, item]))
+        }
+        if (data.dataType === 'Map') {
+          return new Map(data.value)
+        }
+        return data
+      }
+      return defaultValue
     } catch {
       return defaultValue
     }
@@ -62,7 +72,11 @@ export function usePersistedState(key, defaultValue) {
 
   useEffect(() => {
     try {
-      localStorage.setItem(key, JSON.stringify(state))
+      if (state instanceof Map) {
+        localStorage.setItem(key, JSON.stringify({ dataType: 'Map', value: Array.from(state.entries()) }))
+      } else {
+        localStorage.setItem(key, JSON.stringify(state))
+      }
     } catch (error) {
       console.error('Failed to save to localStorage:', error)
     }

@@ -24,7 +24,7 @@ const DUMMYTWCLASSES = [
 ]
 
 function findTopSortPosition(todos) {
-  const activeTodos = todos.filter((todo) => !todo.completed)
+  const activeTodos = todos.filter((todo) => !todo.isCompleted)
   const minSortOrder = activeTodos.length > 0 ? Math.min(...activeTodos.map((t) => t.sortOrder)) : 1
   return minSortOrder
 }
@@ -62,12 +62,18 @@ function stopTimer(currTodo, currentTime) {
   }
 }
 
+/**
+ * Info:
+ * An open todo is a todo that is not in mode 'list'
+ */
 export function TodoProvider({ children }) {
   const generateId = useUniqueId()
   const [newTodo, setNewTodo] = usePersistedState('todo', '')
-  const [todos, setTodos] = usePersistedState('todos', [])
-  const [timeLog, setTimeLog] = usePersistedState('timelog', [])
-  const [swipedTodo, setSwipedTodo] = useState(null) // No need to persist this, since it won't be swiped after a page reload.
+  const [todos, setTodos] = usePersistedState('todos', new Map())
+  const [timeLog, setTimeLog] = usePersistedState('timelog', new Map())
+  const [swipedTodo, setSwipedTodo] = useState(null)
+  const [openTodoId, setOpenTodoId] = usePersistedState('openTodoId', null)
+  const [runningTimeItemId, setRunningTimeItemId] = usePersistedState('runningTimeItemId', null)
 
   const handleTodoAdd = useCallback(
     (ev) => {
@@ -79,22 +85,23 @@ export function TodoProvider({ children }) {
         return
       }
 
+      const id = generateId()
       const newTodoItem = {
-        id: generateId(),
+        id,
         title,
         descr: '',
-        color: getRandomTailwindColor(),
         mode: 'list',
-        completed: false,
-        timeSpent: 0,
-        startTime: null,
         isTimerRunning: false,
-        sortOrder: findTopSortPosition(todos) - 1,
-        createdAt: Date.now(),
+        startTime: null,
+        timeSpent: 0,
+        isCompleted: false,
         completedAt: null,
+        createdAt: Date.now(),
+        color: getRandomTailwindColor(),
+        sortOrder: findTopSortPosition([...todos.values()]) - 1,
       }
 
-      setTodos((prevTodos) => [...prevTodos, newTodoItem])
+      setTodos((prevTodos) => new Map(prevTodos).set(id, newTodoItem))
       setNewTodo('')
     },
     [generateId, newTodo, setNewTodo, todos, setTodos]
@@ -105,7 +112,11 @@ export function TodoProvider({ children }) {
       ev.preventDefault()
       ev.stopPropagation()
 
-      setTodos((prevTodos) => prevTodos.filter((currTodo) => currTodo.id !== todo.id))
+      setTodos((prevTodos) => {
+        const newTodos = new Map(prevTodos)
+        newTodos.delete(todo.id)
+        return newTodos
+      })
     },
     [setTodos]
   )
@@ -115,34 +126,49 @@ export function TodoProvider({ children }) {
       ev.preventDefault()
       ev.stopPropagation()
 
-      setTodos((prevTodos) =>
-        prevTodos.map((currTodo) => {
-          if (currTodo.id === todo.id) {
-            const newTodo = { ...currTodo, ...data }
-            newTodo.title = newTodo.title.trim()
+      const updatingMode = 'mode' in data
+      const settingOpenTodo = updatingMode && data.mode !== 'list'
 
-            // Restore old title if it's empty
-            if (!newTodo.title) {
-              newTodo.title = todo.title
-              // Reset the DOM element to original title
-              if (ev.target.tagName === 'DIV') {
-                ev.target.innerText = todo.title
-              }
+      setTodos((prevTodos) => {
+        const newTodos = new Map(prevTodos)
+
+        // Reset mode to 'list' on previous open todo
+        if (settingOpenTodo && openTodoId && openTodoId !== todo.id) {
+          const openTodo = newTodos.get(openTodoId)
+          if (openTodo) {
+            newTodos.set(openTodoId, { ...openTodo, mode: 'list' })
+          }
+        }
+
+        // Update todo data
+        const oldTodo = newTodos.get(todo.id)
+        if (oldTodo) {
+          const newTodo = { ...oldTodo, ...data }
+
+          // If title is empty, restore old title
+          newTodo.title = newTodo.title.trim()
+          if (!newTodo.title) {
+            newTodo.title = todo.title
+            if (ev.target.tagName === 'DIV') {
+              ev.target.innerText = todo.title
             }
-
-            return newTodo
           }
 
-          // Make sure other todos are in list mode
-          if (currTodo.mode !== 'list') {
-            return { ...currTodo, mode: 'list' }
-          }
+          newTodos.set(todo.id, newTodo)
+        }
 
-          return currTodo
-        })
-      )
+        return newTodos
+      })
+
+      if (updatingMode) {
+        if (data.mode !== 'list') {
+          setOpenTodoId(todo.id)
+        } else if (todo.mode !== 'list') {
+          setOpenTodoId(null)
+        }
+      }
     },
-    [setTodos]
+    [setTodos, openTodoId, setOpenTodoId]
   )
 
   const handleTodoCompleted = useCallback(
@@ -151,39 +177,41 @@ export function TodoProvider({ children }) {
       ev.stopPropagation()
 
       const currentTime = roundMs(Date.now())
-      const completed = !todo.completed
+      const isCompleted = !todo.isCompleted
 
-      // First, update the todos state
-      setTodos((prevTodos) =>
-        prevTodos.map((currTodo) => {
-          if (currTodo.id === todo.id) {
-            const stoppedTodo = currTodo.isTimerRunning ? stopTimer(currTodo, currentTime) : currTodo
-            return {
-              ...stoppedTodo,
-              completed,
-              completedAt: completed ? currentTime : null,
-              sortOrder: completed ? currTodo.sortOrder : findTopSortPosition(prevTodos) - 1,
-              mode: 'list',
-            }
+      // Toggle completed/active todo
+      setTodos((prevTodos) => {
+        const newTodos = new Map(prevTodos)
+
+        const oldTodo = newTodos.get(todo.id)
+        if (oldTodo) {
+          const stoppedTodo = oldTodo.isTimerRunning ? stopTimer(oldTodo, currentTime) : oldTodo
+          newTodos.set(todo.id, {
+            ...stoppedTodo,
+            isCompleted: isCompleted,
+            completedAt: isCompleted ? currentTime : null,
+            sortOrder: isCompleted ? oldTodo.sortOrder : findTopSortPosition([...newTodos.values()]) - 1,
+            mode: 'list',
+          })
+        }
+
+        return newTodos
+      })
+
+      // Stop this todos running timer in the timeLog
+      if (isCompleted && runningTimeItemId) {
+        setTimeLog((prevTimeLog) => {
+          const newTimeLog = new Map(prevTimeLog)
+          const runningTimeItem = newTimeLog.get(runningTimeItemId)
+          if (runningTimeItem && runningTimeItem.todoId === todo.id) {
+            newTimeLog.set(runningTimeItemId, { ...runningTimeItem, stop: currentTime })
+            setRunningTimeItemId(null)
           }
-          return currTodo
+          return newTimeLog
         })
-      )
-
-      if (!completed) return
-
-      // Second, update the timelog state
-      // If the completed todo has a running timer, stop it.
-      setTimeLog((prevTimeLog) =>
-        prevTimeLog.map((timeItem) => {
-          if (timeItem.todoId == todo.id && !timeItem.stop) {
-            return { ...timeItem, stop: currentTime }
-          }
-          return timeItem
-        })
-      )
+      }
     },
-    [setTodos, setTimeLog]
+    [setTodos, setTimeLog, runningTimeItemId, setRunningTimeItemId]
   )
 
   const handleTodoToggleTimer = useCallback(
@@ -194,56 +222,53 @@ export function TodoProvider({ children }) {
       const currentTime = roundMs(Date.now())
       const isStarting = !todo.isTimerRunning
 
-      // First, update the todos state
       setTodos((prevTodos) => {
-        return prevTodos.map((currTodo) => {
-          if (currTodo.id === todo.id) {
-            if (isStarting) {
-              // Starting timer
-              return {
-                ...currTodo,
-                isTimerRunning: true,
-                startTime: currentTime,
-              }
+        const newTodos = new Map(prevTodos)
+        const oldTodo = newTodos.get(todo.id)
+
+        if (!oldTodo) return newTodos
+
+        // If starting this timer, stop other running todo first
+        if (isStarting && runningTimeItemId) {
+          const runningTodoId = timeLog.get(runningTimeItemId)?.todoId
+          if (runningTodoId && runningTodoId !== todo.id) {
+            const runningTodo = newTodos.get(runningTodoId)
+            if (runningTodo) {
+              newTodos.set(runningTodoId, stopTimer(runningTodo, currentTime))
             }
-            // Stopping timer
-            return stopTimer(currTodo, currentTime)
           }
-
-          // Stop any other running timers (only one timer can run at a time)
-          if (currTodo.isTimerRunning) {
-            return stopTimer(currTodo, currentTime)
-          }
-
-          return currTodo
-        })
-      })
-
-      // Second, update the timelog state
-      setTimeLog((prevTimeLog) => {
-        // Stop all current running timers in the timelog
-        const updatedLog = prevTimeLog.map((timeItem) => {
-          if (!timeItem.stop) {
-            return { ...timeItem, stop: currentTime }
-          }
-          return timeItem
-        })
-
-        // If starting a new timer, add a new time item to the timelog
-        if (isStarting) {
-          const newTimeItem = {
-            id: generateId(),
-            todoId: todo.id,
-            start: currentTime,
-            stop: null,
-          }
-          return [...updatedLog, newTimeItem]
         }
 
-        return updatedLog
+        // Toggle timer start/stop on this todo
+        if (isStarting) {
+          newTodos.set(oldTodo.id, { ...oldTodo, isTimerRunning: true, startTime: currentTime })
+        } else {
+          newTodos.set(oldTodo.id, stopTimer(oldTodo, currentTime))
+        }
+
+        return newTodos
+      })
+
+      setTimeLog((prevTimeLog) => {
+        const newTimeLog = new Map(prevTimeLog)
+        if (runningTimeItemId) {
+          const runningTimeItem = newTimeLog.get(runningTimeItemId)
+          if (runningTimeItem) {
+            newTimeLog.set(runningTimeItemId, { ...runningTimeItem, stop: currentTime })
+          }
+        }
+
+        if (isStarting) {
+          const newTimeItemId = generateId()
+          newTimeLog.set(newTimeItemId, { id: newTimeItemId, todoId: todo.id, start: currentTime, stop: null })
+          setRunningTimeItemId(newTimeItemId)
+        } else {
+          setRunningTimeItemId(null)
+        }
+        return newTimeLog
       })
     },
-    [setTodos, setTimeLog, generateId]
+    [setTodos, setTimeLog, timeLog, runningTimeItemId, setRunningTimeItemId, generateId]
   )
 
   const handleTodoContentEditable = useCallback((ev, todo) => {
@@ -269,8 +294,7 @@ export function TodoProvider({ children }) {
       }
 
       setTodos((prevTodos) => {
-        const activeTodos = prevTodos.filter((todo) => !todo.completed).sort((a, b) => a.sortOrder - b.sortOrder)
-        const completedTodos = prevTodos.filter((todo) => todo.completed)
+        const activeTodos = [...prevTodos.values()].filter((todo) => !todo.isCompleted).sort((a, b) => a.sortOrder - b.sortOrder)
 
         const draggedIndex = activeTodos.findIndex((todo) => todo.id === draggedTodo.id)
         const droppedIndex = activeTodos.findIndex((todo) => todo.id === droppedOnTodo.id)
@@ -279,12 +303,15 @@ export function TodoProvider({ children }) {
         const [removed] = newActiveTodos.splice(draggedIndex, 1)
         newActiveTodos.splice(droppedIndex, 0, removed)
 
-        const updatedTodos = newActiveTodos.map((todo, index) => ({
-          ...todo,
-          sortOrder: index,
-        }))
+        const newTodos = new Map(prevTodos)
+        newActiveTodos.forEach((todo, index) => {
+          const oldTodo = newTodos.get(todo.id)
+          if (oldTodo) {
+            newTodos.set(todo.id, { ...oldTodo, sortOrder: index })
+          }
+        })
 
-        return [...updatedTodos, ...completedTodos]
+        return newTodos
       })
     },
     [setTodos]
@@ -326,5 +353,5 @@ export function TodoProvider({ children }) {
     ]
   )
 
-  return <TodoContext value={contextValue}>{children}</TodoContext>
+  return <TodoContext.Provider value={contextValue}>{children}</TodoContext.Provider>
 }

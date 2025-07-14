@@ -5,7 +5,7 @@ import { formatDate, formatTime, formatTimeSpentDisplay } from './helpers'
 export default function TodoEdit({ todo }) {
   const { timeLog } = useContext(TodoContext)
 
-  const todoTimeLog = useMemo(() => timeLog.filter((timeItem) => timeItem.todoId === todo.id), [timeLog, todo.id])
+  const todoTimeLog = useMemo(() => [...timeLog.values()].filter((timeItem) => timeItem.todoId === todo.id), [timeLog, todo.id])
 
   function getLoggedTimeTitle(timeItem) {
     const loggedTime = timeItem.stop ? formatTimeSpentDisplay(timeItem.start, timeItem.stop) : ''
@@ -24,13 +24,13 @@ export default function TodoEdit({ todo }) {
   return (
     <div className="space-y-3 p-3 pt-1">
       <h3 className="font-semibold">Time log</h3>
-      <ul className="border border-stone-200 bg-white p-2 text-right font-mono text-sm">
+      <ul className="border border-neutral-200 bg-white p-2 text-right font-mono text-sm">
         {todoTimeLog.length === 0 && <li className="text-left">No times registered yet.</li>}
 
         {todoTimeLog.length > 0 && (
-          <li className="flex justify-between gap-4 font-semibold odd:bg-stone-50">
+          <li className="flex justify-between gap-4 font-semibold odd:bg-neutral-50">
             <div className="flex gap-4">
-              <div className={`hidden @2xl:block`}>Start date</div>
+              <div className={`hidden @[640px]:block`}>Start date</div>
               <div className="min-w-[68px] text-left">Start</div>
               <div>&nbsp;</div>
               <div className="min-w-[68px] text-left">Stop</div>
@@ -41,9 +41,9 @@ export default function TodoEdit({ todo }) {
 
         {todoTimeLog.length > 0 &&
           todoTimeLog.map((timeItem) => (
-            <li key={timeItem.id} className="flex justify-between gap-4 odd:bg-stone-50">
+            <li key={timeItem.id} className="flex justify-between gap-4 odd:bg-neutral-50">
               <div className="flex gap-4">
-                <div className={`hidden @2xl:block`} title={getStartDateTitle(timeItem)}>
+                <div className={`hidden @[640px]:block`} title={getStartDateTitle(timeItem)}>
                   {formatDate(timeItem.start)}
                 </div>
 

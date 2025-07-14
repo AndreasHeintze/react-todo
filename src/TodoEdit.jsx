@@ -24,7 +24,7 @@ export default function TodoEdit({ todo }) {
         name="title"
         defaultValue={todo.title}
         placeholder="Title"
-        className="block w-full max-w-[80ch] border border-stone-300 bg-white p-2"
+        className="block w-full max-w-[80ch] border border-neutral-300 bg-white p-2"
       />
 
       <label className="py-2 font-semibold" htmlFor={descrRef}>
@@ -35,13 +35,13 @@ export default function TodoEdit({ todo }) {
         name="descr"
         defaultValue={todo.descr}
         placeholder="Description"
-        className="block min-h-40 w-full max-w-[80ch] border border-stone-300 bg-white p-2"
+        className="block min-h-40 w-full max-w-[80ch] border border-neutral-300 bg-white p-2"
       ></textarea>
 
       <div className="mt-4 flex gap-4">
         <button
           type="submit"
-          className={`flex h-8 w-42 cursor-pointer items-center justify-center rounded border border-stone-400 bg-stone-200 p-1 font-medium text-stone-900 transition-colors duration-200 hover:border-stone-400 hover:bg-stone-300 focus:ring-2 focus:ring-stone-500 focus:outline-none`}
+          className={`flex h-8 w-42 cursor-pointer items-center justify-center rounded border border-neutral-400 bg-neutral-200 p-1 font-medium text-neutral-900 transition-colors duration-200 hover:border-neutral-400 hover:bg-neutral-300 focus:ring-2 focus:ring-neutral-500 focus:outline-none`}
           aria-label={`Save todo`}
         >
           Save
@@ -50,7 +50,7 @@ export default function TodoEdit({ todo }) {
         <button
           type="button"
           onClick={(ev) => handleTodoSave(ev, todo, { mode: 'list' })}
-          className={`flex h-8 w-42 cursor-pointer items-center justify-center rounded border border-stone-400 bg-stone-200 p-1 font-medium text-stone-600 transition-colors duration-200 hover:border-stone-400 hover:bg-stone-300 focus:ring-2 focus:ring-stone-500 focus:outline-none`}
+          className={`flex h-8 w-42 cursor-pointer items-center justify-center rounded border border-neutral-400 bg-neutral-200 p-1 font-medium text-neutral-600 transition-colors duration-200 hover:border-neutral-400 hover:bg-neutral-300 focus:ring-2 focus:ring-neutral-500 focus:outline-none`}
           aria-label={`Cancel editing`}
         >
           Cancel

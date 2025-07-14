@@ -1,6 +1,6 @@
 import { useCallback } from 'react'
 
-export default function CheckBox({ todo, onTodoCompleted }) {
+export default function TodoCompletedCheckbox({ todo, onTodoCompleted }) {
   const handleKeyUp = useCallback(
     (e) => {
       if (e.key === 'Enter' || e.key === ' ') {
@@ -18,14 +18,14 @@ export default function CheckBox({ todo, onTodoCompleted }) {
       onClick={onTodoCompleted}
       onKeyUp={handleKeyUp}
       className={`focus:ring-green-haze-500 flex size-6 flex-shrink-0 cursor-pointer items-center justify-center rounded border-2 transition-all duration-200 focus:ring-2 focus:ring-offset-2 focus:outline-none ${
-        todo.completed
+        todo.isCompleted
           ? 'border-green-haze-600 bg-green-haze-600 text-white'
           : 'hover:border-green-haze-500 border-gray-300 bg-white'
       }`}
-      aria-checked={todo.completed}
-      aria-label={`Mark task "${todo.text}" as ${todo.completed ? 'incomplete' : 'complete'}`}
+      aria-checked={todo.isCompleted}
+      aria-label={`Mark task "${todo.text}" as ${todo.isCompleted ? 'incomplete' : 'complete'}`}
     >
-      {todo.completed && (
+      {todo.isCompleted && (
         <svg className="h-4 w-4 stroke-current stroke-2" fill="currentColor" viewBox="0 0 20 20">
           <path
             fillRule="evenodd"

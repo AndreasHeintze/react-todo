@@ -1,17 +1,15 @@
 @import "tailwindcss";
 
 /* Add to your global CSS */
-@layer utilities {
-  .scrollbar-hide {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
-  .scrollbar-hide::-webkit-scrollbar {
-    display: none;
-  }
+@utility .scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+@utility .scrollbar-hide::-webkit-scrollbar {
+  display: none;
 }
 
-.p-fluid-sm {
+@utility .p-fluid-sm {
   padding: clamp(8px, 8px + (32 - 8) * (100cqw - 320px) / (671 - 320), 32px);
 }
 
