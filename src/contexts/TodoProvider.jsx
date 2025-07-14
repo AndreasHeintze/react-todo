@@ -128,6 +128,12 @@ export function TodoProvider({ children }) {
 
       const updatingMode = 'mode' in data
       const settingOpenTodo = updatingMode && data.mode !== 'list'
+      const openingTimeLog = updatingMode && data.mode === 'timelog'
+
+      // Don't allow quickedit on a completed todo
+      if (todo.isCompleted && data.mode === 'quickedit') {
+        return
+      }
 
       setTodos((prevTodos) => {
         const newTodos = new Map(prevTodos)
@@ -166,6 +172,10 @@ export function TodoProvider({ children }) {
         } else if (todo.mode !== 'list') {
           setOpenTodoId(null)
         }
+      }
+
+      if (openingTimeLog) {
+        // calcTimeSpent(todo)
       }
     },
     [setTodos, openTodoId, setOpenTodoId]
@@ -316,6 +326,10 @@ export function TodoProvider({ children }) {
     },
     [setTodos]
   )
+
+  // function calcTimeSpent(todo) {
+  //   setTimeLog((prevTimeLog) => {})
+  // }
 
   // Memoize the context value to prevent unnecessary re-renders
   const contextValue = useMemo(
