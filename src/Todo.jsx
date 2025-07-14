@@ -34,31 +34,17 @@ const Todo = forwardRef(({ todo, style, attributes, listeners }, ref) => {
   }, [todo])
 
   // Set swiped todo & swipe other back
-  const handleScrollEnd = (() => {
-    let scrollTimeout
-    return (ev) => {
-      ev.stopPropagation()
-      if (todo.isCompleted) {
-        setSwipedTodo(null)
-        return false
-      }
-      const scrolledTodo = ev.currentTarget
-      clearTimeout(scrollTimeout)
-      scrollTimeout = setTimeout(() => {
-        if (scrolledTodo.scrollLeft !== 0) {
-          if (swipedTodo && swipedTodo.ref !== scrolledTodo) {
-            swipedTodo.ref.scrollTo({
-              left: 0,
-              behavior: 'smooth',
-            })
-          }
-          setSwipedTodo({ id: todo.id, ref: scrolledTodo })
-        } else {
-          setSwipedTodo(null)
-        }
-      }, 200)
+  function handleScroll(ev) {
+    ev.stopPropagation()
+    const scrolledTodo = ev.currentTarget
+    if (swipedTodo && swipedTodo.ref !== scrolledTodo) {
+      swipedTodo.ref.scrollTo({
+        left: 0,
+        // behavior: 'smooth',
+      })
     }
-  })()
+    setSwipedTodo({ id: todo.id, ref: scrolledTodo })
+  }
 
   return (
     <div
@@ -69,8 +55,7 @@ const Todo = forwardRef(({ todo, style, attributes, listeners }, ref) => {
       <div
         ref={swipeTodoRef}
         data-swipeable="true"
-        onScrollEnd={handleScrollEnd}
-        onTouchEnd={handleScrollEnd}
+        onScroll={handleScroll}
         className="scrollbar-hide flex snap-x snap-proximity scroll-px-3 items-center justify-between overflow-x-auto rounded px-2 py-2 pr-3"
       >
         {/** Drag, checkbox and title section */}
