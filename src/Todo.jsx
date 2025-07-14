@@ -74,7 +74,7 @@ const Todo = forwardRef(({ todo, style, attributes, listeners }, ref) => {
 
           {/** Todo title */}
           <div
-            className={`${todo.mode !== 'quickedit' ? 'line-clamp-1' : 'overflow-x-hidden whitespace-nowrap'} rounded p-1 pr-0 leading-normal font-semibold focus:outline-none`}
+            className={`${todo.mode !== 'quickedit' ? 'line-clamp-1' : 'overflow-x-hidden whitespace-nowrap'} rounded p-1 pr-0 leading-5 font-semibold focus:outline-none`}
             ref={todoTitleRef}
             onKeyDown={(ev) => handleTodoContentEditable(ev, todo)}
             onBlur={(ev) => handleTodoSave(ev, todo, { title: ev.target.innerText, mode: 'list' })}
