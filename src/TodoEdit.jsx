@@ -2,15 +2,15 @@ import { useContext, useRef } from 'react'
 import { TodoContext } from './contexts/TodoContext'
 
 export default function TodoEdit({ todo }) {
-  const { handleTodoSave } = useContext(TodoContext)
+  const { dispatch } = useContext(TodoContext)
   const titleRef = useRef(null)
   const descrRef = useRef(null)
 
-  function handleSubmit(ev) {
-    ev.preventDefault()
-    const formData = new FormData(ev.target)
+  function handleSubmit(e) {
+    e.preventDefault()
+    const formData = new FormData(e.target)
     const data = Object.fromEntries(formData)
-    handleTodoSave(ev, todo, { ...data, mode: 'list' })
+    dispatch({ type: 'SAVE_TODO', payload: { todo, data: { ...data, mode: 'list' } } })
   }
 
   return (
@@ -49,7 +49,7 @@ export default function TodoEdit({ todo }) {
 
         <button
           type="button"
-          onClick={(ev) => handleTodoSave(ev, todo, { mode: 'list' })}
+          onClick={() => dispatch({ type: 'SAVE_TODO', payload: { todo, data: { mode: 'list' } } })}
           className={`flex h-8 w-42 cursor-pointer items-center justify-center rounded border border-neutral-400 bg-neutral-200 p-1 font-medium text-neutral-600 transition-colors duration-200 hover:border-neutral-400 hover:bg-neutral-300 focus:ring-2 focus:ring-neutral-500 focus:outline-none`}
           aria-label={`Cancel editing`}
         >

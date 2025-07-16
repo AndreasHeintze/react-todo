@@ -2,10 +2,13 @@ import { useContext, useMemo } from 'react'
 import { TodoContext } from './contexts/TodoContext'
 import { formatDate, formatTime, formatTimeSpentDisplay } from './helpers'
 
-export default function TodoEdit({ todo }) {
-  const { timeLog } = useContext(TodoContext)
+export default function TodoTimeLog({ todo }) {
+  const { state } = useContext(TodoContext)
 
-  const todoTimeLog = useMemo(() => [...timeLog.values()].filter((timeItem) => timeItem.todoId === todo.id), [timeLog, todo.id])
+  const todoTimeLog = useMemo(
+    () => [...state.timeLog.values()].filter((timeItem) => timeItem.todoId === todo.id),
+    [state.timeLog, todo.id]
+  )
 
   function getLoggedTimeTitle(timeItem) {
     const loggedTime = timeItem.stop ? formatTimeSpentDisplay(timeItem.start, timeItem.stop) : ''

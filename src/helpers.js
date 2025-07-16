@@ -1,4 +1,4 @@
-import {useState, useEffect} from "react"
+import { useReducer, useEffect } from "react"
 
 export function roundMs(timestamp) {
   return Math.round(timestamp / 1000) * 1000
@@ -50,44 +50,46 @@ export function formatTimeSpentDisplay(startTimestamp, endTimestamp) {
   return formatTimeSpent(roundedEnd - roundedStart)
 }
 
-export function usePersistedState(key, defaultValue) {
-  const [state, setState] = useState(() => {
+export function usePersistedReducer(reducer, initialState, storageKey) {
+  const [state, dispatch] = useReducer(reducer, initialState, (init) => {
     try {
-      const saved = localStorage.getItem(key)
-      if (saved) {
-        const data = JSON.parse(saved)
-        if ((key === 'todos' || key === 'timelog') && Array.isArray(data)) {
-          return new Map(data.map((item) => [item.id, item]))
-        }
-        if (data.dataType === 'Map') {
-          return new Map(data.value)
-        }
+      const stored = localStorage.getItem(storageKey)
+      if (stored) {
+        const data = JSON.parse(stored)
+        // Handle Map deserialization
+        if (data.todos) data.todos = new Map(data.todos)
+        if (data.timeLog) data.timeLog = new Map(data.timeLog)
         return data
       }
-      return defaultValue
-    } catch {
-      return defaultValue
+    } catch (error) {
+      console.error('Error reading from localStorage:', error)
     }
+    return init
   })
 
   useEffect(() => {
     try {
-      if (state instanceof Map) {
-        localStorage.setItem(key, JSON.stringify({ dataType: 'Map', value: Array.from(state.entries()) }))
-      } else {
-        localStorage.setItem(key, JSON.stringify(state))
+      // Don't persist swipedTodo
+      const { swipedTodo: DUMMY, ...dataToStore } = state
+      // Handle Map serialization
+      if (dataToStore.todos instanceof Map) {
+        dataToStore.todos = Array.from(dataToStore.todos.entries())
       }
+      if (dataToStore.timeLog instanceof Map) {
+        dataToStore.timeLog = Array.from(dataToStore.timeLog.entries())
+      }
+      localStorage.setItem(storageKey, JSON.stringify(dataToStore))
     } catch (error) {
-      console.error('Failed to save to localStorage:', error)
+      console.error('Error writing to localStorage:', error)
     }
-  }, [key, state])
+  }, [state, storageKey])
 
-  return [state, setState]
+  return [state, dispatch]
 }
 
-export function useUniqueId() {
+export function generateId() {
   if (crypto.randomUUID) {
-    return () => crypto.randomUUID()
+    return crypto.randomUUID()
   }
-  return () => Date.now().toString(36) + Math.random().toString(36).slice(2)
+  return Date.now().toString(36) + Math.random().toString(36).slice(2)
 }

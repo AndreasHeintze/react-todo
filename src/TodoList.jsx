@@ -7,27 +7,25 @@ import Todo from './Todo'
 
 function SortableTodo({ todo }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: todo.id })
-
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
     opacity: isDragging ? 0 : 1,
     zIndex: isDragging ? 1 : 'auto',
   }
-
   return <Todo todo={todo} ref={setNodeRef} style={style} attributes={attributes} listeners={listeners} />
 }
 
 export default function TodoList() {
-  const { todos, handleTodoSort } = useContext(TodoContext)
+  const { state, dispatch } = useContext(TodoContext)
   const [draggedTodo, setDraggedTodo] = useState(null)
 
   const { activeTodos, completedTodos } = useMemo(() => {
-    const allTodos = [...todos.values()]
+    const allTodos = [...state.todos.values()]
     const activeTodos = allTodos.filter((todo) => todo && !todo.isCompleted).sort((a, b) => a.sortOrder - b.sortOrder)
     const completedTodos = allTodos.filter((todo) => todo && todo.isCompleted).sort((a, b) => b.completedAt - a.completedAt)
     return { activeTodos, completedTodos }
-  }, [todos])
+  }, [state.todos])
 
   const activeTodoIds = useMemo(() => activeTodos.map((todo) => todo.id), [activeTodos])
 
@@ -48,13 +46,13 @@ export default function TodoList() {
       const draggedTodo = activeTodos[oldIndex]
       const droppedOnTodo = activeTodos[newIndex]
 
-      handleTodoSort(draggedTodo, droppedOnTodo)
+      dispatch({ type: 'SORT_TODOS', payload: { draggedTodo, droppedOnTodo } })
     }
   }
 
-  if (todos.length === 0) {
+  if (state.todos.size === 0) {
     return (
-      <div className="py-8 text-center text-gray-500" role="status" aria-live="polite">
+      <div className="py-8 text-center text-white @[640px]:text-inherit" role="status" aria-live="polite">
         No todos yet. Add one above to get started!
       </div>
     )

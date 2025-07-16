@@ -4,7 +4,7 @@ import { formatTimeSpent, roundMs } from './helpers'
 import { Edit, Timer, Trash2, LoaderCircle } from 'lucide-react'
 
 const TodoButtons = forwardRef(({ todo }, ref) => {
-  const { handleTodoSave, handleTodoToggleTimer, handleTodoDelete } = useContext(TodoContext)
+  const { state, dispatch } = useContext(TodoContext)
   const buttonsRef = useRef(null)
 
   // Update tick every second
@@ -53,8 +53,11 @@ const TodoButtons = forwardRef(({ todo }, ref) => {
         type="button"
         ref={ref}
         role="timer"
+        onClick={() =>
+          dispatch({ type: 'SAVE_TODO', payload: { todo, data: { mode: todo.mode === 'timelog' ? 'list' : 'timelog' } } })
+        }
         className="flex h-11 min-w-11 cursor-pointer items-center justify-end rounded border border-transparent p-1 text-right font-mono text-sm transition-colors duration-200 hover:border-neutral-300 hover:bg-neutral-100 focus:ring-2 focus:ring-neutral-500 focus:outline-none"
-        onClick={(ev) => handleTodoSave(ev, todo, { mode: todo.mode === 'timelog' ? 'list' : 'timelog' })}
+        title={`Click to ${todo.mode === 'timelog' ? 'close' : 'view'} time log`}
         aria-label={`Time spent: ${formatTimeSpent(totalTime)}`}
       >
         {/** Todo timer running indicator */}
@@ -71,13 +74,13 @@ const TodoButtons = forwardRef(({ todo }, ref) => {
       {/** Edit button */}
       <button
         type="button"
+        onClick={() => dispatch({ type: 'SAVE_TODO', payload: { todo, data: { mode: todo.mode === 'edit' ? 'list' : 'edit' } } })}
+        disabled={todo.isCompleted}
         className={`flex h-11 w-11 items-center justify-center rounded border p-1 font-medium transition-colors duration-200 focus:ring-2 focus:ring-blue-500 focus:outline-none ${
           todo.isCompleted
             ? 'cursor-not-allowed border-gray-300 bg-gray-200 text-gray-400'
             : 'cursor-pointer border-blue-200 bg-blue-50 text-blue-600 hover:border-blue-300 hover:bg-blue-100'
         }`}
-        onClick={(ev) => handleTodoSave(ev, todo, { mode: todo.mode === 'edit' ? 'list' : 'edit' })}
-        disabled={todo.isCompleted}
         aria-label={`Edit todo: ${todo.title}`}
       >
         <Edit size={24} aria-hidden="true" />
@@ -91,7 +94,7 @@ const TodoButtons = forwardRef(({ todo }, ref) => {
             ? 'cursor-not-allowed border-gray-300 bg-gray-200 text-gray-400'
             : 'cursor-pointer border-amber-200 bg-amber-50 text-amber-600 hover:border-amber-300 hover:bg-amber-100'
         }`}
-        onClick={(ev) => handleTodoToggleTimer(ev, todo)}
+        onClick={() => dispatch({ type: 'TOGGLE_TIMER', payload: { todo, currentTime: roundMs(Date.now()) } })}
         disabled={todo.isCompleted}
         aria-label={todo.isTimerRunning ? `Stop timer for todo: ${todo.title}` : `Start timer for todo: ${todo.title}`}
       >
@@ -108,8 +111,8 @@ const TodoButtons = forwardRef(({ todo }, ref) => {
       {/** Delete button */}
       <button
         type="button"
+        onClick={() => dispatch({ type: 'DELETE_TODO', payload: { id: todo.id } })}
         className="flex h-11 w-11 cursor-pointer items-center justify-center rounded border border-red-200 bg-red-50 p-1 font-medium text-red-600 transition-colors duration-200 hover:border-red-300 hover:bg-red-100 focus:ring-2 focus:ring-red-500 focus:outline-none"
-        onClick={(ev) => handleTodoDelete(ev, todo)}
         aria-label={`Delete todo: ${todo.title}`}
       >
         <Trash2 size={24} aria-hidden="true" />

@@ -3,18 +3,17 @@ import { GripVertical } from 'lucide-react'
 import { TodoContext } from './contexts/TodoContext'
 import TodoCompletedCheckbox from './TodoCompletedCheckbox'
 import TodoEdit from './TodoEdit'
-import TodoTimes from './TodoTimes'
+import TodoTimeLog from './TodoTimeLog'
 import TodoButtons from './TodoButtons'
 
 const Todo = forwardRef(({ todo, style, attributes, listeners }, ref) => {
-  const { swipedTodo, setSwipedTodo, handleTodoSave, handleTodoCompleted, handleTodoContentEditable } = useContext(TodoContext)
+  const { state, dispatch } = useContext(TodoContext)
 
   const swipeTodoRef = useRef(null)
-  const todoTitleRef = useRef(null)
   const totalTimeRef = useRef(null)
   const [titleWidth, setTitleWidth] = useState(0)
 
-  // Calc <title-width> = <todo-width> - <timer-width> - 272 or 88
+  // Calc <title-width> = <todo-width> - <timer-width> - 266 or 82
   useEffect(() => {
     // Calculate on todo change
     calculateWidth()
@@ -33,18 +32,51 @@ const Todo = forwardRef(({ todo, style, attributes, listeners }, ref) => {
     return () => window.removeEventListener('resize', calculateWidth)
   }, [todo])
 
-  // Set swiped todo & swipe other back
-  function handleScroll(ev) {
-    ev.stopPropagation()
-    const scrolledTodo = ev.currentTarget
-    if (swipedTodo && swipedTodo.ref !== scrolledTodo) {
-      swipedTodo.ref.scrollTo({
-        left: 0,
-        // behavior: 'smooth',
-      })
+  function handleQuickEditKey(e) {
+    e.stopPropagation()
+    if (e.key === 'Escape') {
+      e.target.innerText = todo.title
+      e.target.blur()
     }
-    setSwipedTodo({ id: todo.id, ref: scrolledTodo })
+    if (e.key === 'Enter') {
+      e.target.blur()
+    }
   }
+
+  function handleQuickSave(e) {
+    const payload = { todo, data: { title: e.target.innerText.trim(), mode: 'list' } }
+
+    if (!payload.data.title) {
+      payload.data.title = todo.title
+      e.target.innerText = todo.title
+    }
+
+    dispatch({ type: 'SAVE_TODO', payload })
+  }
+
+  // Set swiped todo & swipe other back
+  const handleScroll = (() => {
+    let prevScrollLeft
+    return (e) => {
+      e.stopPropagation()
+      const scrolledTodo = e.currentTarget
+      if (prevScrollLeft !== undefined) {
+        const swipeDirection = scrolledTodo.scrollLeft - prevScrollLeft > 0 ? 'left' : 'right'
+        if (swipeDirection === 'right') return
+
+        // Swipe previous todo back
+        if (state.swipedTodo && state.swipedTodo.ref !== scrolledTodo) {
+          state.swipedTodo.ref.scrollTo({
+            left: 0,
+            behavior: 'smooth',
+          })
+        }
+
+        dispatch({ type: 'SET_SWIPED_TODO', payload: { id: todo.id, ref: scrolledTodo } })
+      }
+      prevScrollLeft = scrolledTodo.scrollLeft
+    }
+  })()
 
   return (
     <div
@@ -70,15 +102,13 @@ const Todo = forwardRef(({ todo, style, attributes, listeners }, ref) => {
           {todo.isCompleted && <div className="size-[20px] min-w-[20px] snap-start"></div>}
 
           {/** Todo completed checkbox */}
-          <TodoCompletedCheckbox todo={todo} onTodoCompleted={(ev) => handleTodoCompleted(ev, todo)} />
+          <TodoCompletedCheckbox todo={todo} />
 
           {/** Todo title */}
           <div
-            className={`${todo.mode !== 'quickedit' ? 'line-clamp-1' : 'overflow-x-hidden whitespace-nowrap'} rounded p-1 pr-0 leading-5 font-semibold focus:outline-none`}
-            ref={todoTitleRef}
-            onKeyDown={(ev) => handleTodoContentEditable(ev, todo)}
-            onBlur={(ev) => handleTodoSave(ev, todo, { title: ev.target.innerText, mode: 'list' })}
-            onClick={(ev) => handleTodoSave(ev, todo, { mode: 'quickedit' })}
+            onClick={() => dispatch({ type: 'SAVE_TODO', payload: { todo, data: { mode: 'quickedit' } } })}
+            onKeyDown={handleQuickEditKey}
+            onBlur={handleQuickSave}
             suppressContentEditableWarning={true}
             contentEditable={todo.mode === 'quickedit' ? 'plaintext-only' : 'false'}
             style={{
@@ -86,8 +116,9 @@ const Todo = forwardRef(({ todo, style, attributes, listeners }, ref) => {
               textDecoration: todo.isCompleted ? 'line-through' : '',
               opacity: todo.isCompleted ? 0.5 : 1,
             }}
+            className={`${todo.mode !== 'quickedit' ? 'line-clamp-1' : 'overflow-x-hidden whitespace-nowrap'} rounded p-1 pr-0 leading-5 font-semibold focus:outline-none`}
             title={todo.mode === 'quickedit' ? '' : 'Click to edit'}
-            aria-label={todo.mode === 'quickedit' ? 'Edit todo title' : `Todo: ${todo.title}`}
+            aria-label={todo.mode === 'quickedit' ? 'Edit todo title' : 'Todo title'}
             role={todo.mode === 'quickedit' ? 'textbox' : 'button'}
             tabIndex={todo.mode === 'quickedit' ? 0 : -1}
             aria-multiline="false"
@@ -107,7 +138,7 @@ const Todo = forwardRef(({ todo, style, attributes, listeners }, ref) => {
         <TodoButtons ref={totalTimeRef} todo={todo} />
       </div>
       {todo.mode === 'edit' && <TodoEdit todo={todo} />}
-      {todo.mode === 'timelog' && <TodoTimes todo={todo} />}
+      {todo.mode === 'timelog' && <TodoTimeLog todo={todo} />}
     </div>
   )
 })
