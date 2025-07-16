@@ -1,3 +1,10 @@
+/**
+ * Info:
+ * An open todo is a todo that is not in mode 'list' and only one can be opened at once.
+ * swipedTodo is the last one that is swiped to the left and only one can be swiped at once.
+ * runningTimeItem is the timeLog item that currently has a timer running. Only one time log item can have a timer running at once.
+ */
+
 import { useMemo } from 'react'
 import { generateId, usePersistedReducer, roundMs } from '../helpers'
 import { TodoContext } from './TodoContext'
@@ -62,19 +69,13 @@ function stopTimer(currTodo, currentTime) {
   }
 }
 
-/**
- * Info:
- * An open todo is a todo that is not in mode 'list' and only one can be opened at once.
- * swipedTodo is the last one that is swiped to the left and only one can be swiped at once.
- * runningTimeItemId is the timeLog item that currently has a timer running. Only one todo can have a timer running at once.
- */
 const initialState = {
   titleInput: '',
   todos: new Map(),
   timeLog: new Map(),
   swipedTodo: null,
   openTodoId: null,
-  runningTimeItemId: null,
+  runningTimeItem: null,
 }
 
 function todoReducer(state, action) {
@@ -141,12 +142,11 @@ function todoReducer(state, action) {
         mode: 'list',
       })
 
-      if (isCompleted && state.runningTimeItemId) {
+      if (isCompleted && state.runningTimeItem) {
         const newTimeLog = new Map(state.timeLog)
-        const runningTimeItem = newTimeLog.get(state.runningTimeItemId)
-        if (runningTimeItem && runningTimeItem.todoId === todo.id) {
-          newTimeLog.set(state.runningTimeItemId, { ...runningTimeItem, stop: currentTime })
-          return { ...state, todos: newTodos, timeLog: newTimeLog, runningTimeItemId: null }
+        if (state.runningTimeItem && state.runningTimeItem.todoId === todo.id) {
+          newTimeLog.set(state.runningTimeItem.id, { ...state.runningTimeItem, stop: currentTime })
+          return { ...state, todos: newTodos, timeLog: newTimeLog, runningTimeItem: null }
         }
       }
 
@@ -157,44 +157,38 @@ function todoReducer(state, action) {
       const currentTime = roundMs(Date.now())
       const newTimeItemId = generateId()
       const newTodos = new Map(state.todos)
-      const oldTodo = newTodos.get(todo.id)
-      if (!oldTodo) return state
+      const newTimeLog = new Map(state.timeLog)
+      const isStarting = !todo.isTimerRunning
 
-      const isStarting = !oldTodo.isTimerRunning
-      if (isStarting && state.runningTimeItemId) {
-        const runningTodoId = state.timeLog.get(state.runningTimeItemId)?.todoId
+      // Stop timer on other running todo and time log item
+      if (isStarting && state.runningTimeItem) {
+        const runningTodoId = state.runningTimeItem.todoId
         if (runningTodoId && runningTodoId !== todo.id) {
           const runningTodo = newTodos.get(runningTodoId)
           if (runningTodo) {
             newTodos.set(runningTodoId, stopTimer(runningTodo, currentTime))
           }
+          newTimeLog.set(state.runningTimeItem.id, { ...state.runningTimeItem, stop: currentTime })
         }
       }
 
+      // Start timer on this todo and add a new running time log item
       if (isStarting) {
-        newTodos.set(oldTodo.id, { ...oldTodo, isTimerRunning: true, startTime: currentTime })
-      } else {
-        newTodos.set(oldTodo.id, stopTimer(oldTodo, currentTime))
+        newTodos.set(todo.id, { ...todo, isTimerRunning: true, startTime: currentTime })
+        const newTimeItem = { id: newTimeItemId, todoId: todo.id, start: currentTime, stop: null }
+        newTimeLog.set(newTimeItemId, newTimeItem)
+        return { ...state, todos: newTodos, timeLog: newTimeLog, runningTimeItem: newTimeItem }
       }
 
-      const newTimeLog = new Map(state.timeLog)
-      if (state.runningTimeItemId) {
-        const runningTimeItem = newTimeLog.get(state.runningTimeItemId)
-        if (runningTimeItem) {
-          newTimeLog.set(state.runningTimeItemId, { ...runningTimeItem, stop: currentTime })
-        }
+      // ..or else stop the timer on this todo and in the time log
+      newTodos.set(todo.id, stopTimer(todo, currentTime))
+      if (state.runningTimeItem) {
+        newTimeLog.set(state.runningTimeItem.id, { ...state.runningTimeItem, stop: currentTime })
       }
-
-      if (isStarting) {
-        newTimeLog.set(newTimeItemId, { id: newTimeItemId, todoId: todo.id, start: currentTime, stop: null })
-        return { ...state, todos: newTodos, timeLog: newTimeLog, runningTimeItemId: newTimeItemId }
-      } else {
-        return { ...state, todos: newTodos, timeLog: newTimeLog, runningTimeItemId: null }
-      }
+      return { ...state, todos: newTodos, timeLog: newTimeLog, runningTimeItem: null }
     }
     case 'SORT_TODOS': {
       const { draggedTodo, droppedOnTodo } = action.payload
-
       if (draggedTodo.id === droppedOnTodo.id) return state
 
       const newTodos = new Map(state.todos)
@@ -202,6 +196,7 @@ function todoReducer(state, action) {
       const draggedIndex = activeTodos.findIndex((todo) => todo.id === draggedTodo.id)
       const droppedIndex = activeTodos.findIndex((todo) => todo.id === droppedOnTodo.id)
       const [removed] = activeTodos.splice(draggedIndex, 1)
+
       activeTodos.splice(droppedIndex, 0, removed)
       activeTodos.forEach((todo, index) => {
         const oldTodo = newTodos.get(todo.id)
@@ -221,14 +216,7 @@ function todoReducer(state, action) {
 
 export function TodoProvider({ children }) {
   const [state, dispatch] = usePersistedReducer(todoReducer, initialState, 'todoState')
-
-  const contextValue = useMemo(
-    () => ({
-      state,
-      dispatch,
-    }),
-    [state, dispatch]
-  )
+  const contextValue = useMemo(() => ({ state, dispatch }), [state, dispatch])
 
   return <TodoContext value={contextValue}>{children}</TodoContext>
 }

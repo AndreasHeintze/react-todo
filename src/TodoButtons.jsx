@@ -4,7 +4,7 @@ import { formatTimeSpent, roundMs } from './helpers'
 import { Edit, Timer, Trash2, LoaderCircle } from 'lucide-react'
 
 const TodoButtons = forwardRef(({ todo }, ref) => {
-  const { state, dispatch } = useContext(TodoContext)
+  const { dispatch } = useContext(TodoContext)
   const buttonsRef = useRef(null)
 
   // Update tick every second
@@ -89,13 +89,13 @@ const TodoButtons = forwardRef(({ todo }, ref) => {
       {/** Timer button */}
       <button
         type="button"
+        onClick={() => dispatch({ type: 'TOGGLE_TIMER', payload: { todo } })}
+        disabled={todo.isCompleted}
         className={`flex h-11 w-11 items-center justify-center rounded border p-1 font-medium whitespace-nowrap transition-colors duration-200 focus:ring-2 focus:ring-amber-500 focus:outline-none ${
           todo.isCompleted
             ? 'cursor-not-allowed border-gray-300 bg-gray-200 text-gray-400'
             : 'cursor-pointer border-amber-200 bg-amber-50 text-amber-600 hover:border-amber-300 hover:bg-amber-100'
         }`}
-        onClick={() => dispatch({ type: 'TOGGLE_TIMER', payload: { todo, currentTime: roundMs(Date.now()) } })}
-        disabled={todo.isCompleted}
         aria-label={todo.isTimerRunning ? `Stop timer for todo: ${todo.title}` : `Start timer for todo: ${todo.title}`}
       >
         {!todo.isTimerRunning && <Timer size={26} aria-hidden="true" />}
