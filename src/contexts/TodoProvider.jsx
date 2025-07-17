@@ -70,7 +70,6 @@ function stopTimer(currTodo, currentTime) {
 }
 
 const initialState = {
-  titleInput: '',
   todos: new Map(),
   timeLog: new Map(),
   openTodoId: null,
@@ -79,11 +78,8 @@ const initialState = {
 
 function todoReducer(state, action) {
   switch (action.type) {
-    case 'SET_TODO_TITLE_INPUT': {
-      return { ...state, titleInput: action.payload }
-    }
     case 'ADD_TODO': {
-      const title = state.titleInput.trim()
+      const title = action.payload
       if (!title) return
 
       const id = generateId()
@@ -102,7 +98,7 @@ function todoReducer(state, action) {
         createdAt: Date.now(),
       })
 
-      return { ...state, todos: newTodos, titleInput: '' }
+      return { ...state, todos: newTodos }
     }
     case 'DELETE_TODO': {
       const newTodos = new Map(state.todos)
