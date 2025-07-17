@@ -1,11 +1,11 @@
-import { useContext, useMemo, useState } from 'react'
+import { memo, useContext, useMemo, useState } from 'react'
 import { DndContext, DragOverlay, closestCenter } from '@dnd-kit/core'
 import { SortableContext, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { TodoContext } from './contexts/TodoContext'
 import Todo from './Todo'
 
-function SortableTodo({ todo }) {
+const SortableTodo = memo(function SortableTodo({ todo }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: todo.id })
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -14,18 +14,11 @@ function SortableTodo({ todo }) {
     zIndex: isDragging ? 1 : 'auto',
   }
   return <Todo todo={todo} ref={setNodeRef} style={style} attributes={attributes} listeners={listeners} />
-}
+})
 
 export default function TodoList() {
-  const { state, dispatch } = useContext(TodoContext)
+  const { state, dispatch, activeTodos, completedTodos } = useContext(TodoContext)
   const [draggedTodo, setDraggedTodo] = useState(null)
-
-  const { activeTodos, completedTodos } = useMemo(() => {
-    const allTodos = [...state.todos.values()]
-    const activeTodos = allTodos.filter((todo) => todo && !todo.isCompleted).sort((a, b) => a.sortOrder - b.sortOrder)
-    const completedTodos = allTodos.filter((todo) => todo && todo.isCompleted).sort((a, b) => b.completedAt - a.completedAt)
-    return { activeTodos, completedTodos }
-  }, [state.todos])
 
   const activeTodoIds = useMemo(() => activeTodos.map((todo) => todo.id), [activeTodos])
 

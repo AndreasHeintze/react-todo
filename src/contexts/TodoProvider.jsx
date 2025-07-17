@@ -5,7 +5,7 @@
  * runningTimeItem is the timeLog item that currently has a timer running. Only one time log item can have a timer running at once.
  */
 
-import { useMemo } from 'react'
+import { useRef, useMemo, useCallback } from 'react'
 import { generateId, usePersistedReducer, roundMs } from '../helpers'
 import { TodoContext } from './TodoContext'
 
@@ -73,7 +73,6 @@ const initialState = {
   titleInput: '',
   todos: new Map(),
   timeLog: new Map(),
-  swipedTodo: null,
   openTodoId: null,
   runningTimeItem: null,
 }
@@ -206,9 +205,6 @@ function todoReducer(state, action) {
       })
       return { ...state, todos: newTodos }
     }
-    case 'SET_SWIPED_TODO': {
-      return { ...state, swipedTodo: action.payload }
-    }
     default:
       return state
   }
@@ -216,7 +212,48 @@ function todoReducer(state, action) {
 
 export function TodoProvider({ children }) {
   const [state, dispatch] = usePersistedReducer(todoReducer, initialState, 'todoState')
-  const contextValue = useMemo(() => ({ state, dispatch }), [state, dispatch])
+
+  const swipedTodo = useRef(null)
+
+  // Set swiped todo & swipe other back
+  const handleScroll = useCallback((e) => {
+    e.stopPropagation()
+    const scrolledTodo = e.currentTarget
+    const scrollPos = scrolledTodo.scrollLeft
+    const prevScrollPos = scrolledTodo.dataset?.scrollPos ?? 0
+    const swipeDirection = scrollPos - prevScrollPos > 0 ? 'left' : 'right'
+
+    if (swipeDirection === 'right') {
+      scrolledTodo.dataset.scrollPos = scrollPos
+      return
+    }
+
+    // Swipe back the previous swiped todo
+    if (swipedTodo.current && swipedTodo.current !== scrolledTodo) {
+      swipedTodo.current.scrollTo({ left: 0, behavior: 'smooth' })
+    }
+
+    scrolledTodo.dataset.scrollPos = scrollPos
+    swipedTodo.current = scrolledTodo
+  }, [])
+
+  const { activeTodos, completedTodos } = useMemo(() => {
+    const allTodos = [...state.todos.values()]
+    const active = allTodos.filter((todo) => todo && !todo.isCompleted).sort((a, b) => a.sortOrder - b.sortOrder)
+    const completed = allTodos.filter((todo) => todo && todo.isCompleted).sort((a, b) => b.completedAt - a.completedAt)
+    return { activeTodos: active, completedTodos: completed }
+  }, [state.todos])
+
+  const contextValue = useMemo(
+    () => ({
+      state,
+      dispatch,
+      handleScroll,
+      activeTodos,
+      completedTodos,
+    }),
+    [state, dispatch, handleScroll, activeTodos, completedTodos]
+  )
 
   return <TodoContext value={contextValue}>{children}</TodoContext>
 }

@@ -69,8 +69,7 @@ export function usePersistedReducer(reducer, initialState, storageKey) {
 
   useEffect(() => {
     try {
-      // Don't persist swipedTodo
-      const { swipedTodo: DUMMY, ...dataToStore } = state
+      const dataToStore = { ...state }
       // Handle Map serialization
       if (dataToStore.todos instanceof Map) {
         dataToStore.todos = Array.from(dataToStore.todos.entries())

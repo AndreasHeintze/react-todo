@@ -7,8 +7,7 @@ import TodoTimeLog from './TodoTimeLog'
 import TodoButtons from './TodoButtons'
 
 const Todo = forwardRef(({ todo, style, attributes, listeners }, ref) => {
-  const { state, dispatch } = useContext(TodoContext)
-
+  const { dispatch, handleScroll } = useContext(TodoContext)
   const swipeTodoRef = useRef(null)
   const totalTimeRef = useRef(null)
   const [titleWidth, setTitleWidth] = useState(0)
@@ -53,30 +52,6 @@ const Todo = forwardRef(({ todo, style, attributes, listeners }, ref) => {
 
     dispatch({ type: 'SAVE_TODO', payload })
   }
-
-  // Set swiped todo & swipe other back
-  const handleScroll = (() => {
-    let prevScrollLeft
-    return (e) => {
-      e.stopPropagation()
-      const scrolledTodo = e.currentTarget
-      if (prevScrollLeft !== undefined) {
-        const swipeDirection = scrolledTodo.scrollLeft - prevScrollLeft > 0 ? 'left' : 'right'
-        if (swipeDirection === 'right') return
-
-        // Swipe previous todo back
-        if (state.swipedTodo && state.swipedTodo.ref !== scrolledTodo) {
-          state.swipedTodo.ref.scrollTo({
-            left: 0,
-            behavior: 'smooth',
-          })
-        }
-
-        dispatch({ type: 'SET_SWIPED_TODO', payload: { id: todo.id, ref: scrolledTodo } })
-      }
-      prevScrollLeft = scrolledTodo.scrollLeft
-    }
-  })()
 
   return (
     <div
