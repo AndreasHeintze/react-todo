@@ -27,7 +27,7 @@ export default function TodoCompletedCheckbox({ todo }) {
       className={`focus:ring-green-haze-500 flex size-6 flex-shrink-0 cursor-pointer items-center justify-center rounded border-2 transition-all duration-200 focus:ring-2 focus:ring-offset-2 focus:outline-none ${
         todo.isCompleted
           ? 'border-green-haze-600 bg-green-haze-600 text-white'
-          : 'hover:border-green-haze-500 border-gray-300 bg-white'
+          : 'hover:border-green-haze-500 border-neutral-300 bg-white'
       }`}
       aria-checked={todo.isCompleted}
       aria-label={`Mark task "${todo.text}" as ${todo.isCompleted ? 'incomplete' : 'complete'}`}

@@ -70,7 +70,7 @@ const Todo = forwardRef(({ todo, style, attributes, listeners }, ref) => {
           {/** Drag handle */}
           {!todo.isCompleted && (
             <div {...attributes} {...listeners} className="cursor-grab snap-start" aria-label="Drag to reorder">
-              <GripVertical size={20} className="text-gray-400" />
+              <GripVertical size={20} className="text-neutral-400" />
             </div>
           )}
           {/** Some space */}
@@ -86,12 +86,12 @@ const Todo = forwardRef(({ todo, style, attributes, listeners }, ref) => {
             onBlur={handleQuickSave}
             suppressContentEditableWarning={true}
             contentEditable={todo.mode === 'quickedit' ? 'plaintext-only' : 'false'}
-            style={{
-              minWidth: titleWidth,
-              textDecoration: todo.isCompleted ? 'line-through' : '',
-              opacity: todo.isCompleted ? 0.5 : 1,
-            }}
-            className={`${todo.mode !== 'quickedit' ? 'line-clamp-1' : 'overflow-x-hidden whitespace-nowrap'} rounded p-1 pr-0 leading-5 font-semibold focus:outline-none`}
+            style={{ minWidth: titleWidth }}
+            className={
+              `rounded p-1 pr-0 leading-5 font-semibold focus:outline-none ` +
+              `${todo.mode !== 'quickedit' ? 'line-clamp-1' : 'overflow-x-hidden whitespace-nowrap'} ` +
+              `${todo.isCompleted && 'line-through opacity-50'}`
+            }
             title={todo.mode === 'quickedit' ? '' : 'Click to edit'}
             aria-label={todo.mode === 'quickedit' ? 'Edit todo title' : 'Todo title'}
             role={todo.mode === 'quickedit' ? 'textbox' : 'button'}

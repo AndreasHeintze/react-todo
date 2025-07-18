@@ -2,6 +2,7 @@ import { useRef, useEffect, useContext, forwardRef } from 'react'
 import { TodoContext } from './contexts/TodoContext'
 import { Edit, Timer, Trash2, LoaderCircle } from 'lucide-react'
 import TodoTimeSpent from './TodoTimeSpent'
+import Button from '@/components/ui/Button'
 
 const TodoButtons = forwardRef(({ todo }, ref) => {
   const { dispatch } = useContext(TodoContext)
@@ -24,31 +25,21 @@ const TodoButtons = forwardRef(({ todo }, ref) => {
       <TodoTimeSpent ref={ref} todo={todo} />
 
       {/** Edit button */}
-      <button
-        type="button"
+      <Button
         onClick={() => dispatch({ type: 'SAVE_TODO', payload: { todo, data: { mode: todo.mode === 'edit' ? 'list' : 'edit' } } })}
         disabled={todo.isCompleted}
-        className={`flex h-11 w-11 items-center justify-center rounded border p-1 font-medium transition-colors duration-200 focus:ring-2 focus:ring-blue-500 focus:outline-none ${
-          todo.isCompleted
-            ? 'cursor-not-allowed border-gray-300 bg-gray-200 text-gray-400'
-            : 'cursor-pointer border-blue-200 bg-blue-50 text-blue-600 hover:border-blue-300 hover:bg-blue-100'
-        }`}
-        aria-label={`Edit todo: ${todo.title}`}
+        color="blue"
+        ariaLabel="Edit this todo"
       >
         <Edit size={24} aria-hidden="true" />
-      </button>
+      </Button>
 
       {/** Timer button */}
-      <button
-        type="button"
+      <Button
         onClick={() => dispatch({ type: 'TOGGLE_TIMER', payload: { todo } })}
         disabled={todo.isCompleted}
-        className={`flex h-11 w-11 items-center justify-center rounded border p-1 font-medium whitespace-nowrap transition-colors duration-200 focus:ring-2 focus:ring-amber-500 focus:outline-none ${
-          todo.isCompleted
-            ? 'cursor-not-allowed border-gray-300 bg-gray-200 text-gray-400'
-            : 'cursor-pointer border-amber-200 bg-amber-50 text-amber-600 hover:border-amber-300 hover:bg-amber-100'
-        }`}
-        aria-label={todo.isTimerRunning ? `Stop timer for todo: ${todo.title}` : `Start timer for todo: ${todo.title}`}
+        color="amber"
+        ariaLabel={todo.isTimerRunning ? `Stop` : `Start` + ` timer for this todo`}
       >
         {!todo.isTimerRunning && <Timer size={26} aria-hidden="true" />}
 
@@ -58,17 +49,16 @@ const TodoButtons = forwardRef(({ todo }, ref) => {
             <div className="absolute top-[9px] left-[9px] size-2 bg-current" aria-hidden="true"></div>
           </div>
         )}
-      </button>
+      </Button>
 
       {/** Delete button */}
-      <button
-        type="button"
+      <Button
         onClick={() => dispatch({ type: 'DELETE_TODO', payload: { id: todo.id } })}
-        className="flex h-11 w-11 cursor-pointer items-center justify-center rounded border border-red-200 bg-red-50 p-1 font-medium text-red-600 transition-colors duration-200 hover:border-red-300 hover:bg-red-100 focus:ring-2 focus:ring-red-500 focus:outline-none"
-        aria-label={`Delete todo: ${todo.title}`}
+        color="red"
+        ariaLabel="Delete this todo"
       >
         <Trash2 size={24} aria-hidden="true" />
-      </button>
+      </Button>
     </div>
   )
 })

@@ -27,7 +27,7 @@ export default function TodoInput() {
           placeholder="Enter your todo title here"
           value={titleInput}
           onChange={(e) => setTitleInput(e.target.value)}
-          className="focus:ring-green-haze-500 focus:border-green-haze-500 mr-2 w-full rounded border border-gray-400 bg-white p-4 focus:ring-2 focus:outline-none"
+          className="focus:ring-green-haze-500 focus:border-green-haze-500 mr-2 w-full rounded border border-neutral-400 bg-white p-4 focus:ring-2 focus:outline-none"
           aria-describedby="todo-help"
           required
         />

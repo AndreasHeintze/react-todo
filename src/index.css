@@ -1,20 +1,5 @@
 @import "tailwindcss";
 
-/* Add to your global CSS */
-@layer utilities {
-  .scrollbar-hide {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
-  .scrollbar-hide::-webkit-scrollbar {
-    display: none;
-  }
-}
-
-.p-fluid-sm {
-  padding: clamp(8px, 8px + (32 - 8) * (100cqw - 320px) / (671 - 320), 32px);
-}
-
 @theme {
   --color-havelock-blue-50: oklch(97.454% 0.00803 254.094);
   --color-havelock-blue-100: oklch(94.842% 0.01388 248.155);
@@ -28,18 +13,31 @@
   --color-havelock-blue-900: oklch(34.661% 0.06194 253.094);
   --color-havelock-blue-950: oklch(26.561% 0.04516 255.669);
 
---color-green-haze-50: oklch(97.65% 0.01645 163.126);
---color-green-haze-100: oklch(94.259% 0.04108 158.761);
---color-green-haze-200: oklch(88.683% 0.07221 159.522);
---color-green-haze-300: oklch(81.107% 0.10724 161.249);
---color-green-haze-400: oklch(72.078% 0.1334 159.695);
---color-green-haze-500: oklch(60.727% 0.12766 159.213);
---color-green-haze-600: oklch(54.144% 0.11538 159.849);
---color-green-haze-700: oklch(46.314% 0.09594 161.073);
---color-green-haze-800: oklch(39.518% 0.07694 162.728);
---color-green-haze-900: oklch(34.97% 0.06584 163.964);
---color-green-haze-950: oklch(24.275% 0.04059 167.681);
-
+  --color-green-haze-50: oklch(97.65% 0.01645 163.126);
+  --color-green-haze-100: oklch(94.259% 0.04108 158.761);
+  --color-green-haze-200: oklch(88.683% 0.07221 159.522);
+  --color-green-haze-300: oklch(81.107% 0.10724 161.249);
+  --color-green-haze-400: oklch(72.078% 0.1334 159.695);
+  --color-green-haze-500: oklch(60.727% 0.12766 159.213);
+  --color-green-haze-600: oklch(54.144% 0.11538 159.849);
+  --color-green-haze-700: oklch(46.314% 0.09594 161.073);
+  --color-green-haze-800: oklch(39.518% 0.07694 162.728);
+  --color-green-haze-900: oklch(34.97% 0.06584 163.964);
+  --color-green-haze-950: oklch(24.275% 0.04059 167.681);
 
   --shadow-tiny: 0 0 0 calc(1px / var(--scale-x, 1)) rgba(63, 63, 68, 0.05), 0 1px calc(3px / var(--scale-x, 1)) 0 rgba(34, 33, 81, 0.15);
+}
+
+@layer utilities {
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  .p-fluid-sm {
+    padding: clamp(8px, 8px + (32 - 8) * (100cqw - 320px) / (671 - 320), 32px);
+  }
 }
