@@ -1,4 +1,4 @@
-import { forwardRef, useContext, useRef, useState, useEffect } from 'react'
+import { useContext, useRef, useState, useEffect } from 'react'
 import { GripVertical } from 'lucide-react'
 import { TodoContext } from './contexts/TodoContext'
 import TodoCompletedCheckbox from './TodoCompletedCheckbox'
@@ -6,7 +6,7 @@ import TodoEdit from './TodoEdit'
 import TodoTimeLog from './TodoTimeLog'
 import TodoButtons from './TodoButtons'
 
-const Todo = forwardRef(({ todo, style, attributes, listeners }, ref) => {
+export default function Todo({ todo, style, attributes, listeners, ref }) {
   const { dispatch, handleScroll } = useContext(TodoContext)
   const swipeTodoRef = useRef(null)
   const totalTimeRef = useRef(null)
@@ -116,8 +116,4 @@ const Todo = forwardRef(({ todo, style, attributes, listeners }, ref) => {
       {todo.mode === 'timelog' && <TodoTimeLog todo={todo} />}
     </div>
   )
-})
-
-Todo.displayName = 'Todo'
-
-export default Todo
+}

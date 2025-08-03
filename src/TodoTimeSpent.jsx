@@ -1,8 +1,8 @@
-import { forwardRef, useState, useContext, useRef, useEffect } from 'react'
+import { useState, useContext, useRef, useEffect } from 'react'
 import { TodoContext } from './contexts/TodoContext'
 import { formatTimeSpent, roundMs } from './helpers'
 
-const TodoTimeSpent = forwardRef(({ todo }, ref) => {
+export default function TodoTimeSpent({ todo, ref }) {
   const { dispatch } = useContext(TodoContext)
 
   // Update tick every second
@@ -56,8 +56,4 @@ const TodoTimeSpent = forwardRef(({ todo }, ref) => {
       {formatTimeSpent(totalTime)}
     </button>
   )
-})
-
-TodoTimeSpent.displayName = 'TodoTimeSpent'
-
-export default TodoTimeSpent
+}

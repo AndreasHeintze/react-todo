@@ -1,10 +1,10 @@
-import { useRef, useEffect, useContext, forwardRef } from 'react'
+import { useRef, useEffect, useContext } from 'react'
 import { TodoContext } from './contexts/TodoContext'
 import { Edit, Timer, Trash2, LoaderCircle } from 'lucide-react'
 import TodoTimeSpent from './TodoTimeSpent'
 import Button from '@/components/ui/Button'
 
-const TodoButtons = forwardRef(({ todo }, ref) => {
+export default function TodoButtons({ todo, ref }) {
   const { dispatch } = useContext(TodoContext)
   const buttonsRef = useRef(null)
 
@@ -61,8 +61,4 @@ const TodoButtons = forwardRef(({ todo }, ref) => {
       </Button>
     </div>
   )
-})
-
-TodoButtons.displayName = 'TodoButtons'
-
-export default TodoButtons
+}
