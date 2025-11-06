@@ -1,18 +1,15 @@
-import { useState, useContext, useCallback } from 'react'
+import { useState, useContext } from 'react'
 import { TodoContext } from './contexts/TodoContext'
 
 export default function TodoInput() {
   const { dispatch } = useContext(TodoContext)
   const [titleInput, setTitleInput] = useState('')
 
-  const handleSubmit = useCallback(
-    (e) => {
-      e.preventDefault()
-      dispatch({ type: 'ADD_TODO', payload: titleInput })
-      setTitleInput('')
-    },
-    [dispatch, titleInput]
-  )
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    dispatch({ type: 'ADD_TODO', payload: titleInput })
+    setTitleInput('')
+  }
 
   return (
     <form onSubmit={handleSubmit}>

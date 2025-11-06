@@ -1,22 +1,19 @@
-import { useCallback, useContext } from 'react'
+import { useContext } from 'react'
 import { TodoContext } from './contexts/TodoContext'
 
 export default function TodoCompletedCheckbox({ todo }) {
   const { dispatch } = useContext(TodoContext)
 
-  const handleTodoCompleted = useCallback(() => {
+  const handleTodoCompleted = () => {
     dispatch({ type: 'COMPLETE_TODO', payload: { todo } })
-  }, [todo, dispatch])
+  }
 
-  const handleKeyUp = useCallback(
-    (e) => {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault()
-        handleTodoCompleted()
-      }
-    },
-    [handleTodoCompleted]
-  )
+  const handleKeyUp = (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault()
+      handleTodoCompleted()
+    }
+  }
 
   return (
     <button

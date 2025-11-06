@@ -5,7 +5,7 @@
  * runningTimeItem is the timeLog item that currently has a timer running. Only one time log item can have a timer running at once.
  */
 
-import { useRef, useMemo, useCallback } from 'react'
+import { useRef } from 'react'
 import { generateId, usePersistedReducer, roundMs } from '../helpers'
 import { TodoContext } from './TodoContext'
 
@@ -209,7 +209,7 @@ export function TodoProvider({ children }) {
   const swipedTodo = useRef(null)
 
   // Set swiped todo & swipe other back
-  const handleScroll = useCallback((e) => {
+  const handleScroll = (e) => {
     e.stopPropagation()
     const scrolledTodo = e.currentTarget
     const scrollPos = scrolledTodo.scrollLeft
@@ -228,25 +228,19 @@ export function TodoProvider({ children }) {
 
     scrolledTodo.dataset.scrollPos = scrollPos
     swipedTodo.current = scrolledTodo
-  }, [])
+  }
 
-  const { activeTodos, completedTodos } = useMemo(() => {
-    const allTodos = [...state.todos.values()]
-    const active = allTodos.filter((todo) => todo && !todo.isCompleted).sort((a, b) => a.sortOrder - b.sortOrder)
-    const completed = allTodos.filter((todo) => todo && todo.isCompleted).sort((a, b) => b.completedAt - a.completedAt)
-    return { activeTodos: active, completedTodos: completed }
-  }, [state.todos])
+  const allTodos = [...state.todos.values()]
+  const activeTodos = allTodos.filter((todo) => todo && !todo.isCompleted).sort((a, b) => a.sortOrder - b.sortOrder)
+  const completedTodos = allTodos.filter((todo) => todo && todo.isCompleted).sort((a, b) => b.completedAt - a.completedAt)
 
-  const contextValue = useMemo(
-    () => ({
-      state,
-      dispatch,
-      handleScroll,
-      activeTodos,
-      completedTodos,
-    }),
-    [state, dispatch, handleScroll, activeTodos, completedTodos]
-  )
+  const contextValue = {
+    state,
+    dispatch,
+    handleScroll,
+    activeTodos,
+    completedTodos,
+  }
 
   return <TodoContext value={contextValue}>{children}</TodoContext>
 }

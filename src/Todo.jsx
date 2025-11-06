@@ -113,7 +113,7 @@ export default function Todo({ todo, style, attributes, listeners, ref }) {
         <TodoButtons ref={totalTimeRef} todo={todo} />
       </div>
       <TodoEdit todo={todo} />
-      {todo.mode === 'timelog' && <TodoTimeLog todo={todo} />}
+      <TodoTimeLog todo={todo} />
     </div>
   )
 }

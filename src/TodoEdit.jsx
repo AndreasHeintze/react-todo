@@ -18,11 +18,10 @@ export default function TodoEdit({ todo }) {
       onSubmit={handleSubmit}
       style={{ interpolateSize: 'allow-keywords' }}
       className={
-        'block space-y-3 overflow-hidden transition-[height] duration-300 ease-in-out ' +
-        (todo.mode === 'edit' ? 'h-auto' : 'h-0')
+        'block overflow-hidden transition-[height] duration-300 ease-in-out ' + (todo.mode === 'edit' ? 'h-auto' : 'h-0')
       }
     >
-      <div className="p-3 pt-1">
+      <div className="space-y-3 p-3 pt-1">
         <label className="py-2 font-semibold" htmlFor={titleRef}>
           Title
         </label>
