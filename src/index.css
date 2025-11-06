@@ -28,6 +28,10 @@
   --shadow-tiny: 0 0 0 calc(1px / var(--scale-x, 1)) rgba(63, 63, 68, 0.05), 0 1px calc(3px / var(--scale-x, 1)) 0 rgba(34, 33, 81, 0.15);
 }
 
+body {
+  --base-color: oklch(42.72% 0.09097 251.669);
+}
+
 @layer utilities {
   .scrollbar-hide {
     -ms-overflow-style: none;
