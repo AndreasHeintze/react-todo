@@ -5,7 +5,7 @@ import { formatDate, formatTime, formatTimeSpentDisplay } from './helpers'
 export default function TodoTimeLog({ todo }) {
   const { state } = useContext(TodoContext)
 
-  const todoTimeLog = () => [...state.timeLog.values()].filter((timeItem) => timeItem.todoId === todo.id)
+  const todoTimeLog = [...state.timeLog.values()].filter((timeItem) => timeItem.todoId === todo.id)
 
   function getLoggedTimeTitle(timeItem) {
     const loggedTime = timeItem.stop ? formatTimeSpentDisplay(timeItem.start, timeItem.stop) : ''
