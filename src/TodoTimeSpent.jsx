@@ -5,33 +5,28 @@ import { formatTimeSpent, roundMs } from './helpers'
 export default function TodoTimeSpent({ todo, ref }) {
   const { dispatch } = useContext(TodoContext)
 
-  // Update tick every second
+  // Update tick every second to force re-render
   const [, setTick] = useState(0)
   const intervalId = useRef(null)
   useEffect(() => {
-    if (!todo.isTimerRunning) {
-      // Stop interval when timer stops
+    if (todo.isTimerRunning) {
+      // Start interval for this specific Todo
+      intervalId.current = setInterval(() => {
+        setTick((prevTick) => prevTick + 1)
+      }, 1000)
+    }
+
+    return () => {
+      // Clean up interval on unmount or when timer state changes
       if (intervalId.current) {
         clearInterval(intervalId.current)
         intervalId.current = null
       }
-      return
     }
+  }, [todo.isTimerRunning])
 
-    // Start interval for this specific Todo
-    intervalId.current = setInterval(() => {
-      setTick((prevTick) => prevTick + 1)
-    }, 1000)
-
-    return () => {
-      if (intervalId.current) {
-        clearInterval(intervalId.current)
-      }
-    }
-  }, [todo.isTimerRunning, todo.startTime])
-
-  // Use a re-render to calculate time
-  const totalTime = todo.timeSpent + (todo.isTimerRunning && todo.startTime ? roundMs(Date.now()) - roundMs(todo.startTime) : 0)
+  // Use a re-render to calculate time (tick forces re-render every second)
+  const totalTime = todo.timeSpent + (todo.isTimerRunning && todo.startTime !== null ? Date.now() - todo.startTime : 0)
 
   return (
     <button
@@ -47,7 +42,7 @@ export default function TodoTimeSpent({ todo, ref }) {
     >
       {/** Todo timer running indicator */}
       {todo.isTimerRunning && (
-        <span className="relative -left-[2px] flex size-3">
+        <span className="relative -left-0.5 flex size-3">
           <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-400 opacity-75"></span>
           <span className="relative inline-flex size-3 rounded-full bg-red-500"></span>
         </span>
