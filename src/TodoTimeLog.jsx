@@ -50,7 +50,7 @@ export default function TodoTimeLog({ todo }) {
                   <div>-</div>
 
                   <input
-                    key={todo.isTimerRunning ? timeItem.stop : timeItem.id}
+                    key={timeItem.stop}
                     className="w-48 font-mono"
                     type="datetime-local"
                     step="1"
