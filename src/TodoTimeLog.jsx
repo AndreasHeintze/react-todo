@@ -16,7 +16,6 @@ export default function TodoTimeLog({ todo }) {
     >
       <div className="space-y-3 p-3 pt-1">
         <h3 className="font-semibold">Time log</h3>
-        {/*<ul className="overflow-auto border border-neutral-200 bg-white p-2 pr-0 font-mono text-sm">*/}
         <ul className="grid grid-cols-[1fr_auto] gap-x-4 gap-y-2 overflow-auto border border-neutral-200 bg-white p-2 pr-0 font-mono text-sm @2xl:gap-y-1">
           {todoTimeLog.length === 0 && <li className="text-left">No times registered yet.</li>}
 
@@ -36,7 +35,7 @@ export default function TodoTimeLog({ todo }) {
               <li key={timeItem.id} className="col-span-2 grid grid-cols-subgrid gap-4 py-3 odd:bg-neutral-50 @2xl:py-0">
                 <div className="flex gap-4">
                   <input
-                    className="w-48 font-mono"
+                    className="w-48"
                     type="datetime-local"
                     step="1"
                     value={formatDateTimeLocal(timeItem.start)}
@@ -52,13 +51,11 @@ export default function TodoTimeLog({ todo }) {
                   <div>-</div>
 
                   <input
-                    key={timeItem.stop}
-                    className="w-48 font-mono"
+                    className="w-48"
                     type="datetime-local"
                     step="1"
                     value={formatDateTimeLocal(timeItem.stop)}
                     min={formatDateTimeLocal(timeItem.start)}
-                    onFocus={() => console.log('Input focused')}
                     onChange={(e) => {
                       dispatch({
                         type: 'UPDATE_TIMEITEM',
