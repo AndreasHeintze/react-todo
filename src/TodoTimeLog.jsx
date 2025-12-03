@@ -1,6 +1,6 @@
 import { useContext } from 'react'
 import { TodoContext } from './contexts/TodoContext'
-import { formatDateTimeLocal, formatTimeSpent, roundMs } from './helpers'
+import { formatTimeSpent, formatDate, formatTime, roundMs } from './helpers'
 
 export default function TodoTimeLog({ todo }) {
   const { state, dispatch } = useContext(TodoContext)
@@ -22,47 +22,91 @@ export default function TodoTimeLog({ todo }) {
           {todoTimeLog.length > 0 && (
             <li className="col-span-2 grid grid-cols-subgrid gap-4 font-semibold odd:bg-neutral-50">
               <div className="flex gap-4">
-                <div className="w-48">Start</div>
+                <div className="w-57">Start</div>
                 <div>&nbsp;</div>
-                <div className="w-48">Stop</div>
+                <div className="w-57">Stop</div>
               </div>
               <div className="pr-2 text-right">Time</div>
             </li>
           )}
 
           {todoTimeLog.length > 0 &&
-            todoTimeLog.map((timeItem) => (
+            todoTimeLog.map((timeItem, index) => (
               <li key={timeItem.id} className="col-span-2 grid grid-cols-subgrid gap-4 py-3 odd:bg-neutral-50 @2xl:py-0">
                 <div className="flex gap-4">
-                  <input
-                    className="w-48"
-                    type="datetime-local"
-                    step="1"
-                    value={formatDateTimeLocal(timeItem.start)}
-                    max={formatDateTimeLocal(timeItem.stop)}
-                    onChange={(e) => {
-                      dispatch({
-                        type: 'UPDATE_TIMEITEM',
-                        payload: { ...timeItem, start: new Date(e.target.value).getTime() },
-                      })
-                    }}
-                  />
+                  <div className="flex items-center gap-3">
+                    {/* Start: Native date picker */}
+                    <input
+                      type="date"
+                      className="w-29"
+                      value={formatDate(timeItem.start)} // "2025-12-03"
+                      onChange={(e) => {
+                        const [y, m, d] = e.target.value.split('-')
+                        const newDate = new Date(timeItem.start)
+                        newDate.setFullYear(+y, +m - 1, +d)
+                        dispatch({
+                          type: 'UPDATE_TIMEITEM',
+                          payload: { ...timeItem, start: newDate.getTime() },
+                        })
+                      }}
+                    />
+
+                    {/* Start: Native time picker */}
+                    <input
+                      type="time"
+                      step="1"
+                      className="w-25"
+                      value={formatTime(timeItem.start)} // "09:14:37"
+                      onChange={(e) => {
+                        const [h, m, s] = e.target.value.split(':')
+                        const newDate = new Date(timeItem.start)
+                        newDate.setHours(+h, +m, +s || 0)
+                        dispatch({
+                          type: 'UPDATE_TIMEITEM',
+                          payload: { ...timeItem, start: newDate.getTime() },
+                        })
+                      }}
+                    />
+                  </div>
 
                   <div>-</div>
 
-                  <input
-                    className="w-48"
-                    type="datetime-local"
-                    step="1"
-                    value={formatDateTimeLocal(timeItem.stop)}
-                    min={formatDateTimeLocal(timeItem.start)}
-                    onChange={(e) => {
-                      dispatch({
-                        type: 'UPDATE_TIMEITEM',
-                        payload: { ...timeItem, stop: new Date(e.target.value).getTime() },
-                      })
-                    }}
-                  />
+                  <div className="flex items-center gap-3">
+                    {/* Stop: Native date picker */}
+                    <input
+                      type="date"
+                      className="w-29"
+                      value={formatDate(timeItem.stop)} // "2025-12-03"
+                      disabled={todo.isTimerRunning && todoTimeLog.length === index + 1}
+                      onChange={(e) => {
+                        const [y, m, d] = e.target.value.split('-')
+                        const newDate = new Date(timeItem.stop)
+                        newDate.setFullYear(+y, +m - 1, +d)
+                        dispatch({
+                          type: 'UPDATE_TIMEITEM',
+                          payload: { ...timeItem, stop: newDate.getTime() },
+                        })
+                      }}
+                    />
+
+                    {/* Stop: Native time picker */}
+                    <input
+                      type="time"
+                      step="1"
+                      className="w-25"
+                      value={formatTime(timeItem.stop)} // "09:14:37"
+                      disabled={todo.isTimerRunning && todoTimeLog.length === index + 1}
+                      onChange={(e) => {
+                        const [h, m, s] = e.target.value.split(':')
+                        const newDate = new Date(timeItem.stop)
+                        newDate.setHours(+h, +m, +s || 0)
+                        dispatch({
+                          type: 'UPDATE_TIMEITEM',
+                          payload: { ...timeItem, stop: newDate.getTime() },
+                        })
+                      }}
+                    />
+                  </div>
                 </div>
                 <div className="pr-2 text-right whitespace-nowrap">
                   {formatTimeSpent(roundMs(timeItem.stop) - roundMs(timeItem.start))}
