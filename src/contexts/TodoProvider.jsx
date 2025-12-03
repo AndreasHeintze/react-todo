@@ -203,24 +203,32 @@ export function TodoProvider({ children }) {
   const [state, dispatch] = usePersistedReducer(todoReducer, initialState, 'todoState')
 
   const swipedTodo = useRef(null)
-  const timerIntervalId = useRef(null)
 
-  // Set up interval to update running time item every second
   useEffect(() => {
     if (state.runningTimeItem) {
-      timerIntervalId.current = setInterval(() => {
-        const updatedTimeItem = {
-          ...state.runningTimeItem,
-          stop: roundMs(Date.now()),
-        }
-        dispatch({ type: 'UPDATE_TIMEITEM', payload: updatedTimeItem })
-      }, 1000)
-    }
+      let animationFrameId
+      let lastUpdate = Date.now()
 
-    return () => {
-      if (timerIntervalId.current) {
-        clearInterval(timerIntervalId.current)
-        timerIntervalId.current = null
+      const updateTimer = () => {
+        const now = Date.now()
+        // Only update if at least 1 second has passed
+        if (now - lastUpdate >= 1000) {
+          const updatedTimeItem = {
+            ...state.runningTimeItem,
+            stop: roundMs(now),
+          }
+          dispatch({ type: 'UPDATE_TIMEITEM', payload: updatedTimeItem })
+          lastUpdate = now
+        }
+        animationFrameId = requestAnimationFrame(updateTimer)
+      }
+
+      animationFrameId = requestAnimationFrame(updateTimer)
+
+      return () => {
+        if (animationFrameId) {
+          cancelAnimationFrame(animationFrameId)
+        }
       }
     }
   }, [state.runningTimeItem, dispatch])
