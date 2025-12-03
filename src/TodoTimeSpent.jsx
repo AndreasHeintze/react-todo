@@ -1,32 +1,10 @@
-import { useState, useContext, useRef, useEffect } from 'react'
+import { useContext } from 'react'
 import { TodoContext } from './contexts/TodoContext'
-import { formatTimeSpent, roundMs } from './helpers'
+import { formatTimeSpent, calcTotalTime } from './helpers'
 
 export default function TodoTimeSpent({ todo, ref }) {
-  const { dispatch } = useContext(TodoContext)
-
-  // Update tick every second to force re-render
-  const [, setTick] = useState(0)
-  const intervalId = useRef(null)
-  useEffect(() => {
-    if (todo.isTimerRunning) {
-      // Start interval for this specific Todo
-      intervalId.current = setInterval(() => {
-        setTick((prevTick) => prevTick + 1)
-      }, 1000)
-    }
-
-    return () => {
-      // Clean up interval on unmount or when timer state changes
-      if (intervalId.current) {
-        clearInterval(intervalId.current)
-        intervalId.current = null
-      }
-    }
-  }, [todo.isTimerRunning])
-
-  // Use a re-render to calculate time (tick forces re-render every second)
-  const totalTime = todo.timeSpent + (todo.isTimerRunning && todo.startTime !== null ? Date.now() - todo.startTime : 0)
+  const { state, dispatch } = useContext(TodoContext)
+  const totalTime = calcTotalTime(todo, state.timeLog)
 
   return (
     <button

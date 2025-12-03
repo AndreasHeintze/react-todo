@@ -4,16 +4,24 @@ export function roundMs(timestamp) {
   return Math.round(timestamp / 1000) * 1000
 }
 
-export function formatDate(timestamp) {
-  const date = new Date(timestamp)
-  return date.toLocaleDateString()
+export function calcTotalTime(todo, timeLog) {
+  const filteredItems = Array.from(timeLog.values()).filter((item) => item.todoId === todo.id)
+  let totalTime = 0
+  filteredItems.forEach((item) => {
+    totalTime += (item.stop ? item.stop : roundMs(Date.now())) - item.start
+  })
+  return totalTime
 }
 
-export function formatTime(timestamp) {
-  // Round to nearest second
-  const roundedTimestamp = roundMs(timestamp)
-  const date = new Date(roundedTimestamp)
-  return date.toLocaleTimeString()
+export function formatDateTimeLocal(timestamp) {
+  const date = new Date(timestamp)
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  const hours = String(date.getHours()).padStart(2, '0')
+  const minutes = String(date.getMinutes()).padStart(2, '0')
+  const seconds = String(date.getSeconds()).padStart(2, '0')
+  return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`
 }
 
 export function formatTimeSpent(ms) {
@@ -25,12 +33,12 @@ export function formatTimeSpent(ms) {
   const minutes = Math.floor((totalSeconds % 3600) / 60)
   const seconds = totalSeconds % 60
 
-  let dayPart = ""
+  let dayPart = ''
   if (days > 0) {
     dayPart = `${days} ${days === 1 ? 'day' : 'days'} `
   }
 
-  let timePart = ""
+  let timePart = ''
   if (days > 0) {
     timePart = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
   } else if (hours > 0) {
@@ -40,14 +48,6 @@ export function formatTimeSpent(ms) {
   }
 
   return dayPart + timePart
-}
-
-export function formatTimeSpentDisplay(startTimestamp, endTimestamp) {
-  // Round both timestamps to nearest second
-  const roundedStart = roundMs(startTimestamp)
-  const roundedEnd = roundMs(endTimestamp)
-  
-  return formatTimeSpent(roundedEnd - roundedStart)
 }
 
 export function usePersistedReducer(reducer, initialState, storageKey) {

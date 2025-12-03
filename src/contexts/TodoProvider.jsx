@@ -5,7 +5,7 @@
  * runningTimeItem is the timeLog item that currently has a timer running. Only one time log item can have a timer running at once.
  */
 
-import { useRef } from 'react'
+import { useRef, useEffect } from 'react'
 import { generateId, usePersistedReducer, roundMs } from '../helpers'
 import { TodoContext } from './TodoContext'
 
@@ -60,15 +60,6 @@ function findTopSortPosition(todos) {
   return minSortOrder
 }
 
-function stopTimer(currTodo, currentTime) {
-  return {
-    ...currTodo,
-    isTimerRunning: false,
-    startTime: null,
-    timeSpent: currTodo.timeSpent + (currentTime - currTodo.startTime),
-  }
-}
-
 const initialState = {
   todos: new Map(),
   timeLog: new Map(),
@@ -90,8 +81,6 @@ function todoReducer(state, action) {
         mode: 'list',
         color: getRandomTailwindColor(),
         isTimerRunning: false,
-        startTime: null,
-        timeSpent: 0,
         sortOrder: findTopSortPosition([...state.todos.values()]) - 1,
         isCompleted: false,
         completedAt: null,
@@ -128,7 +117,7 @@ function todoReducer(state, action) {
       const newTodos = new Map(state.todos)
       const currentTime = roundMs(Date.now())
       const isCompleted = !todo.isCompleted
-      const baseTodo = todo.isTimerRunning ? stopTimer(todo, currentTime) : todo
+      const baseTodo = todo.isTimerRunning ? { ...todo, isTimerRunning: false } : todo
 
       newTodos.set(todo.id, {
         ...baseTodo,
@@ -158,20 +147,20 @@ function todoReducer(state, action) {
       if (isStarting && runningTimeItem) {
         const runningTodo = newTodos.get(runningTimeItem.todoId)
         if (runningTodo) {
-          newTodos.set(runningTodo.id, stopTimer(runningTodo, currentTime))
+          newTodos.set(runningTodo.id, { ...runningTodo, isTimerRunning: false })
         }
         newTimeLog.set(runningTimeItem.id, { ...runningTimeItem, stop: currentTime })
       }
 
       // Start timer on this todo and add a new running time log item
       if (isStarting) {
-        newTodos.set(todo.id, { ...todo, isTimerRunning: true, startTime: currentTime })
+        newTodos.set(todo.id, { ...todo, isTimerRunning: true })
         const newTimeItemId = generateId()
-        runningTimeItem = { id: newTimeItemId, todoId: todo.id, start: currentTime, stop: null }
+        runningTimeItem = { id: newTimeItemId, todoId: todo.id, start: currentTime, stop: roundMs(Date.now()) }
         newTimeLog.set(newTimeItemId, runningTimeItem)
         // ..or else stop the timer on this todo and in the time log
       } else {
-        newTodos.set(todo.id, stopTimer(todo, currentTime))
+        newTodos.set(todo.id, { ...todo, isTimerRunning: false })
         if (runningTimeItem) {
           newTimeLog.set(runningTimeItem.id, { ...runningTimeItem, stop: currentTime })
         }
@@ -179,6 +168,13 @@ function todoReducer(state, action) {
       }
 
       return { ...state, todos: newTodos, timeLog: newTimeLog, runningTimeItem }
+    }
+    case 'UPDATE_TIMEITEM': {
+      const newTimeItem = action.payload
+      const newTimeLog = new Map(state.timeLog)
+      newTimeLog.set(newTimeItem.id, newTimeItem)
+
+      return { ...state, timeLog: newTimeLog }
     }
     case 'SORT_TODOS': {
       const { draggedTodo, droppedOnTodo } = action.payload
@@ -207,6 +203,27 @@ export function TodoProvider({ children }) {
   const [state, dispatch] = usePersistedReducer(todoReducer, initialState, 'todoState')
 
   const swipedTodo = useRef(null)
+  const timerIntervalId = useRef(null)
+
+  // Set up interval to update running time item every second
+  useEffect(() => {
+    if (state.runningTimeItem) {
+      timerIntervalId.current = setInterval(() => {
+        const updatedTimeItem = {
+          ...state.runningTimeItem,
+          stop: roundMs(Date.now()),
+        }
+        dispatch({ type: 'UPDATE_TIMEITEM', payload: updatedTimeItem })
+      }, 1000)
+    }
+
+    return () => {
+      if (timerIntervalId.current) {
+        clearInterval(timerIntervalId.current)
+        timerIntervalId.current = null
+      }
+    }
+  }, [state.runningTimeItem, dispatch])
 
   // Set swiped todo & swipe other back
   const handleScroll = (e) => {

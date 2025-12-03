@@ -20,6 +20,8 @@ export default function TodoEdit({ todo }) {
       className={
         'block overflow-hidden transition-[height] duration-300 ease-in-out ' + (todo.mode === 'edit' ? 'h-auto' : 'h-0')
       }
+      inert={todo.mode !== 'edit' || undefined}
+      data-mode={todo.mode}
     >
       <div className="space-y-3 p-3 pt-1">
         <label className="py-2 font-semibold" htmlFor={titleRef}>

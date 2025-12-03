@@ -74,7 +74,7 @@ export default function Todo({ todo, style, attributes, listeners, ref }) {
             </div>
           )}
           {/** Some space */}
-          {todo.isCompleted && <div className="size-[20px] min-w-[20px] snap-start"></div>}
+          {todo.isCompleted && <div className="size-5 min-w-5 snap-start"></div>}
 
           {/** Todo completed checkbox */}
           <TodoCompletedCheckbox todo={todo} />
