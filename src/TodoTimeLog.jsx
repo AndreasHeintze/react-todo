@@ -56,6 +56,7 @@ export default function TodoTimeLog({ todo }) {
                     step="1"
                     value={formatDateTimeLocal(timeItem.stop)}
                     min={formatDateTimeLocal(timeItem.start)}
+                    onFocus={() => console.log('Input focused')}
                     onChange={(e) => {
                       dispatch({
                         type: 'UPDATE_TIMEITEM',
