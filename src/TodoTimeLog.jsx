@@ -62,6 +62,7 @@ export default function TodoTimeLog({ todo }) {
                       })
                     }}
                   />
+                  <div>{formatDateTimeLocal(timeItem.stop)}</div>
                 </div>
                 <div className="pr-2 text-right whitespace-nowrap">
                   {formatTimeSpent(roundMs(timeItem.stop) - roundMs(timeItem.start))}
