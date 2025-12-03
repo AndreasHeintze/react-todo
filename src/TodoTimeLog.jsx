@@ -6,6 +6,8 @@ export default function TodoTimeLog({ todo }) {
   const { state, dispatch } = useContext(TodoContext)
   const todoTimeLog = [...state.timeLog.values()].filter((timeItem) => timeItem.todoId === todo.id)
 
+  console.log('TodoTimeLog')
+
   return (
     <div
       style={{ interpolateSize: 'allow-keywords' }}
