@@ -34,7 +34,7 @@ export default function TodoTimeLog({ todo }) {
               <li key={timeItem.id} className="col-span-2 grid grid-cols-subgrid gap-4 py-3 odd:bg-neutral-50 @2xl:py-0">
                 <div className="flex gap-4">
                   <input
-                    className="w-48"
+                    className="w-48 font-mono"
                     type="datetime-local"
                     step="1"
                     value={formatDateTimeLocal(timeItem.start)}
@@ -50,7 +50,7 @@ export default function TodoTimeLog({ todo }) {
                   <div>-</div>
 
                   <input
-                    className="w-48"
+                    className="w-48 font-mono"
                     type="datetime-local"
                     step="1"
                     value={formatDateTimeLocal(timeItem.stop)}
