@@ -50,6 +50,7 @@ export default function TodoTimeLog({ todo }) {
                   <div>-</div>
 
                   <input
+                    key={todo.isTimerRunning ? timeItem.stop : undefined}
                     className="w-48 font-mono"
                     type="datetime-local"
                     step="1"
@@ -62,7 +63,6 @@ export default function TodoTimeLog({ todo }) {
                       })
                     }}
                   />
-                  <div>{formatDateTimeLocal(timeItem.stop)}</div>
                 </div>
                 <div className="pr-2 text-right whitespace-nowrap">
                   {formatTimeSpent(roundMs(timeItem.stop) - roundMs(timeItem.start))}
