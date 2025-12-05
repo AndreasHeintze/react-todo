@@ -2,8 +2,8 @@ import { useContext, useState } from 'react'
 import { DndContext, DragOverlay, closestCenter } from '@dnd-kit/core'
 import { SortableContext, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
-import { TodoContext } from './contexts/TodoContext'
-import Todo from './Todo'
+import { TodoContext } from './contexts/TodoContext.js'
+import Todo from './Todo.js'
 
 const SortableTodo = function SortableTodo({ todo }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: todo.id })

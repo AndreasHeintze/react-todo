@@ -1,7 +1,7 @@
 import { useRef, useEffect, useContext } from 'react'
-import { TodoContext } from './contexts/TodoContext'
+import { TodoContext } from './contexts/TodoContext.js'
 import { Edit, Timer, Trash2, LoaderCircle } from 'lucide-react'
-import TodoTimeSpent from './TodoTimeSpent'
+import TodoTimeSpent from './TodoTimeSpent.js'
 import Button from '@/components/ui/Button'
 
 export default function TodoButtons({ todo, ref }) {

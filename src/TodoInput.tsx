@@ -1,5 +1,5 @@
 import { useState, useContext } from 'react'
-import { TodoContext } from './contexts/TodoContext'
+import { TodoContext } from './contexts/TodoContext.js'
 
 export default function TodoInput() {
   const { dispatch } = useContext(TodoContext)

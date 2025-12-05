@@ -1,5 +1,5 @@
 import { useContext, useRef } from 'react'
-import { TodoContext } from './contexts/TodoContext'
+import { TodoContext } from './contexts/TodoContext.js'
 
 export default function TodoEdit({ todo }) {
   const { dispatch } = useContext(TodoContext)

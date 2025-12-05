@@ -1,6 +1,6 @@
 import { useContext } from 'react'
-import { TodoContext } from './contexts/TodoContext'
-import { formatDateTimeLocal, formatTimeSpent, roundMs } from './helpers'
+import { TodoContext } from './contexts/TodoContext.js'
+import { formatDateTimeLocal, formatTimeSpent, roundMs } from './helpers.js'
 
 export default function TodoTimeLog({ todo }) {
   const { state, dispatch } = useContext(TodoContext)

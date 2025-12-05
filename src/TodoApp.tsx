@@ -1,5 +1,5 @@
-import TodoInput from './TodoInput'
-import TodoList from './TodoList'
+import TodoInput from './TodoInput.js'
+import TodoList from './TodoList.js'
 
 export default function TodoApp() {
   return (

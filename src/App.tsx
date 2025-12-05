@@ -1,4 +1,4 @@
-import {TodoProvider} from "./contexts/TodoProvider"
+import { TodoProvider } from './contexts/TodoProvider'
 import TodoApp from './TodoApp'
 import './App.css'
 

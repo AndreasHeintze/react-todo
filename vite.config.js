@@ -17,6 +17,7 @@ export default defineConfig({
     tailwindcss(),
   ],
   resolve: {
+    extensions: ['.js', '.jsx', '.ts', '.tsx'],
     alias: {
       '@': '/src',
     },

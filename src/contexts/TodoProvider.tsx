@@ -6,8 +6,8 @@
  */
 
 import { useRef, useEffect } from 'react'
-import { generateId, usePersistedReducer, roundMs } from '../helpers'
-import { TodoContext } from './TodoContext'
+import { generateId, usePersistedReducer, roundMs } from '../helpers.js'
+import { TodoContext } from './TodoContext.js'
 
 const DUMMYTWCLASSES = [
   'to-red-400',

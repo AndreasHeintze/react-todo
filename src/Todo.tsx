@@ -1,10 +1,10 @@
 import { useContext, useRef, useState, useEffect } from 'react'
 import { GripVertical } from 'lucide-react'
-import { TodoContext } from './contexts/TodoContext'
-import TodoCompletedCheckbox from './TodoCompletedCheckbox'
-import TodoEdit from './TodoEdit'
-import TodoTimeLog from './TodoTimeLog'
-import TodoButtons from './TodoButtons'
+import { TodoContext } from './contexts/TodoContext.js'
+import TodoCompletedCheckbox from './TodoCompletedCheckbox.js'
+import TodoEdit from './TodoEdit.js'
+import TodoTimeLog from './TodoTimeLog.js'
+import TodoButtons from './TodoButtons.js'
 
 export default function Todo({ todo, style, attributes, listeners, ref }) {
   const { dispatch, handleScroll } = useContext(TodoContext)
