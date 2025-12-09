@@ -1,15 +1,23 @@
-import { useContext, useRef, useState, useEffect } from 'react'
+import { useRef, useState, useEffect, forwardRef, KeyboardEvent, FocusEvent } from 'react'
 import { GripVertical } from 'lucide-react'
-import { TodoContext } from './contexts/TodoContext.js'
-import TodoCompletedCheckbox from './TodoCompletedCheckbox.js'
-import TodoEdit from './TodoEdit.js'
-import TodoTimeLog from './TodoTimeLog.js'
-import TodoButtons from './TodoButtons.js'
+import { useTodoContext } from './contexts/TodoContext'
+import type { Todo as TodoType } from './types'
+import TodoCompletedCheckbox from './TodoCompletedCheckbox'
+import TodoEdit from './TodoEdit'
+import TodoTimeLog from './TodoTimeLog'
+import TodoButtons from './TodoButtons'
 
-export default function Todo({ todo, style, attributes, listeners, ref }) {
-  const { dispatch, handleScroll } = useContext(TodoContext)
-  const swipeTodoRef = useRef(null)
-  const totalTimeRef = useRef(null)
+interface TodoProps {
+  todo: TodoType
+  style?: React.CSSProperties
+  attributes?: any
+  listeners?: any
+}
+
+const Todo = forwardRef<HTMLDivElement, TodoProps>(({ todo, style, attributes, listeners }, ref) => {
+  const { dispatch, handleScroll } = useTodoContext()
+  const swipeTodoRef = useRef<HTMLDivElement>(null)
+  const totalTimeRef = useRef<HTMLButtonElement>(null)
   const [titleWidth, setTitleWidth] = useState(0)
 
   // Calc <title-width> = <todo-width> - <timer-width> - 266 or 82
@@ -31,19 +39,19 @@ export default function Todo({ todo, style, attributes, listeners, ref }) {
     return () => window.removeEventListener('resize', calculateWidth)
   }, [todo])
 
-  function handleQuickEditKey(e) {
+  function handleQuickEditKey(e: KeyboardEvent<HTMLDivElement>) {
     e.stopPropagation()
     if (e.key === 'Escape') {
-      e.target.innerText = todo.title
-      e.target.blur()
+      ;(e.target as HTMLDivElement).innerText = todo.title
+      ;(e.target as HTMLDivElement).blur()
     }
     if (e.key === 'Enter') {
-      e.target.blur()
+      ;(e.target as HTMLDivElement).blur()
     }
   }
 
-  function handleQuickSave(e) {
-    const payload = { todo, data: { title: e.target.innerText.trim(), mode: 'list' } }
+  function handleQuickSave(e: FocusEvent<HTMLDivElement>) {
+    const payload = { todo, data: { title: e.target.innerText.trim(), mode: 'list' as const } }
 
     if (!payload.data.title) {
       payload.data.title = todo.title
@@ -116,4 +124,6 @@ export default function Todo({ todo, style, attributes, listeners, ref }) {
       <TodoTimeLog todo={todo} />
     </div>
   )
-}
+})
+
+export default Todo

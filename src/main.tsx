@@ -5,10 +5,13 @@ import { ErrorBoundary } from 'react-error-boundary'
 import FallbackComponent from '@/FallbackComponent'
 import App from '@/App'
 
-createRoot(document.getElementById('root')).render(
-  <StrictMode>
-    <ErrorBoundary FallbackComponent={FallbackComponent}>
-      <App />
-    </ErrorBoundary>
-  </StrictMode>
-)
+const rootElement = document.getElementById('root')
+if (rootElement) {
+  createRoot(rootElement).render(
+    <StrictMode>
+      <ErrorBoundary FallbackComponent={FallbackComponent}>
+        <App />
+      </ErrorBoundary>
+    </StrictMode>
+  )
+}

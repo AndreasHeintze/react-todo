@@ -1,11 +1,12 @@
-import { useContext, useState } from 'react'
-import { DndContext, DragOverlay, closestCenter } from '@dnd-kit/core'
+import { useState } from 'react'
+import { DndContext, DragOverlay, closestCenter, DragStartEvent, DragEndEvent } from '@dnd-kit/core'
 import { SortableContext, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
-import { TodoContext } from './contexts/TodoContext.js'
-import Todo from './Todo.js'
+import { useTodoContext } from './contexts/TodoContext'
+import type { Todo as TodoType } from './types'
+import Todo from './Todo'
 
-const SortableTodo = function SortableTodo({ todo }) {
+const SortableTodo = function SortableTodo({ todo }: { todo: TodoType }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: todo.id })
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -17,29 +18,34 @@ const SortableTodo = function SortableTodo({ todo }) {
 }
 
 export default function TodoList() {
-  const { state, dispatch, activeTodos, completedTodos } = useContext(TodoContext)
-  const [draggedTodo, setDraggedTodo] = useState(null)
+  const { state, dispatch, activeTodos, completedTodos } = useTodoContext()
+  const [draggedTodo, setDraggedTodo] = useState<TodoType | null>(null)
 
   const activeTodoIds = activeTodos.map((todo) => todo.id)
 
-  function handleDragStart(event) {
+  function handleDragStart(event: DragStartEvent) {
     const { active } = event
     const todo = activeTodos.find((todo) => todo.id === active.id)
-    setDraggedTodo(todo)
+    if (todo) {
+      setDraggedTodo(todo)
+    }
   }
 
-  function handleDragEnd(event) {
+  function handleDragEnd(event: DragEndEvent) {
     const { active, over } = event
     setDraggedTodo(null)
 
     if (over && active.id !== over.id) {
-      const oldIndex = activeTodoIds.indexOf(active.id)
-      const newIndex = activeTodoIds.indexOf(over.id)
+      const oldIndex = activeTodoIds.indexOf(active.id as string)
+      const newIndex = activeTodoIds.indexOf(over.id as string)
 
-      const draggedTodo = activeTodos[oldIndex]
-      const droppedOnTodo = activeTodos[newIndex]
-
-      dispatch({ type: 'SORT_TODOS', payload: { draggedTodo, droppedOnTodo } })
+      if (oldIndex !== -1 && newIndex !== -1) {
+        const draggedTodo = activeTodos[oldIndex]
+        const droppedOnTodo = activeTodos[newIndex]
+        if (draggedTodo && droppedOnTodo) {
+          dispatch({ type: 'SORT_TODOS', payload: { draggedTodo, droppedOnTodo } })
+        }
+      }
     }
   }
 

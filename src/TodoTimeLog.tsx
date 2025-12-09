@@ -1,18 +1,20 @@
-import { useContext } from 'react'
-import { TodoContext } from './contexts/TodoContext.js'
-import { formatDateTimeLocal, formatTimeSpent, roundMs } from './helpers.js'
+import { useTodoContext } from './contexts/TodoContext'
+import { formatDateTimeLocal, formatTimeSpent, roundMs } from './helpers'
+import type { Todo } from './types'
 
-export default function TodoTimeLog({ todo }) {
-  const { state, dispatch } = useContext(TodoContext)
+interface TodoTimeLogProps {
+  todo: Todo
+}
+
+export default function TodoTimeLog({ todo }: TodoTimeLogProps) {
+  const { state, dispatch } = useTodoContext()
   const todoTimeLog = [...state.timeLog.values()].filter((timeItem) => timeItem.todoId === todo.id)
-
-  console.log('TodoTimeLog')
 
   return (
     <div
       style={{ interpolateSize: 'allow-keywords' }}
       className={'overflow-hidden transition-[height] duration-300 ease-in-out ' + (todo.mode === 'timelog' ? 'h-auto' : 'h-0')}
-      inert={todo.mode !== 'timelog' || undefined}
+      inert={todo.mode !== 'timelog'}
     >
       <div className="space-y-3 p-3 pt-1">
         <h3 className="font-semibold">Time log</h3>
@@ -20,7 +22,7 @@ export default function TodoTimeLog({ todo }) {
           {todoTimeLog.length === 0 && <li className="text-left">No times registered yet.</li>}
 
           {todoTimeLog.length > 0 && (
-            <li className="col-span-2 grid grid-cols-subgrid gap-4 font-semibold odd:bg-neutral-50">
+            <li className="col-span-2 grid grid-cols-subgrid gap-4 font-semibold">
               <div className="flex gap-4">
                 <div className="w-48">Start</div>
                 <div>&nbsp;</div>
@@ -32,7 +34,7 @@ export default function TodoTimeLog({ todo }) {
 
           {todoTimeLog.length > 0 &&
             todoTimeLog.map((timeItem, index) => (
-              <li key={timeItem.id} className="col-span-2 grid grid-cols-subgrid gap-4 py-3 odd:bg-neutral-50 @2xl:py-0">
+              <li key={timeItem.id} className="col-span-2 grid grid-cols-subgrid gap-4 py-3 even:bg-neutral-50 @2xl:py-0">
                 <div className="flex gap-4">
                   <input
                     className="w-48"

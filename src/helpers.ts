@@ -1,10 +1,11 @@
-import { useReducer, useEffect } from "react"
+import { useReducer, useEffect, Reducer } from 'react'
+import type { Todo, TimeLogItem } from './types'
 
-export function roundMs(timestamp) {
+export function roundMs(timestamp: number): number {
   return Math.round(timestamp / 1000) * 1000
 }
 
-export function calcTotalTime(todo, timeLog) {
+export function calcTotalTime(todo: Todo, timeLog: Map<string, TimeLogItem>): number {
   const filteredItems = Array.from(timeLog.values()).filter((item) => item.todoId === todo.id)
   let totalTime = 0
   filteredItems.forEach((item) => {
@@ -13,7 +14,7 @@ export function calcTotalTime(todo, timeLog) {
   return totalTime
 }
 
-export function formatDateTimeLocal(timestamp) {
+export function formatDateTimeLocal(timestamp: number): string {
   const date = new Date(timestamp)
   const year = date.getFullYear()
   const month = String(date.getMonth() + 1).padStart(2, '0')
@@ -24,7 +25,7 @@ export function formatDateTimeLocal(timestamp) {
   return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`
 }
 
-export function formatTimeSpent(ms) {
+export function formatTimeSpent(ms: number): string {
   if (ms < 0) ms = 0
 
   const totalSeconds = Math.round(ms / 1000)
@@ -50,7 +51,7 @@ export function formatTimeSpent(ms) {
   return dayPart + timePart
 }
 
-export function usePersistedReducer(reducer, initialState, storageKey) {
+export function usePersistedReducer<S, A>(reducer: Reducer<S, A>, initialState: S, storageKey: string): [S, React.Dispatch<A>] {
   const [state, dispatch] = useReducer(reducer, initialState, (init) => {
     try {
       const stored = localStorage.getItem(storageKey)
@@ -69,7 +70,7 @@ export function usePersistedReducer(reducer, initialState, storageKey) {
 
   useEffect(() => {
     try {
-      const dataToStore = { ...state }
+      const dataToStore: any = { ...state }
       // Handle Map serialization
       if (dataToStore.todos instanceof Map) {
         dataToStore.todos = Array.from(dataToStore.todos.entries())
@@ -86,9 +87,10 @@ export function usePersistedReducer(reducer, initialState, storageKey) {
   return [state, dispatch]
 }
 
-export function generateId() {
+export function generateId(): string {
   if (crypto.randomUUID) {
     return crypto.randomUUID()
   }
   return Date.now().toString(36) + Math.random().toString(36).slice(2)
 }
+

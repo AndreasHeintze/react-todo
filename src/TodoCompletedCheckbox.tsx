@@ -1,14 +1,19 @@
-import { useContext } from 'react'
-import { TodoContext } from './contexts/TodoContext.js'
+import { KeyboardEvent } from 'react'
+import { useTodoContext } from './contexts/TodoContext'
+import type { Todo } from './types'
 
-export default function TodoCompletedCheckbox({ todo }) {
-  const { dispatch } = useContext(TodoContext)
+interface TodoCompletedCheckboxProps {
+  todo: Todo
+}
+
+export default function TodoCompletedCheckbox({ todo }: TodoCompletedCheckboxProps) {
+  const { dispatch } = useTodoContext()
 
   const handleTodoCompleted = () => {
     dispatch({ type: 'COMPLETE_TODO', payload: { todo } })
   }
 
-  const handleKeyUp = (e) => {
+  const handleKeyUp = (e: KeyboardEvent) => {
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault()
       handleTodoCompleted()
@@ -27,7 +32,7 @@ export default function TodoCompletedCheckbox({ todo }) {
           : 'hover:border-green-haze-500 border-neutral-300 bg-white'
       }`}
       aria-checked={todo.isCompleted}
-      aria-label={`Mark task "${todo.text}" as ${todo.isCompleted ? 'incomplete' : 'complete'}`}
+      aria-label={`Mark task "${todo.title}" as ${todo.isCompleted ? 'incomplete' : 'complete'}`}
     >
       {todo.isCompleted && (
         <svg className="h-4 w-4 stroke-current stroke-2" fill="currentColor" viewBox="0 0 20 20">

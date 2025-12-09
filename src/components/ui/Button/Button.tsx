@@ -1,4 +1,14 @@
-export default function Button({ children, onClick, disabled, color, ariaLabel }) {
+import { ReactNode } from 'react'
+
+interface ButtonProps {
+  children: ReactNode
+  onClick: () => void
+  disabled?: boolean
+  color: 'blue' | 'amber' | 'red'
+  ariaLabel: string
+}
+
+export default function Button({ children, onClick, disabled, color, ariaLabel }: ButtonProps) {
   const colors = {
     blue: {
       focusRing: 'focus:ring-blue-500',

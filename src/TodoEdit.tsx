@@ -1,14 +1,19 @@
-import { useContext, useRef } from 'react'
-import { TodoContext } from './contexts/TodoContext.js'
+import { useRef, FormEvent } from 'react'
+import { useTodoContext } from './contexts/TodoContext'
+import type { Todo } from './types'
 
-export default function TodoEdit({ todo }) {
-  const { dispatch } = useContext(TodoContext)
-  const titleRef = useRef(null)
-  const descrRef = useRef(null)
+interface TodoEditProps {
+  todo: Todo
+}
 
-  function handleSubmit(e) {
+export default function TodoEdit({ todo }: TodoEditProps) {
+  const { dispatch } = useTodoContext()
+  const titleRef = useRef<HTMLInputElement>(null)
+  const descrRef = useRef<HTMLTextAreaElement>(null)
+
+  function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault()
-    const formData = new FormData(e.target)
+    const formData = new FormData(e.currentTarget)
     const data = Object.fromEntries(formData)
     dispatch({ type: 'SAVE_TODO', payload: { todo, data: { ...data, mode: 'list' } } })
   }
@@ -20,27 +25,29 @@ export default function TodoEdit({ todo }) {
       className={
         'block overflow-hidden transition-[height] duration-300 ease-in-out ' + (todo.mode === 'edit' ? 'h-auto' : 'h-0')
       }
-      inert={todo.mode !== 'edit' || undefined}
+      inert={todo.mode !== 'edit'}
       data-mode={todo.mode}
     >
       <div className="space-y-3 p-3 pt-1">
-        <label className="py-2 font-semibold" htmlFor={titleRef}>
+        <label className="py-2 font-semibold" htmlFor={titleRef.current?.id}>
           Title
         </label>
         <input
           ref={titleRef}
+          id={todo.id + '-title'}
           type="text"
           name="title"
-          defaultValue={todo.title}
+          value={todo.title}
           placeholder="Title"
           className="block w-full max-w-[80ch] border border-neutral-300 bg-white p-2"
         />
 
-        <label className="py-2 font-semibold" htmlFor={descrRef}>
+        <label className="py-2 font-semibold" htmlFor={descrRef.current?.id}>
           Description
         </label>
         <textarea
           ref={descrRef}
+          id={todo.id + '-descr'}
           name="descr"
           defaultValue={todo.descr}
           placeholder="Description"

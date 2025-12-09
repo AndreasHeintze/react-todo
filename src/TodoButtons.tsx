@@ -1,12 +1,17 @@
-import { useRef, useEffect, useContext } from 'react'
-import { TodoContext } from './contexts/TodoContext.js'
+import { useRef, useEffect, forwardRef } from 'react'
+import { useTodoContext } from './contexts/TodoContext'
+import type { Todo as TodoType } from './types'
 import { Edit, Timer, Trash2, LoaderCircle } from 'lucide-react'
-import TodoTimeSpent from './TodoTimeSpent.js'
+import TodoTimeSpent from './TodoTimeSpent'
 import Button from '@/components/ui/Button'
 
-export default function TodoButtons({ todo, ref }) {
-  const { dispatch } = useContext(TodoContext)
-  const buttonsRef = useRef(null)
+interface TodoButtonsProps {
+  todo: TodoType
+}
+
+const TodoButtons = forwardRef<HTMLButtonElement, TodoButtonsProps>(({ todo }, ref) => {
+  const { dispatch } = useTodoContext()
+  const buttonsRef = useRef<HTMLDivElement>(null)
 
   /**
    * This is a workaround for iPhone (IOS) to prevent todos
@@ -15,7 +20,7 @@ export default function TodoButtons({ todo, ref }) {
    */
   useEffect(() => {
     setTimeout(() => {
-      buttonsRef.current.classList.add('snap-end')
+      buttonsRef.current?.classList.add('snap-end')
     }, 10)
   }, [])
 
@@ -56,9 +61,12 @@ export default function TodoButtons({ todo, ref }) {
         onClick={() => dispatch({ type: 'DELETE_TODO', payload: { id: todo.id } })}
         color="red"
         ariaLabel="Delete this todo"
+        disabled={false}
       >
         <Trash2 size={24} aria-hidden="true" />
       </Button>
     </div>
   )
-}
+})
+
+export default TodoButtons

@@ -1,11 +1,11 @@
-import { useState, useContext } from 'react'
-import { TodoContext } from './contexts/TodoContext.js'
+import { useState, FormEvent } from 'react'
+import { useTodoContext } from './contexts/TodoContext'
 
 export default function TodoInput() {
-  const { dispatch } = useContext(TodoContext)
+  const { dispatch } = useTodoContext()
   const [titleInput, setTitleInput] = useState('')
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: FormEvent) => {
     e.preventDefault()
     dispatch({ type: 'ADD_TODO', payload: titleInput })
     setTitleInput('')

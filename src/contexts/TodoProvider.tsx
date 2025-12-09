@@ -5,76 +5,57 @@
  * runningTimeItem is the timeLog item that currently has a timer running. Only one time log item can have a timer running at once.
  */
 
-import { useRef, useEffect } from 'react'
-import { generateId, usePersistedReducer, roundMs } from '../helpers.js'
-import { TodoContext } from './TodoContext.js'
+import { useRef, useEffect, UIEvent, ReactNode } from 'react'
+import { generateId, usePersistedReducer, roundMs } from '../helpers'
+import { TodoContext } from './TodoContext'
+import type { TodoState, TodoAction, Todo, TodoContextType, TimeLogItem } from '../types'
 
-const DUMMYTWCLASSES = [
-  'to-red-400',
-  'to-orange-400',
-  'to-amber-400',
-  'to-yellow-400',
-  'to-lime-400',
-  'to-green-400',
-  'to-emerald-400',
-  'to-teal-400',
-  'to-cyan-400',
-  'to-sky-400',
-  'to-blue-400',
-  'to-indigo-400',
-  'to-violet-400',
-  'to-purple-400',
-  'to-fuchsia-400',
-  'to-pink-400',
-  'to-rose-400',
-  'snap-end',
-]
+const PREDEFINED_COLORS = [
+  'border-l-red-400',
+  'border-l-orange-400',
+  'border-l-amber-400',
+  'border-l-yellow-400',
+  'border-l-lime-400',
+  'border-l-green-400',
+  'border-l-emerald-400',
+  'border-l-teal-400',
+  'border-l-cyan-400',
+  'border-l-sky-400',
+  'border-l-blue-400',
+  'border-l-indigo-400',
+  'border-l-violet-400',
+  'border-l-purple-400',
+  'border-l-fuchsia-400',
+  'border-l-pink-400',
+  'border-l-rose-400',
+] as const
 
-function getRandomTailwindColor() {
-  const predefinedColors = [
-    'border-l-red-400',
-    'border-l-orange-400',
-    'border-l-amber-400',
-    'border-l-yellow-400',
-    'border-l-lime-400',
-    'border-l-green-400',
-    'border-l-emerald-400',
-    'border-l-teal-400',
-    'border-l-cyan-400',
-    'border-l-sky-400',
-    'border-l-blue-400',
-    'border-l-indigo-400',
-    'border-l-violet-400',
-    'border-l-purple-400',
-    'border-l-fuchsia-400',
-    'border-l-pink-400',
-    'border-l-rose-400',
-  ]
-
-  return predefinedColors[Math.floor(Math.random() * predefinedColors.length)]
+function getRandomTailwindColor(): (typeof PREDEFINED_COLORS)[number] {
+  const index = Math.floor(Math.random() * PREDEFINED_COLORS.length) % PREDEFINED_COLORS.length
+  return PREDEFINED_COLORS[index]!
 }
 
-function findTopSortPosition(todos) {
+function findTopSortPosition(todos: Todo[]) {
   const activeTodos = todos.filter((todo) => !todo.isCompleted)
   const minSortOrder = activeTodos.length > 0 ? Math.min(...activeTodos.map((t) => t.sortOrder)) : 1
   return minSortOrder
 }
 
-const initialState = {
+const initialState: TodoState = {
   todos: new Map(),
   timeLog: new Map(),
   openTodoId: null,
   runningTimeItem: null,
 }
 
-function todoReducer(state, action) {
+function todoReducer(state: TodoState, action: TodoAction): TodoState {
   switch (action.type) {
     case 'ADD_TODO': {
       const title = action.payload
       if (!title) return state
 
       const id = generateId()
-      const newTodos = new Map(state.todos).set(id, {
+      const newTodo: Todo = {
         id,
         title,
         descr: '',
@@ -85,7 +66,8 @@ function todoReducer(state, action) {
         isCompleted: false,
         completedAt: null,
         createdAt: Date.now(),
-      })
+      }
+      const newTodos = new Map(state.todos).set(id, newTodo)
 
       return { ...state, todos: newTodos }
     }
@@ -186,10 +168,13 @@ function todoReducer(state, action) {
       const droppedIndex = activeTodos.findIndex((todo) => todo.id === droppedOnTodo.id)
 
       const [removed] = activeTodos.splice(draggedIndex, 1)
-      activeTodos.splice(droppedIndex, 0, removed)
+      if (removed) {
+        activeTodos.splice(droppedIndex, 0, removed)
+      }
 
       activeTodos.forEach((todo, index) => {
-        newTodos.set(todo.id, { ...newTodos.get(todo.id), sortOrder: index })
+        const existingTodo = newTodos.get(todo.id)! // Non-null assertion
+        newTodos.set(todo.id, { ...existingTodo, sortOrder: index })
       })
 
       return { ...state, todos: newTodos }
@@ -199,26 +184,28 @@ function todoReducer(state, action) {
   }
 }
 
-export function TodoProvider({ children }) {
-  const [state, dispatch] = usePersistedReducer(todoReducer, initialState, 'todoState')
+export function TodoProvider({ children }: { children: ReactNode }) {
+  const [state, dispatch] = usePersistedReducer<TodoState, TodoAction>(todoReducer, initialState, 'todoState')
 
-  const swipedTodo = useRef(null)
+  const swipedTodo = useRef<HTMLElement | null>(null)
 
   useEffect(() => {
     if (state.runningTimeItem) {
-      let animationFrameId
+      let animationFrameId: number
       let lastUpdate = Date.now()
 
       const updateTimer = () => {
         const now = Date.now()
         // Only update if at least 1 second has passed
         if (now - lastUpdate >= 1000) {
-          const updatedTimeItem = {
-            ...state.runningTimeItem,
-            stop: roundMs(now),
+          if (state.runningTimeItem) {
+            const updatedTimeItem: TimeLogItem = {
+              ...state.runningTimeItem,
+              stop: roundMs(now),
+            }
+            dispatch({ type: 'UPDATE_TIMEITEM', payload: updatedTimeItem })
+            lastUpdate = now
           }
-          dispatch({ type: 'UPDATE_TIMEITEM', payload: updatedTimeItem })
-          lastUpdate = now
         }
         animationFrameId = requestAnimationFrame(updateTimer)
       }
@@ -234,15 +221,15 @@ export function TodoProvider({ children }) {
   }, [state.runningTimeItem, dispatch])
 
   // Set swiped todo & swipe other back
-  const handleScroll = (e) => {
+  const handleScroll = (e: UIEvent<HTMLElement>) => {
     e.stopPropagation()
     const scrolledTodo = e.currentTarget
     const scrollPos = scrolledTodo.scrollLeft
-    const prevScrollPos = scrolledTodo.dataset?.scrollPos ?? 0
+    const prevScrollPos = parseInt(scrolledTodo.dataset?.scrollPos ?? '0')
     const swipeDirection = scrollPos - prevScrollPos > 0 ? 'left' : 'right'
 
     if (swipeDirection === 'right') {
-      scrolledTodo.dataset.scrollPos = scrollPos
+      scrolledTodo.dataset.scrollPos = scrollPos.toString()
       return
     }
 
@@ -251,15 +238,15 @@ export function TodoProvider({ children }) {
       swipedTodo.current.scrollTo({ left: 0, behavior: 'smooth' })
     }
 
-    scrolledTodo.dataset.scrollPos = scrollPos
+    scrolledTodo.dataset.scrollPos = scrollPos.toString()
     swipedTodo.current = scrolledTodo
   }
 
   const allTodos = [...state.todos.values()]
   const activeTodos = allTodos.filter((todo) => todo && !todo.isCompleted).sort((a, b) => a.sortOrder - b.sortOrder)
-  const completedTodos = allTodos.filter((todo) => todo && todo.isCompleted).sort((a, b) => b.completedAt - a.completedAt)
+  const completedTodos = allTodos.filter((todo) => todo && todo.isCompleted).sort((a, b) => b.completedAt! - a.completedAt!)
 
-  const contextValue = {
+  const contextValue: TodoContextType = {
     state,
     dispatch,
     handleScroll,

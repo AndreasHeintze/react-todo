@@ -1,9 +1,14 @@
-import { useContext } from 'react'
-import { TodoContext } from './contexts/TodoContext.js'
-import { formatTimeSpent, calcTotalTime } from './helpers.js'
+import { forwardRef } from 'react'
+import { useTodoContext } from './contexts/TodoContext'
+import { formatTimeSpent, calcTotalTime } from './helpers'
+import type { Todo } from './types'
 
-export default function TodoTimeSpent({ todo, ref }) {
-  const { state, dispatch } = useContext(TodoContext)
+interface TodoTimeSpentProps {
+  todo: Todo
+}
+
+const TodoTimeSpent = forwardRef<HTMLButtonElement, TodoTimeSpentProps>(({ todo }, ref) => {
+  const { state, dispatch } = useTodoContext()
   const totalTime = calcTotalTime(todo, state.timeLog)
 
   return (
@@ -29,4 +34,6 @@ export default function TodoTimeSpent({ todo, ref }) {
       {formatTimeSpent(totalTime)}
     </button>
   )
-}
+})
+
+export default TodoTimeSpent
