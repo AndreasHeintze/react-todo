@@ -1,4 +1,5 @@
 import { useRef, useState, useEffect, forwardRef, KeyboardEvent, FocusEvent } from 'react'
+import type { DraggableAttributes, SyntheticListeners } from '@dnd-kit/core'
 import { GripVertical } from 'lucide-react'
 import { useTodoContext } from './contexts/TodoContext'
 import type { Todo as TodoType } from './types'
@@ -10,8 +11,8 @@ import TodoButtons from './TodoButtons'
 interface TodoProps {
   todo: TodoType
   style?: React.CSSProperties
-  attributes?: any
-  listeners?: any
+  attributes?: DraggableAttributes
+  listeners?: SyntheticListeners
 }
 
 const Todo = forwardRef<HTMLDivElement, TodoProps>(({ todo, style, attributes, listeners }, ref) => {

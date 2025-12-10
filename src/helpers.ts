@@ -70,7 +70,7 @@ export function usePersistedReducer<S, A>(reducer: Reducer<S, A>, initialState: 
 
   useEffect(() => {
     try {
-      const dataToStore: any = { ...state }
+      const dataToStore: Record<string, unknown> = { ...(state as Record<string, unknown>) }
       // Handle Map serialization
       if (dataToStore.todos instanceof Map) {
         dataToStore.todos = Array.from(dataToStore.todos.entries())

@@ -158,6 +158,13 @@ function todoReducer(state: TodoState, action: TodoAction): TodoState {
 
       return { ...state, timeLog: newTimeLog }
     }
+    case 'DELETE_TIMEITEM': {
+      const timeItemId = action.payload
+      const newTimeLog = new Map(state.timeLog)
+      newTimeLog.delete(timeItemId)
+
+      return { ...state, timeLog: newTimeLog }
+    }
     case 'SORT_TODOS': {
       const { draggedTodo, droppedOnTodo } = action.payload
       if (draggedTodo.id === droppedOnTodo.id) return state

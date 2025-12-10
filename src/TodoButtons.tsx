@@ -3,7 +3,7 @@ import { useTodoContext } from './contexts/TodoContext'
 import type { Todo as TodoType } from './types'
 import { Edit, Timer, Trash2, LoaderCircle } from 'lucide-react'
 import TodoTimeSpent from './TodoTimeSpent'
-import Button from '@/components/ui/Button'
+import TodoButton from '@/components/ui/TodoButton'
 
 interface TodoButtonsProps {
   todo: TodoType
@@ -30,17 +30,17 @@ const TodoButtons = forwardRef<HTMLButtonElement, TodoButtonsProps>(({ todo }, r
       <TodoTimeSpent ref={ref} todo={todo} />
 
       {/** Edit button */}
-      <Button
+      <TodoButton
         onClick={() => dispatch({ type: 'SAVE_TODO', payload: { todo, data: { mode: todo.mode === 'edit' ? 'list' : 'edit' } } })}
         disabled={todo.isCompleted}
         color="blue"
         ariaLabel="Edit this todo"
       >
         <Edit size={24} aria-hidden="true" />
-      </Button>
+      </TodoButton>
 
       {/** Timer button */}
-      <Button
+      <TodoButton
         onClick={() => dispatch({ type: 'TOGGLE_TIMER', payload: { todo } })}
         disabled={todo.isCompleted}
         color="amber"
@@ -54,17 +54,17 @@ const TodoButtons = forwardRef<HTMLButtonElement, TodoButtonsProps>(({ todo }, r
             <div className="absolute top-[9px] left-[9px] size-2 bg-current" aria-hidden="true"></div>
           </div>
         )}
-      </Button>
+      </TodoButton>
 
       {/** Delete button */}
-      <Button
+      <TodoButton
         onClick={() => dispatch({ type: 'DELETE_TODO', payload: { id: todo.id } })}
         color="red"
         ariaLabel="Delete this todo"
         disabled={false}
       >
         <Trash2 size={24} aria-hidden="true" />
-      </Button>
+      </TodoButton>
     </div>
   )
 })

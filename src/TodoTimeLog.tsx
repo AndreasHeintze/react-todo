@@ -1,5 +1,6 @@
 import { useTodoContext } from './contexts/TodoContext'
 import { formatDateTimeLocal, formatTimeSpent, roundMs } from './helpers'
+import { X } from 'lucide-react'
 import type { Todo } from './types'
 
 interface TodoTimeLogProps {
@@ -28,14 +29,14 @@ export default function TodoTimeLog({ todo }: TodoTimeLogProps) {
                 <div>&nbsp;</div>
                 <div className="w-48">Stop</div>
               </div>
-              <div className="pr-2 text-right">Time</div>
+              <div className="mr-8 pr-2 text-right">Time</div>
             </li>
           )}
 
           {todoTimeLog.length > 0 &&
             todoTimeLog.map((timeItem, index) => (
               <li key={timeItem.id} className="col-span-2 grid grid-cols-subgrid gap-4 py-3 even:bg-neutral-50 @2xl:py-0">
-                <div className="flex gap-4">
+                <div className="flex items-center gap-4">
                   <input
                     className="w-48"
                     type="datetime-local"
@@ -67,8 +68,24 @@ export default function TodoTimeLog({ todo }: TodoTimeLogProps) {
                     }}
                   />
                 </div>
-                <div className="pr-2 text-right whitespace-nowrap">
+                <div className="flex items-center justify-end pr-2 whitespace-nowrap">
                   {formatTimeSpent(roundMs(timeItem.stop) - roundMs(timeItem.start))}
+                  {state.runningTimeItem?.id !== timeItem.id ? (
+                    <button
+                      onClick={() => {
+                        dispatch({
+                          type: 'DELETE_TIMEITEM',
+                          payload: timeItem.id,
+                        })
+                      }}
+                      className="cursor-pointer p-2 text-red-600 transition-colors hover:text-red-800"
+                      title="Radera"
+                    >
+                      <X size={16} />
+                    </button>
+                  ) : (
+                    <div className="w-8"></div>
+                  )}
                 </div>
               </li>
             ))}

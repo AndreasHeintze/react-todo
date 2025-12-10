@@ -1,4 +1,4 @@
-import { useRef, FormEvent } from 'react'
+import { FormEvent } from 'react'
 import { useTodoContext } from './contexts/TodoContext'
 import type { Todo } from './types'
 
@@ -8,8 +8,6 @@ interface TodoEditProps {
 
 export default function TodoEdit({ todo }: TodoEditProps) {
   const { dispatch } = useTodoContext()
-  const titleRef = useRef<HTMLInputElement>(null)
-  const descrRef = useRef<HTMLTextAreaElement>(null)
 
   function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -29,24 +27,22 @@ export default function TodoEdit({ todo }: TodoEditProps) {
       data-mode={todo.mode}
     >
       <div className="space-y-3 p-3 pt-1">
-        <label className="py-2 font-semibold" htmlFor={titleRef.current?.id}>
+        <label className="py-2 font-semibold" htmlFor={todo.id + '-title'}>
           Title
         </label>
         <input
-          ref={titleRef}
           id={todo.id + '-title'}
           type="text"
           name="title"
-          value={todo.title}
+          defaultValue={todo.title}
           placeholder="Title"
           className="block w-full max-w-[80ch] border border-neutral-300 bg-white p-2"
         />
 
-        <label className="py-2 font-semibold" htmlFor={descrRef.current?.id}>
+        <label className="py-2 font-semibold" htmlFor={todo.id + '-descr'}>
           Description
         </label>
         <textarea
-          ref={descrRef}
           id={todo.id + '-descr'}
           name="descr"
           defaultValue={todo.descr}

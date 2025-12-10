@@ -34,6 +34,7 @@ export type TodoAction =
   | { type: 'COMPLETE_TODO'; payload: { todo: Todo } }
   | { type: 'TOGGLE_TIMER'; payload: { todo: Todo } }
   | { type: 'UPDATE_TIMEITEM'; payload: TimeLogItem }
+  | { type: 'DELETE_TIMEITEM'; payload: string }
   | { type: 'SORT_TODOS'; payload: { draggedTodo: Todo; droppedOnTodo: Todo } }
 
 export interface TodoContextType {
